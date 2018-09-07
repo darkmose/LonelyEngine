@@ -1,51 +1,54 @@
 #pragma once
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <SOIL/SOIL.h>
-
-const GLchar* shaderS = "#version 330 core \n"
-"\n"
-"layout (location = 0) in vec3 pos; \n"
-"//layout (location = 1) in vec3 color;\n"
-"layout (location = 1) in vec2 textPos;\n"
-
-"//out vec3 Color;\n"
-"out vec2 TexturePos;\n"
-"uniform vec2 stretch;\n"
-"uniform vec2 offset;\n"
-
-"uniform mat4 transform;\n"
-
-"void main(){\n"
-"//Color = color;\n"
-"TexturePos = vec2(textPos.x * stretch.x + offset.x ,1-(textPos.y * stretch.y + offset.y));\n"
-"gl_Position = transform * vec4(pos.x,pos.y,pos.z,1.0);\n"
-"}\n";
-
-const GLchar* shaderF = "#version 330 core"
-"\n"
-"//in vec3 Color;\n"
-"in vec2 TexturePos;\n"
-
-"uniform sampler2D texture1;\n"
-"uniform sampler2D texture2;\n"
-
-"out vec4 color;\n"
-"void main(){\n"
-"	color = mix(texture(texture1,TexturePos),texture(texture2,vec2(TexturePos.x, TexturePos.y)),0.4f);\n"
-"}";
 
 
-GLuint shaderProgram;
-GLuint vertexShader;
-GLuint fragmentShader;
+class Shader
+{
+private:
+	const GLchar* VertexShader;
+	const GLchar* FragmentShader;
 
-void initShaders() 
+	GLuint shaderProgram;
+	GLuint vertexShader;
+	GLuint fragmentShader;
+	void InitShaders();
+	void InitProgram();
+	void LoadShaders(std::string& path);
+	bool unifAcces;
+	
+
+	
+public:
+	void SetUniforms(bool);
+	vec3 Light;
+	Shader(const GLchar* name);
+
+	void ActiveUniforms();
+	void Active();
+	GLuint Sprogram();
+
+	vec2 stretch = vec2(1.f, 1.f);
+	vec2 offset = vec2(0.f, 0.f);
+
+	~Shader();
+};
+
+
+
+inline void Shader::SetUniforms(bool acces)
+{
+	unifAcces = acces;
+}
+
+inline Shader::Shader(const GLchar * name)
+{
+	std::string path = "Shaders/" + (std::string)name;
+	LoadShaders(path);	
+}
+
+void Shader::InitShaders()
 {
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &shaderS, nullptr);
+	glShaderSource(vertexShader, 1, &VertexShader, nullptr);
 	glCompileShader(vertexShader);
 
 	GLint status;
@@ -55,13 +58,11 @@ void initShaders()
 		char info[512];
 		glGetShaderInfoLog(vertexShader, 512, NULL, info);
 		std::cout << info;
-		delete(info);
-		
+		glfwTerminate();
 	}
 
-
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &shaderF, nullptr);
+	glShaderSource(fragmentShader, 1, &FragmentShader, nullptr);
 	glCompileShader(fragmentShader);
 
 	GLint status2;
@@ -71,11 +72,11 @@ void initShaders()
 		char info[512];
 		glGetShaderInfoLog(fragmentShader, 512, NULL, info);
 		std::cout << info;
-		delete(info);
+		glfwTerminate();
 	}
 }
 
-void initProgramShader() 
+void Shader::InitProgram()
 {
 	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
@@ -89,25 +90,75 @@ void initProgramShader()
 		char log[512];
 		glGetProgramInfoLog(shaderProgram, 512, NULL, log);
 		std::cout << log;
+		glfwTerminate();
 	}
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	delete[] VertexShader;
+	delete[] FragmentShader;
+}
+
+inline void Shader::LoadShaders(std::string & path)
+{
+	std::string resv, resf;
+	resv = path + "V.lshader";
+	resf = path + "F.lshader";
+	{
+		ifstream str(resv, ios::in|ios::binary|ios::ate);
+		ifstream::pos_type size = str.tellg();
+		GLint fSize = (GLint)str.tellg();
+		GLchar* memblock;
+		memblock = new char[1 + fSize];
+		str.seekg(0, ios::beg);
+		str.read(memblock, size);
+		str.close();
+		memblock[size] = '\0';		
+
+		VertexShader = memblock;
+		str.close();		
+	}	
+	{
+		ifstream str(resf, ios::in | ios::binary | ios::ate);
+		ifstream::pos_type size = str.tellg();
+		GLint fSize = (GLint)str.tellg();
+		GLchar* memblock;
+		memblock = new char[1 + fSize];
+		str.seekg(0, ios::beg);
+		str.read(memblock, size);
+		str.close();
+		memblock[size] = '\0';
+
+		FragmentShader = memblock;
+		str.close();	
+	}	
+	InitShaders();
+	InitProgram();
+
 }
 
 
-float stretchX = 1;
-float stretchY = 1;
-float offsetX = 0;
-float offsetY = 0;
-
-bool isOffset = false;
-
-void shaderUniforms()
+void Shader::Active() 
 {
-	glUniform2f(glGetUniformLocation(shaderProgram, "stretch"), stretchX, stretchY);
-	if (isOffset)
+	glUseProgram(shaderProgram);
+}
+
+inline GLuint Shader::Sprogram()
+{
+	return shaderProgram;
+}
+
+inline Shader::~Shader()
+{
+	glDeleteProgram(shaderProgram);
+}
+
+void Shader::ActiveUniforms()
+{
+	if (unifAcces)
 	{
-		glUniform2f(glGetUniformLocation(shaderProgram, "offset"), offsetX, offsetY);
-	}		
+		glUniform2f(glGetUniformLocation(shaderProgram, "stretch"), stretch.x, stretch.y);
+		glUniform2f(glGetUniformLocation(shaderProgram, "offset"), offset.x, offset.y);
+		glUniform3f(glGetUniformLocation(shaderProgram, "light"),Light.r,Light.g,Light.b);
+	}
 }

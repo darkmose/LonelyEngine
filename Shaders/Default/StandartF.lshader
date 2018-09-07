@@ -1,0 +1,12 @@
+#version 330 core
+in vec2 TexturePos;
+
+uniform vec3 light;
+uniform sampler2D text;
+out vec4 color;
+
+
+void main()
+{
+	color = texture(text,TexturePos)*vec4(light,1.f);
+}

@@ -1,0 +1,15 @@
+#version 330 core
+layout (location = 0) in vec3 pos; 
+layout (location = 1) in vec2 textPos;
+
+out vec2 TexturePos;
+uniform vec2 stretch;
+uniform vec2 offset;
+
+uniform mat4 transform;
+
+void main()
+{
+	gl_Position = transform * vec4(pos.x,pos.y,pos.z,1);
+	TexturePos = vec2(textPos.x * stretch.x + offset.x ,1-(textPos.y * stretch.y + offset.y));
+}
