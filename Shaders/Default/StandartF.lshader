@@ -1,12 +1,51 @@
 #version 330 core
-in vec2 TexturePos;
 
-uniform vec3 light;
-uniform sampler2D text;
+in vec2 TexturePos;
+in vec3 Normal;
+in vec3 FragPos;
+
+	struct Texture
+	{
+		sampler2D main;		
+	};
+	struct  MatProp
+	{
+		float ambient;
+		float diffuse;
+		float specular;		
+	};
+	struct Color
+	{
+		vec3 object;
+		vec3 light;
+	};
+	struct Pose
+	{
+		vec3 camera;
+		vec3 light;		
+	};
+	
+	uniform Texture Textures;
+	uniform Color Colors;
+	uniform MatProp Props;
+	uniform Pose Poses;
+
 out vec4 color;
 
 
 void main()
 {
-	color = texture(text,TexturePos)*vec4(light,1.f);
+	vec3 ambient = Colors.light*Props.ambient;
+	
+	vec3 lightDir = normalize(Poses.light - FragPos);
+	float diff = max(dot(lightDir,Normal),0.f);
+	vec3 Diffuse = diff * Colors.light * Props.diffuse;
+	
+	vec3 cameraDir = normalize(Poses.camera - FragPos);
+	vec3 reflectLight = reflect(-lightDir, Normal);
+	float spec = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specular);
+	vec3 specular = spec * Colors.light;
+	
+	vec3 result = (ambient + Diffuse + specular) * Colors.object * vec3(texture(Textures.main,TexturePos));;
+	color = vec4(result, 1.0f);
 }

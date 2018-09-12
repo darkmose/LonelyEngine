@@ -129,11 +129,14 @@
     <ClInclude Include="Callbacks.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FirstInitHeader.h" />
-    <ClInclude Include="GLMath.h" />
-    <ClInclude Include="Object.h" />
+    <ClInclude Include="GameObj.h" />
+    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture2D.h" />
-    <ClInclude Include="VertexData.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Time.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

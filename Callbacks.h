@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Light.h"
 
 static class Callbacks 
 {	
@@ -7,7 +7,6 @@ private:
 	static GLfloat lastX, lastY;
 	static GLFWwindow* window;
 	static vec2 deltaMouse;
-	static Camera* camera;
 	static bool keys[400];
 	static bool mods[10];
 	static float speed;
@@ -20,15 +19,14 @@ private:
 	static void scroll_callback(GLFWwindow* window, double x, double y);
 public:
 
-	Callbacks(GLFWwindow* window, Camera* camera);
-	static void do_movement(float);	
+	Callbacks(GLFWwindow* window);
+	static void do_movement(Light*);
 	static void initCallbacks();
 };
 
 
-inline Callbacks::Callbacks(GLFWwindow * _window, Camera * _camera)
+inline Callbacks::Callbacks(GLFWwindow * _window)
 {
-	camera = _camera;
 	window = _window;
 }
 
@@ -36,36 +34,47 @@ GLfloat Callbacks::lastX;
 GLfloat Callbacks::lastY;
 GLFWwindow* Callbacks::window;
 vec2 Callbacks::deltaMouse;
-Camera* Callbacks::camera;
 bool Callbacks::keys[400];
 GLfloat Callbacks::cameraSpeed;
 bool Callbacks::mods[10];
 float Callbacks::speed = 1.f;
 
 
-void Callbacks::do_movement(float delta)
+void Callbacks::do_movement(Light* lPos)
 {
-	cameraSpeed = delta * 5* speed;
+	cameraSpeed = Time::deltaTime * 5* speed;
 	
 
 	if (keys[GLFW_KEY_W])
-		camera->Translate(camera->Forward(cameraSpeed));
+		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Forward(cameraSpeed));
 	if (keys[GLFW_KEY_S])
-		camera->Translate(camera->Forward(-cameraSpeed));
+		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Forward(-cameraSpeed));
 	if (keys[GLFW_KEY_A])
-		camera->Translate(camera->Right(-cameraSpeed));
+		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Right(-cameraSpeed));
 	if (keys[GLFW_KEY_D])
-		camera->Translate(camera->Right(cameraSpeed));
+		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Right(cameraSpeed));
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwTerminate();
 	if (keys[340])
 		speed = 2.f;
 	else speed = 1.f;
 	if (keys[GLFW_KEY_SPACE])
-		camera->Translate(vec3(0, 4 * delta, 0));
+		Camera::mainCamera->transform.TranslatePos(vec3(0, 4 * Time::deltaTime, 0));
 	if (keys[GLFW_KEY_F])
-		camera->Translate(vec3(0, -4 * delta, 0));
-	
+		Camera::mainCamera->transform.TranslatePos(vec3(0, -4 * Time::deltaTime, 0));
+	if (keys[GLFW_KEY_UP])
+		lPos->SetLPos(vec3(0, 0, Time::deltaTime *10));
+	if (keys[GLFW_KEY_DOWN])
+		lPos->SetLPos(vec3(0, 0, -Time::deltaTime * 10));
+	if (keys[GLFW_KEY_LEFT])
+		lPos->SetLPos(vec3(Time::deltaTime * 10, 0, 0));
+	if (keys[GLFW_KEY_RIGHT])
+		lPos->SetLPos(vec3(-Time::deltaTime * 10, 0, 0));
+	if (keys[GLFW_KEY_I])
+		lPos->SetLPos(vec3(0, Time::deltaTime * 10, 0));
+	if (keys[GLFW_KEY_K])
+		lPos->SetLPos(vec3(0, -Time::deltaTime * 10, 0));
+
 }
 
 void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -84,7 +93,7 @@ void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int acti
 void Callbacks::cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
 {		
 	deltaMouse = vec2((xpos - lastX), (lastY - ypos));
-	camera->Look(deltaMouse.y, deltaMouse.x);
+	Camera::mainCamera->Look(deltaMouse.y, deltaMouse.x);
 	lastX = xpos;
 	lastY = ypos;
 }
@@ -93,7 +102,7 @@ void Callbacks::mouseB_callback(GLFWwindow* window, int b, int action, int mods)
 {
 	if (b == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
-		
+		cout << Time::currenttime;
 	}
 }
 

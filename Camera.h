@@ -1,36 +1,30 @@
 #pragma once
+#include "Transform.h"
 
 class Camera
 {
 private:
 	vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
-	vec3 cameraPos = vec3(0, -2, 0);
-	vec3 cameraUp = vec3(0, 1, 0);
 	vec3 direction;
 	GLfloat p = 0.f, y = -90.f;
-
 public:
+	static Camera* mainCamera;
+	Transform transform;
 	void Look(GLfloat, GLfloat);
-	mat4 View();
+	void View();
 	Camera(vec3);
-	void SetPosition(vec3);
-	void Translate(vec3);
 	vec3 Forward(float);
 	vec3 Right(float);
 };
 
+Camera* Camera::mainCamera;
 
-inline Camera::Camera(vec3 position) : cameraPos(position) {}
-
- void Camera::SetPosition(vec3 pos)
+inline Camera::Camera(vec3 position)
 {
-	cameraPos = pos;
+	mainCamera = this;
+	transform._position = vec3(0.f, 0.f, 0.f);	
 }
 
- void Camera::Translate(vec3 vectorTranslate)
-{
-	cameraPos += vectorTranslate;
-}
 
  vec3 Camera::Forward(float scale = 1)
 {
@@ -39,14 +33,14 @@ inline Camera::Camera(vec3 position) : cameraPos(position) {}
 
  vec3 Camera::Right(float scale = 1)
 {
-	 vec3 r = normalize(glm::cross(cameraFront, cameraUp))*scale;
+	 vec3 r = normalize(cross(cameraFront, Transform::up))*scale;
 	 return vec3(r.x,0,r.z);
 }
 
 void Camera::Look(GLfloat pitch, GLfloat yaw)
 {
-	p += pitch*deltaTime*10;
-	y += yaw*deltaTime*10;
+	p += pitch*Time::deltaTime*10;
+	y += yaw*Time::deltaTime*10;
 	if (p > 89.0f)
 		p = 89.0f;
 	if (p < -89.0f)
@@ -58,9 +52,9 @@ void Camera::Look(GLfloat pitch, GLfloat yaw)
 	cameraFront = normalize(direction);
 }
 
-mat4 Camera::View() 
+void Camera::View() 
 {	
-	return lookAt(cameraPos, (cameraPos + cameraFront), cameraUp);
+	Matrix::view = lookAt(transform._position, (transform._position + cameraFront), Transform::up);
 }
 
 

@@ -13,31 +13,13 @@ private:
 	void InitShaders();
 	void InitProgram();
 	void LoadShaders(std::string& path);
-	bool unifAcces;
-	
-
 	
 public:
-	void SetUniforms(bool);
-	vec3 Light;
 	Shader(const GLchar* name);
-
-	void ActiveUniforms();
 	void Active();
 	GLuint Sprogram();
-
-	vec2 stretch = vec2(1.f, 1.f);
-	vec2 offset = vec2(0.f, 0.f);
-
 	~Shader();
 };
-
-
-
-inline void Shader::SetUniforms(bool acces)
-{
-	unifAcces = acces;
-}
 
 inline Shader::Shader(const GLchar * name)
 {
@@ -151,14 +133,4 @@ inline GLuint Shader::Sprogram()
 inline Shader::~Shader()
 {
 	glDeleteProgram(shaderProgram);
-}
-
-void Shader::ActiveUniforms()
-{
-	if (unifAcces)
-	{
-		glUniform2f(glGetUniformLocation(shaderProgram, "stretch"), stretch.x, stretch.y);
-		glUniform2f(glGetUniformLocation(shaderProgram, "offset"), offset.x, offset.y);
-		glUniform3f(glGetUniformLocation(shaderProgram, "light"),Light.r,Light.g,Light.b);
-	}
 }

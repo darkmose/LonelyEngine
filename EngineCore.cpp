@@ -1,59 +1,65 @@
 #include "FirstInitHeader.h"
-#include "GLMath.h"
+#include "Texture2D.h"
 #include "Shader.h"
+#include "Material.h"
+#include "Matrix.h"
 #include "Camera.h"
-#include "Object.h"
+#include "Transform.h"
 #include "Callbacks.h"
-#include "VertexData.h"
+#include "GameObj.h"
+#include "Light.h"
 
+
+vec3 GlobalLight(1, 1, 1);
 GLFWwindow* window;
 Camera* mainCamera;
 Callbacks* _callbacks;
 GLfloat vertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,0.0f,  0.0f, -1.0f,
+	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,0.0f,  0.0f, -1.0f,
 
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,0.0f,  0.0f, 1.0f,
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,0.0f,  0.0f, 1.0f,
 
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,-1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,-1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,-1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,-1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,-1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,-1.0f,  0.0f,  0.0f,
 
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, 0.0f,1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
 
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,0.0f,  1.0f,  0.0f
 };
-GLint params[] = { 3,2 };
-GLint lightParam[] = { 3 };
+
+GLint params[] = { 3,2,3 };
+vec3 lPos;
 
 int WindowInit() 
 {
@@ -97,72 +103,71 @@ int main()
 	{
 		return -1;
 	}
+	
 	///Main Variables
-	//Camera
-	mainCamera = new Camera(vec3(0, 0, 0));
-	//Callbacks 
-	_callbacks = new Callbacks(window,mainCamera);
-	_callbacks->initCallbacks();
-	//Material
-	VertexData *vertex = new VertexData("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 2, 36, true);
-	VertexData *lights = new VertexData("Default/Light",vertices, sizeof(vertices), GL_STATIC_DRAW, lightParam, GL_FALSE, GL_TRUE, 1, 36,false);
-	//Texture
-	Texture2D box("Textures/box.jpg", SOIL_LOAD_RGB, GL_RGB, GL_RGB);
-	box.Active();
 	//MatrixGL
 	int x, y;
 	glfwGetWindowSize(window, &x, &y);
-	MatGl matGl(float(x),float(y), true);
+	Matrix::SetProjection(float(x), float(y), true);
+	//Camera
+	mainCamera = new Camera(vec3(0, 0, 0));
+	//Callbacks 
+	_callbacks = new Callbacks(window);
+	_callbacks->initCallbacks();
+	//Material
+	Material *vertex = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
+	//GameObjects
+	Light *LightCube = new Light(lPos);
+	GameObj *CubeBox = new GameObj(vertex, GlobalLight,lPos);
+	
+	//Texture
+	Texture2D box("Textures/metal.jpg", SOIL_LOAD_RGB, GL_RGB, GL_RGB);
+	box.Active();
 
-	const int he = 30;
-	const int wi = 30;
 
-	vec3 map[wi][he];
-	for (size_t i = 0; i < wi; i++)
-	{
-		for (size_t k = 0; k < he; k++)
-		{
-			map[i][k] = vec3(i, sin(float(i)) / 10 + sin(float(k))/3, k);
-		}
-	}
+	const int he = 100;
+	const int wi = 100;
+
 
 
 	glEnable(GL_DEPTH_TEST);
-	mainCamera->SetPosition(vec3(0, 1, 0));
+	mainCamera->transform._position = vec3(0, 1.5f, 0);
+	LightCube->transform._scale = vec3(0.4f);
+	CubeBox->transform.Scale(vec3(wi, 1, he));
+	CubeBox->transform._position = vec3(0, 0, 0);
+	CubeBox->material->params.stretch = vec2(wi, he);
+
 	while (!glfwWindowShouldClose(window))
 	{
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - lastFrame;
-		lastFrame = currentTime;
+		Time::currenttime = glfwGetTime();
+		Time::CalculateDelta();
 
 		glfwPollEvents();
 
-		_callbacks->do_movement(deltaTime);
+		_callbacks->do_movement(LightCube);
+		CubeBox->SetLightPos(lPos);
 		
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.29f, 0.39f, 0.40f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
-		
-		matGl.view = mainCamera->View();
-		
-		for (size_t i = 0; i < wi; i++)
-		{
-			for (size_t k = 0; k < he; k++)
-			{				
-				matGl.model = translate(mat4(), map[i][k]);
-				glUniformMatrix4fv(glGetUniformLocation(vertex->sProgram(), "transform"), 1, GL_FALSE, value_ptr(matGl.GlobalMatrix()));
-				vertex->Draw();
-			}
+		mainCamera->View();
 
-		}
-		matGl.model = translate(mat4(), vec3(1,9,1));
-		glUniformMatrix4fv(glGetUniformLocation(lights->sProgram(), "transform"), 1, GL_FALSE, value_ptr(matGl.GlobalMatrix()));
-		lights->Draw();
+		LightCube->transform._position = vec3(1.0f + sin(glfwGetTime()) * 2.0f, 5, sin(glfwGetTime() / 2.0f) * 1.0f);
+		lPos = LightCube->transform._position;
+		CubeBox->SetLightPos(lPos);
+
+
+		CubeBox->Draw();
+
+		LightCube->Draw();		
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
 	}
 
-		
+	delete[] vertex;
+	delete[] CubeBox;
+	delete[] LightCube;
+
 
 	glfwTerminate();
 	return 0;

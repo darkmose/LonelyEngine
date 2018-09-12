@@ -8,14 +8,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <iostream>
+#include "Time.h"
+
 
 
 using namespace std;
 using namespace glm;
 
-
-
-GLfloat deltaTime = 0.0f;
-GLfloat lastFrame = 0.0f;
-GLfloat currentTime = 0.0f;
 mat4 viewMatrix;
