@@ -165,7 +165,7 @@ int main()
 	Material *material = new Material("Default/Light", vertices2, sizeof(vertices2), GL_STATIC_DRAW, lightParam, GL_FALSE, GL_TRUE, 1, 36);
 
 	//GameObjects
-	GameObj *LightCube = new GameObj();
+	GameObj *LightCube = new GameObj(material);
 	LightCube->AddComponent("PointLight", new Light(LightCube->transform));
 	GameObj *CubeBox = new GameObj(vertex);
 	
@@ -184,9 +184,15 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	mainCamera->transform._position = vec3(0, 1.5f, 0);
 	LightCube->transform._scale = vec3(0.4f);
+	LightCube->transform._position = vec3(4);
 	CubeBox->transform.Scale(vec3(wi, 1, he));
 	CubeBox->transform._position = vec3(0, 0, 0);
 	CubeBox->material->params.stretch = vec2(wi, he);
+	Light* l = (Light*)(LightCube->GetComponent("PointLight"));
+	l->str = 0.7f;
+	
+
+	GLbyte sss = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -195,13 +201,21 @@ int main()
 
 		glfwPollEvents();
 
+		LightCube->transform._position.x = sin(Time::currenttime);
+		LightCube->transform._position.z = sin(Time::currenttime);
+
 		_callbacks->do_movement();
 		
 		glClearColor(0.29f, 0.39f, 0.40f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
 		mainCamera->View();
-
-
+		
+		sss++;
+		 
+		if ( sss%15 == 0)
+		{
+			cout << "FPS:  " << 1 / Time::deltaTime << endl;
+		}
 
 		CubeBox->Draw();
 

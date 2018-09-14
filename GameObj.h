@@ -50,7 +50,7 @@ inline void GameObj::ComponentAction()
 	map <string, Component*>::iterator it;
 	for (it = components.begin(); it != components.end(); ++it)
 	{
-		(*it).second->Action();
+		(*it).second->Update();
 	}
 }
 

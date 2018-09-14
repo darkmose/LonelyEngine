@@ -17,23 +17,18 @@ public:
 	static vec3 Lcolor;
 	static vec3 Lpos;
 
-	void Action();
+	virtual void Update();
 	Transform transform;
 	Light(Transform&);
 	~Light();
 };
 
 
-inline void Light::Action()
+inline void Light::Update()
 {
-    if (reset)
-	{
-		Light::Lcolor = Color;
-		Light::Lpos = trans->_position;
-		Light::strengh = str;
-		
-		reset = !reset;
-	}
+	Light::Lcolor = Color;
+	Light::Lpos = trans->_position;
+	Light::strengh = str;		
 }
 
 inline Light::Light(Transform& _trans)

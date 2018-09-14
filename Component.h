@@ -2,7 +2,7 @@
 class Component
 {
 public:
-	bool reset;
-	virtual void Action() {}
+	bool reset = true;
+	virtual void Update() {}
 };
 

@@ -2,9 +2,10 @@
 static class Time
 {
 private:
+
+public:
 	static float lastFrame;
 	static float timeScale;
-public:
 	static void CalculateDelta();
 
 	static float currenttime;

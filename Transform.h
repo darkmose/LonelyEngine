@@ -4,6 +4,7 @@
 class Transform 
 {
 private:
+	mat4 mat_position;
 	mat4 mat_rotation;
 	mat4 mat_scale;
 public:
@@ -48,6 +49,9 @@ inline void Transform::Scale(vec3 scaleVec)
 	_scale = scaleVec;
 	mat_scale = scale(mat4(), _scale);
 }
+
+
+
 
 
 
