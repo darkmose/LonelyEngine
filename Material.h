@@ -1,4 +1,5 @@
 #pragma once
+#include "Light.h"
 
 class Material
 {
@@ -10,12 +11,12 @@ private:
 	struct Params {
 		vec2 stretch = vec2(1);
 		vec2 offset = vec2(0);
-		vec3 lightCol = vec3(1);
 		vec3 objectCol = vec3(1);
-		vec3 lightPos = vec3(1);
 		float ambient = 0.1f;
 		float diffuse = 0.8f;
-		float specular = 32.f;
+		float specular = 0.3f;
+		float specularStr = 32.f;
+		float Kc = 1.f, Kl = 0.014f, Kq = 0.0007f;
 	};
 public:
 	Params params;
@@ -37,13 +38,17 @@ void Material::ActiveUniforms()
 {
 	SetUnifVec2("stretch", params.stretch);
 	SetUnifVec2("offset", params.offset);
-	SetUnifVec3("Colors.light", params.lightCol);
+	SetUnifVec3("Colors.light", Light::Lcolor);
 	SetUnifVec3("Colors.object", params.objectCol);
-	SetUnifVec3("Poses.light", params.lightPos);
+	SetUnifVec3("Poses.light", Light::Lpos);
 	SetUnifFloat("Props.ambient", params.ambient);
 	SetUnifFloat("Props.diffuse", params.diffuse);
+	SetUnifFloat("Props.specularStr", params.specularStr);
 	SetUnifFloat("Props.specular", params.specular);
 	SetUnifInt("Textures.main", 0);
+	SetUnifFloat("Point.Kc", params.Kc * Light::strengh);
+	SetUnifFloat("Point.Kl", params.Kl * Light::strengh);
+	SetUnifFloat("Point.Kq", params.Kq * Light::strengh);
 }
 
 Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray, GLenum drawMod, GLint* params, GLint isNDC, GLint drawArrays, GLint paramCount, GLint _vertCount, GLint* indices = 0, GLsizei sizeElem = 0)

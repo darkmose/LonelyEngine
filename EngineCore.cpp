@@ -1,4 +1,5 @@
 #include "FirstInitHeader.h"
+#include "Light.h"
 #include "Texture2D.h"
 #include "Shader.h"
 #include "Material.h"
@@ -7,10 +8,10 @@
 #include "Transform.h"
 #include "Callbacks.h"
 #include "GameObj.h"
-#include "Light.h"
 
 
-vec3 GlobalLight(1, 1, 1);
+
+
 GLFWwindow* window;
 Camera* mainCamera;
 Callbacks* _callbacks;
@@ -59,7 +60,52 @@ GLfloat vertices[] = {
 };
 
 GLint params[] = { 3,2,3 };
-vec3 lPos;
+
+GLint lightParam[] = { 3 };
+GLfloat vertices2[] = {
+	-0.5f, -0.5f, -0.5f,
+	0.5f, -0.5f, -0.5f,
+	0.5f,  0.5f, -0.5f,
+	0.5f,  0.5f, -0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f, -0.5f,  0.5f,
+	0.5f, -0.5f,  0.5f,
+	0.5f,  0.5f,  0.5f,
+	0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+
+	0.5f,  0.5f,  0.5f,
+	0.5f,  0.5f, -0.5f,
+	0.5f, -0.5f, -0.5f,
+	0.5f, -0.5f, -0.5f,
+	0.5f, -0.5f,  0.5f,
+	0.5f,  0.5f,  0.5f,
+
+	-0.5f, -0.5f, -0.5f,
+	0.5f, -0.5f, -0.5f,
+	0.5f, -0.5f,  0.5f,
+	0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f,  0.5f, -0.5f,
+	0.5f,  0.5f, -0.5f,
+	0.5f,  0.5f,  0.5f,
+	0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f
+};
+
 
 int WindowInit() 
 {
@@ -116,13 +162,18 @@ int main()
 	_callbacks->initCallbacks();
 	//Material
 	Material *vertex = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
+	Material *material = new Material("Default/Light", vertices2, sizeof(vertices2), GL_STATIC_DRAW, lightParam, GL_FALSE, GL_TRUE, 1, 36);
+
 	//GameObjects
-	Light *LightCube = new Light(lPos);
-	GameObj *CubeBox = new GameObj(vertex, GlobalLight,lPos);
+	GameObj *LightCube = new GameObj();
+	LightCube->AddComponent("PointLight", new Light(LightCube->transform));
+	GameObj *CubeBox = new GameObj(vertex);
 	
 	//Texture
 	Texture2D box("Textures/metal.jpg", SOIL_LOAD_RGB, GL_RGB, GL_RGB);
+	Texture2D boxSpec("Textures/metalSpecular.jpg", SOIL_LOAD_RGB, GL_RGB, GL_RGB);
 	box.Active();
+	box.Active(GL_TEXTURE1);
 
 
 	const int he = 100;
@@ -144,16 +195,12 @@ int main()
 
 		glfwPollEvents();
 
-		_callbacks->do_movement(LightCube);
-		CubeBox->SetLightPos(lPos);
+		_callbacks->do_movement();
 		
 		glClearColor(0.29f, 0.39f, 0.40f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
 		mainCamera->View();
 
-		LightCube->transform._position = vec3(1.0f + sin(glfwGetTime()) * 2.0f, 5, sin(glfwGetTime() / 2.0f) * 1.0f);
-		lPos = LightCube->transform._position;
-		CubeBox->SetLightPos(lPos);
 
 
 		CubeBox->Draw();

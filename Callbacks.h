@@ -20,7 +20,7 @@ private:
 public:
 
 	Callbacks(GLFWwindow* window);
-	static void do_movement(Light*);
+	static void do_movement();
 	static void initCallbacks();
 };
 
@@ -40,7 +40,7 @@ bool Callbacks::mods[10];
 float Callbacks::speed = 1.f;
 
 
-void Callbacks::do_movement(Light* lPos)
+void Callbacks::do_movement()
 {
 	cameraSpeed = Time::deltaTime * 5* speed;
 	
@@ -62,19 +62,6 @@ void Callbacks::do_movement(Light* lPos)
 		Camera::mainCamera->transform.TranslatePos(vec3(0, 4 * Time::deltaTime, 0));
 	if (keys[GLFW_KEY_F])
 		Camera::mainCamera->transform.TranslatePos(vec3(0, -4 * Time::deltaTime, 0));
-	if (keys[GLFW_KEY_UP])
-		lPos->SetLPos(vec3(0, 0, Time::deltaTime *10));
-	if (keys[GLFW_KEY_DOWN])
-		lPos->SetLPos(vec3(0, 0, -Time::deltaTime * 10));
-	if (keys[GLFW_KEY_LEFT])
-		lPos->SetLPos(vec3(Time::deltaTime * 10, 0, 0));
-	if (keys[GLFW_KEY_RIGHT])
-		lPos->SetLPos(vec3(-Time::deltaTime * 10, 0, 0));
-	if (keys[GLFW_KEY_I])
-		lPos->SetLPos(vec3(0, Time::deltaTime * 10, 0));
-	if (keys[GLFW_KEY_K])
-		lPos->SetLPos(vec3(0, -Time::deltaTime * 10, 0));
-
 }
 
 void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)

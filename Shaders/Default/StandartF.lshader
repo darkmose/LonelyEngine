@@ -6,13 +6,15 @@ in vec3 FragPos;
 
 	struct Texture
 	{
-		sampler2D main;		
+		sampler2D main;	
+		//sampler2D specular;	
 	};
 	struct  MatProp
 	{
 		float ambient;
 		float diffuse;
 		float specular;		
+		float specularStr;
 	};
 	struct Color
 	{
@@ -24,28 +26,40 @@ in vec3 FragPos;
 		vec3 camera;
 		vec3 light;		
 	};
+	struct PointL
+	{
+		float Kc;
+		float Kl;
+		float Kq;
+	};
+	
 	
 	uniform Texture Textures;
 	uniform Color Colors;
 	uniform MatProp Props;
 	uniform Pose Poses;
+	uniform PointL Point;
 
 out vec4 color;
 
 
 void main()
 {
-	vec3 ambient = Colors.light*Props.ambient;
-	
+	float distance = length(Poses.light - FragPos);
+	float attenuation = 1.0f/(Point.Kc + Point.Kl*distance + Point.Kq*distance*distance);
+	//
+	vec3 textDiff = vec3(texture(Textures.main,TexturePos));
+	vec3 ambient = Colors.light*Props.ambient;	
+	//
 	vec3 lightDir = normalize(Poses.light - FragPos);
 	float diff = max(dot(lightDir,Normal),0.f);
 	vec3 Diffuse = diff * Colors.light * Props.diffuse;
-	
+	//
 	vec3 cameraDir = normalize(Poses.camera - FragPos);
 	vec3 reflectLight = reflect(-lightDir, Normal);
-	float spec = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specular);
+	float spec = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular;
 	vec3 specular = spec * Colors.light;
-	
-	vec3 result = (ambient + Diffuse + specular) * Colors.object * vec3(texture(Textures.main,TexturePos));;
+	//
+	vec3 result = (ambient + Diffuse + specular) * attenuation * Colors.object * textDiff;
 	color = vec4(result, 1.0f);
 }

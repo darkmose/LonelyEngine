@@ -3,42 +3,63 @@
 class GameObj 
 {
 private:	
+	GLboolean isEmpty;
+	map<string, Component*> components;
 public:
 	Material * material;
 	Transform transform;
+	void AddComponent(string, Component*);
+	Component* GetComponent(string);
 	void Draw();
-	GameObj(Material*, vec3&, vec3&);
+	void ComponentAction();
+	GameObj();
 	GameObj(Material*);
-	vec3 LightPos;
-	void SetLightPos(vec3);
 };
 
 
 
+inline void GameObj::AddComponent(string name, Component *component)
+{
+	components[name] = component;
+}
+
+inline Component * GameObj::GetComponent(string name)
+{
+	return components[name];
+}
+
 inline void GameObj::Draw()
 {
-	material->ActiveShader();
-	material->ActiveUniforms();
-	transform.MoveGlobalMatrix();
-	material->SetUnifMat4("Matrix.model", Matrix::model);
-	material->SetUnifMat4("Matrix.view", Matrix::view);
-	material->SetUnifMat4("Matrix.projection", Matrix::projection);
-	material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform._position);
+	if (!isEmpty)
+	{
+		material->ActiveShader();
+		material->ActiveUniforms();
+		transform.MoveGlobalMatrix();
+		material->SetUnifMat4("Matrix.model", Matrix::model);
+		material->SetUnifMat4("Matrix.view", Matrix::view);
+		material->SetUnifMat4("Matrix.projection", Matrix::projection);
+		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform._position);
 
-	material->Draw();
+		material->Draw();
+	}
+	ComponentAction();
 }
 
-
-
-GameObj::GameObj(Material* material, vec3& _light, vec3& lPos) : material(material)
+inline void GameObj::ComponentAction()
 {
-	material->params.lightCol = _light;
-	SetLightPos(lPos);
+	map <string, Component*>::iterator it;
+	for (it = components.begin(); it != components.end(); ++it)
+	{
+		(*it).second->Action();
+	}
 }
 
-GameObj::GameObj(Material* material) : material(material){}
-
-inline void GameObj::SetLightPos(vec3 pos)
+inline GameObj::GameObj(Material* _material)
 {
-	material->params.lightPos = pos;
+	material = _material; 
+}
+
+inline GameObj::GameObj()
+{
+	isEmpty = true;
 }
