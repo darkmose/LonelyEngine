@@ -1,5 +1,6 @@
 #pragma once
 #include "Light.h"
+#include "Camera.h"
 
 class Material
 {
@@ -49,6 +50,11 @@ void Material::ActiveUniforms()
 	SetUnifFloat("Point.Kc", params.Kc * Light::strengh);
 	SetUnifFloat("Point.Kl", params.Kl * Light::strengh);
 	SetUnifFloat("Point.Kq", params.Kq * Light::strengh);
+
+	SetUnifVec3("Spot.position", Camera::mainCamera->transform._position);
+	SetUnifVec3("Spot.direction", normalize(Camera::mainCamera->Direction()));
+	SetUnifFloat("Spot.cutOff", cos(radians(20.f)));
+	SetUnifFloat("Spot.outerCutOff", cos(radians(30.f)));
 }
 
 Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray, GLenum drawMod, GLint* params, GLint isNDC, GLint drawArrays, GLint paramCount, GLint _vertCount, GLint* indices = 0, GLsizei sizeElem = 0)

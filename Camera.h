@@ -15,6 +15,7 @@ public:
 	Camera(vec3);
 	vec3 Forward(float);
 	vec3 Right(float);
+	vec3 Direction();
 };
 
 Camera* Camera::mainCamera;
@@ -36,6 +37,11 @@ inline Camera::Camera(vec3 position)
 	 vec3 r = normalize(cross(cameraFront, Transform::up))*scale;
 	 return vec3(r.x,0,r.z);
 }
+
+ inline vec3 Camera::Direction()
+ {
+	 return cameraFront;
+ }
 
 void Camera::Look(GLfloat pitch, GLfloat yaw)
 {

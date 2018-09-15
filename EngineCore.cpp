@@ -189,7 +189,6 @@ int main()
 	CubeBox->transform._position = vec3(0, 0, 0);
 	CubeBox->material->params.stretch = vec2(wi, he);
 	Light* l = (Light*)(LightCube->GetComponent("PointLight"));
-	l->str = 0.7f;
 	
 
 	GLbyte sss = 0;
@@ -201,12 +200,9 @@ int main()
 
 		glfwPollEvents();
 
-		LightCube->transform._position.x = sin(Time::currenttime);
-		LightCube->transform._position.z = sin(Time::currenttime);
-
 		_callbacks->do_movement();
 		
-		glClearColor(0.29f, 0.39f, 0.40f,1);
+		glClearColor(0.10f, 0.11f, 0.15f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
 		mainCamera->View();
 		

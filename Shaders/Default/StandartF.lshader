@@ -33,33 +33,52 @@ in vec3 FragPos;
 		float Kq;
 	};
 	
+	struct SpotL
+	{
+		vec3  position;
+		vec3  direction;
+		float cutOff;
+		float outerCutOff;
+	};
+	
 	
 	uniform Texture Textures;
 	uniform Color Colors;
 	uniform MatProp Props;
 	uniform Pose Poses;
 	uniform PointL Point;
+	uniform SpotL Spot;
 
 out vec4 color;
 
 
 void main()
 {
-	float distance = length(Poses.light - FragPos);
-	float attenuation = 1.0f/(Point.Kc + Point.Kl*distance + Point.Kq*distance*distance);
+	//float distance = length(Spot.direction - FragPos);
+	//float attenuation = 1.0f/(Point.Kc + Point.Kl*distance + Point.Kq*distance*distance);
 	//
 	vec3 textDiff = vec3(texture(Textures.main,TexturePos));
 	vec3 ambient = Colors.light*Props.ambient;	
 	//
-	vec3 lightDir = normalize(Poses.light - FragPos);
-	float diff = max(dot(lightDir,Normal),0.f);
-	vec3 Diffuse = diff * Colors.light * Props.diffuse;
+	vec3 lightDir = normalize(Spot.position - FragPos);
+	float theta = dot(lightDir, -Spot.direction);
+
+	vec3 Diffuse;
+	vec3 specular;
+	float intensity;
+	if(theta < Spot.outerCutOff){}
+	else
+	{
+		float epsilon   = Spot.cutOff - Spot.outerCutOff;
+		intensity = clamp((theta - Spot.outerCutOff) / epsilon, 0.0, 1.0);
+		//float diff = 1.f; //max(dot(lightDir,Normal),0.f);
+		Diffuse = Colors.light * Props.diffuse * intensity;
+		vec3 cameraDir = normalize(Poses.camera - FragPos);
+		vec3 reflectLight = reflect(-lightDir, Normal);
+		float spec = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular;
+		specular = spec * Colors.light * intensity;
+	}
 	//
-	vec3 cameraDir = normalize(Poses.camera - FragPos);
-	vec3 reflectLight = reflect(-lightDir, Normal);
-	float spec = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular;
-	vec3 specular = spec * Colors.light;
-	//
-	vec3 result = (ambient + Diffuse + specular) * attenuation * Colors.object * textDiff;
+	vec3 result = (ambient + Diffuse + specular) * Colors.object * textDiff;
 	color = vec4(result, 1.0f);
 }

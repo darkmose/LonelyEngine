@@ -26,7 +26,7 @@ public:
 
 inline void Light::Update()
 {
-	Light::Lcolor = Color;
+    Light::Lcolor = Color;
 	Light::Lpos = trans->_position;
 	Light::strengh = str;		
 }
