@@ -6,8 +6,11 @@
 #include "Matrix.h"
 #include "Camera.h"
 #include "Transform.h"
-#include "Callbacks.h"
 #include "GameObj.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+#include "DirectionalLight.h"
+#include "Callbacks.h"
 
 
 
@@ -166,7 +169,15 @@ int main()
 
 	//GameObjects
 	GameObj *LightCube = new GameObj(material);
-	LightCube->AddComponent("PointLight", new Light(LightCube->transform));
+	GameObj *LC2 = new GameObj(*LightCube);
+	GameObj *LC3 = new GameObj(*LightCube);
+	GameObj *LC4 = new GameObj(*LightCube);
+	//LightCube->AddComponent("PL1", new PointLight(LightCube->transform));
+	LightCube->AddComponent("DirL", new DirectionalLight(vec3(1,-1,0)));
+	//LC2->AddComponent("PL2", new PointLight(LightCube->transform));
+	//LC3->AddComponent("PL3", new PointLight(LightCube->transform));
+	//LC4->AddComponent("PL4", new PointLight(LightCube->transform));
+
 	GameObj *CubeBox = new GameObj(vertex);
 	
 	//Texture
@@ -185,11 +196,11 @@ int main()
 	mainCamera->transform._position = vec3(0, 1.5f, 0);
 	LightCube->transform._scale = vec3(0.4f);
 	LightCube->transform._position = vec3(4);
+	DirectionalLight *d = (DirectionalLight*)LightCube->GetComponent("DirL");
 	CubeBox->transform.Scale(vec3(wi, 1, he));
 	CubeBox->transform._position = vec3(0, 0, 0);
 	CubeBox->material->params.stretch = vec2(wi, he);
-	Light* l = (Light*)(LightCube->GetComponent("PointLight"));
-	
+	d->color = vec3(0, 1, 0);
 
 	GLbyte sss = 0;
 
@@ -216,6 +227,9 @@ int main()
 		CubeBox->Draw();
 
 		LightCube->Draw();		
+	//	LC2->Draw();
+	//	LC3->Draw();
+	//	LC4->Draw();
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);

@@ -17,7 +17,6 @@ private:
 		float diffuse = 0.8f;
 		float specular = 0.3f;
 		float specularStr = 32.f;
-		float Kc = 1.f, Kl = 0.014f, Kq = 0.0007f;
 	};
 public:
 	Params params;
@@ -39,22 +38,67 @@ void Material::ActiveUniforms()
 {
 	SetUnifVec2("stretch", params.stretch);
 	SetUnifVec2("offset", params.offset);
-	SetUnifVec3("Colors.light", Light::Lcolor);
-	SetUnifVec3("Colors.object", params.objectCol);
-	SetUnifVec3("Poses.light", Light::Lpos);
+	SetUnifVec3("Props.objectColor", params.objectCol);
+	SetUnifVec3("cameraPos", Camera::mainCamera->transform._position);
 	SetUnifFloat("Props.ambient", params.ambient);
 	SetUnifFloat("Props.diffuse", params.diffuse);
 	SetUnifFloat("Props.specularStr", params.specularStr);
 	SetUnifFloat("Props.specular", params.specular);
 	SetUnifInt("Textures.main", 0);
-	SetUnifFloat("Point.Kc", params.Kc * Light::strengh);
-	SetUnifFloat("Point.Kl", params.Kl * Light::strengh);
-	SetUnifFloat("Point.Kq", params.Kq * Light::strengh);
 
-	SetUnifVec3("Spot.position", Camera::mainCamera->transform._position);
-	SetUnifVec3("Spot.direction", normalize(Camera::mainCamera->Direction()));
-	SetUnifFloat("Spot.cutOff", cos(radians(20.f)));
-	SetUnifFloat("Spot.outerCutOff", cos(radians(30.f)));
+	cout << "DirCount" << Light::dirLs.size();
+	
+	for (size_t i = 0; i < Light::pointLs.size(); i++)
+	{
+		char* intValue = new char[2];
+		_itoa_s(i,intValue,2,10);
+		string Kc = "Point["+string(intValue)+"].Kc";
+		string Kl = "Point["+string(intValue)+"].Kl";
+		string Kq = "Point["+string(intValue)+"].Kq";
+		string str = "Point["+string(intValue)+"].strengh";
+		string col = "Point["+string(intValue)+"].color";
+		string pos = "Point[" + string(intValue) + "].position";
+
+		SetUnifFloat(Kc.c_str(),(*Light::pointLs[i]).Kc);
+		SetUnifFloat(Kl.c_str(),(*Light::pointLs[i]).Kl);
+		SetUnifFloat(Kq.c_str(),(*Light::pointLs[i]).Kq);
+		SetUnifFloat(str.c_str(),(*Light::pointLs[i]).strengh);
+		SetUnifVec3(col.c_str(),(*Light::pointLs[i]).color);
+		SetUnifVec3(pos.c_str(),(*Light::pointLs[i]).position);
+	}
+	for (size_t i = 0; i < Light::spotLs.size(); i++)
+	{
+		char* intValue = new char[2];
+		_itoa_s(i, intValue,2,10);
+		string pos = "Spot[" + string(intValue) + "].position";
+		string dir = "Spot[" + string(intValue) + "].direction";
+		string Icutoff = "Spot[" + string(intValue) + "].innerCutOff";
+		string Ocutoff = "Spot[" + string(intValue) + "].outerCutOff";
+		string str = "Spot[" + string(intValue) + "].color";
+		string colr = "Spot[" + string(intValue) + "].position";
+
+		SetUnifVec3(pos.c_str(), Camera::mainCamera->transform._position);
+		SetUnifVec3(dir.c_str(), Camera::mainCamera->Direction());
+		SetUnifFloat(Icutoff.c_str(), (*Light::spotLs[i]).innerCutOff);
+		SetUnifFloat(Ocutoff.c_str(), (*Light::spotLs[i]).outerCutOff);
+		SetUnifFloat(str.c_str(), (*Light::spotLs[i]).strengh);
+		SetUnifVec3(colr.c_str(), (*Light::spotLs[i]).color);
+	}
+	for (size_t i = 0; i < Light::dirLs.size(); i++)
+	{
+		char* intValue = new char[2];
+		_itoa_s(i, intValue,2, 10);
+		
+		string dir = "Directional["+string(intValue)+"].direction";
+		string col = "Directional["+string(intValue)+"].color";
+		string str = "Directional["+string(intValue)+"].strengh";
+
+		SetUnifVec3(dir.c_str(), (*Light::dirLs[i]).direction);
+		SetUnifVec3(col.c_str(), (*Light::dirLs[i]).color);
+		SetUnifFloat(str.c_str(), (*Light::dirLs[i]).strengh);		
+	}
+
+
 }
 
 Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray, GLenum drawMod, GLint* params, GLint isNDC, GLint drawArrays, GLint paramCount, GLint _vertCount, GLint* indices = 0, GLsizei sizeElem = 0)

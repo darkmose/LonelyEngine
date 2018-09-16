@@ -52,9 +52,6 @@ inline void Transform::Scale(vec3 scaleVec)
 
 
 
-
-
-
  vec3 Transform::up = vec3(0,1,0);
  vec3 Transform::right = vec3(1,0,0);
  vec3 Transform::forward = vec3(0,0,1);

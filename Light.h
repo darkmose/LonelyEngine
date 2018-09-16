@@ -1,50 +1,52 @@
 #pragma once
 #include "Component.h"
 #include "Transform.h"
+#include <vector>
+
+struct DirectionalL
+{
+	vec3 direction;
+	vec3 color;
+	float strengh;
+};
+
+struct PointL
+{
+	vec3 position;
+	vec3 color;
+	float strengh;
+	float Kc;
+	float Kl;
+	float Kq;
+};
+
+struct SpotL
+{
+	vec3 position;
+	vec3 color;
+	vec3 direction;
+	float strengh;
+	float innerCutOff;
+	float outerCutOff;
+};
+
 
 class Light : public Component
 {
 private:
-	Transform * trans;
-	vec3 tempColor;
-
 public:
-	vec3 Color = vec3(1);
-	float str = 1;
+	vec3 color;
+	float strengh = 1;
+	Light() {}
 
 
-	static float strengh;
-	static vec3 Lcolor;
-	static vec3 Lpos;
 
-	virtual void Update();
-	Transform transform;
-	Light(Transform&);
-	~Light();
+	static vector<PointL*> pointLs;
+	static vector<DirectionalL*> dirLs;
+	static vector<SpotL*> spotLs;
 };
 
-
-inline void Light::Update()
-{
-    Light::Lcolor = Color;
-	Light::Lpos = trans->_position;
-	Light::strengh = str;		
-}
-
-inline Light::Light(Transform& _trans)
-{
-	trans = &_trans;
-	Light::Lcolor = Color;
-	Light::Lpos = trans->_position;
-	Light::strengh = str;
-}
-
-inline Light::~Light()
-{
-	delete[] trans;
-}
-
-vec3 Light::Lcolor;
-vec3 Light::Lpos;
-float Light::strengh;
+ vector<PointL*> Light::pointLs(0);
+ vector<DirectionalL*> Light::dirLs(0);
+ vector<SpotL*> Light::spotLs(0);
 
