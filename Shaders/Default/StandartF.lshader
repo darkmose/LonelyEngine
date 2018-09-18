@@ -4,6 +4,10 @@ in vec2 TexturePos;
 in vec3 Normal;
 in vec3 FragPos;
 
+uniform int PLCount;
+uniform int SLCount;
+uniform int DLCount;
+
 	struct Texture
 	{
 		sampler2D main;	
@@ -47,14 +51,14 @@ in vec3 FragPos;
 	
 	uniform Texture Textures;
 	uniform MatProp Props;
-	uniform PointL Point[4];
+	uniform PointL Point[1];
 	uniform SpotL Spot[1];
-	uniform DirectionalL Directional[4];
+	uniform DirectionalL Directional[1];
 	uniform vec3 cameraPos;
 	
-	vec3 DirectionOut(in DirectionalL,in vec3,in vec3);
-	vec3 SpotOut(in SpotL,in vec3,in vec3);
-	vec3 PointOut(in PointL,in vec3,in vec3,in vec3);
+	vec3 DirectionOut(in DirectionalL,in vec3);
+	vec3 SpotOut(in SpotL,in vec3);
+	vec3 PointOut(in PointL,in vec3);
 
 out vec4 color;
 
@@ -63,59 +67,59 @@ out vec4 color;
 void main()
 {
     vec3 cameraDir = normalize(cameraPos - FragPos);
-	vec3 result = vec3(0);
+	vec3 result;
    
-    for(int i = 0; i < 4; i++){
-    result += DirectionOut(Directional[i],Normal,cameraDir);}
+    //for(int i = 0; i < 1; i++){
+    //result += DirectionOut(Directional[i],cameraDir);}
     
-//	for(int i = 0; i < 4; i++){
-	//result += PointOut(Point[i], Normal, FragPos, cameraDir);}
+	for(int i = 0; i < 1; i++){
+	result += PointOut(Point[i], cameraDir);}
     
-//	for(int i = 0; i < 1; i++){
-//  result += SpotOut(Spot[i], FragPos, cameraDir); }   
+	//for(int i = 0; i < 1; i++){
+	//result += SpotOut(Spot[i], cameraDir); }   
     
     color = vec4(result * Props.objectColor, 1.0) * texture(Textures.main, TexturePos);	
 }
 
 
 
-vec3 DirectionOut(in DirectionalL dir,in vec3 normal,in vec3 cameraDir)
+vec3 DirectionOut(in DirectionalL dir,in vec3 cameraDir)
 {
 	vec3 lightDir = normalize(-dir.direction);
-	vec3 ambient = dir.color * Props.ambient ;
-	float d = max(dot(lightDir,normal),0.f);
+	vec3 ambient = dir.color * Props.ambient;
+	float d = max(dot(lightDir,Normal),0.f);
 	vec3 diffuse = dir.color * Props.diffuse * d;
-	vec3 reflectLight = reflect(-lightDir, normal);
+	vec3 reflectLight = reflect(-lightDir, Normal);
 	float s = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular;
 	vec3 specular = s * Props.specular * dir.color;
 	
 	return (ambient + diffuse + specular)* dir.strengh;
 }
 
-vec3 PointOut(in PointL point,in vec3 normal,in vec3 fragPos,in vec3 cameraDir)
+vec3 PointOut(in PointL point,in vec3 cameraDir)
 {
-	float distance = length(point.position - fragPos);
+	float distance = length(point.position - FragPos);
 	float attenuation = 1.0f/(point.Kc + point.Kl*distance + point.Kq*distance*distance);
 	
-	vec3 lightDir = normalize(point.position - fragPos);
+	vec3 lightDir = normalize(point.position - FragPos);
 	vec3 ambient = point.color * Props.ambient;
 	
-	float d = max(dot(lightDir,normal),0.f) * attenuation;
+	float d = max(dot(lightDir,Normal),0.f) * attenuation;
 	vec3 diffuse = point.color * Props.diffuse * d ;
-	vec3 reflectLight = reflect(-lightDir, normal);
+	vec3 reflectLight = reflect(-lightDir, Normal);
 	float s = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular*attenuation;
 	vec3 specular = s * Props.specular * point.color;
 	
 	return (ambient + diffuse + specular)* point.strengh;
 }
 
-vec3 SpotOut(in SpotL spot,in vec3 fragPos,in vec3 cameraDir)
+vec3 SpotOut(in SpotL spot,in vec3 cameraDir)
 {
 	vec3 ambient = spot.color * Props.ambient;	
 	
-	vec3 lightDir = normalize(spot.position - fragPos);
+	vec3 lightDir = normalize(spot.position - FragPos);
 	float theta = dot(lightDir, -spot.direction);
-	if(theta < spot.outerCutOff){}
+	if(theta > spot.outerCutOff){return vec3(0);}
 	else
 	{
 		float epsilon = spot.innerCutOff - spot.outerCutOff;
@@ -126,7 +130,5 @@ vec3 SpotOut(in SpotL spot,in vec3 fragPos,in vec3 cameraDir)
 		vec3 specular = spec * spot.color * intensity;
 		
 		return (ambient + diffuse + specular) * spot.strengh;
-	}
-	
-	return vec3(0);
+	}	
 }

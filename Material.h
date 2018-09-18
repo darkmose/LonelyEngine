@@ -45,9 +45,8 @@ void Material::ActiveUniforms()
 	SetUnifFloat("Props.specularStr", params.specularStr);
 	SetUnifFloat("Props.specular", params.specular);
 	SetUnifInt("Textures.main", 0);
-
-	cout << "DirCount" << Light::dirLs.size();
 	
+
 	for (size_t i = 0; i < Light::pointLs.size(); i++)
 	{
 		char* intValue = new char[2];

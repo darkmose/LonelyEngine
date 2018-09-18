@@ -1,6 +1,8 @@
 #pragma once
+#include "Component.h"
+#include "Light.h"
 
-class GameObj 
+class GameObject
 {
 private:	
 	GLboolean isEmpty;
@@ -12,23 +14,24 @@ public:
 	Component* GetComponent(string);
 	void Draw();
 	void ComponentAction();
-	GameObj();
-	GameObj(Material*);
+	GameObject();
+	~GameObject();
+	GameObject(Material*);
 };
 
 
 
-inline void GameObj::AddComponent(string name, Component *component)
+inline void GameObject::AddComponent(string name, Component *component)
 {
 	components[name] = component;
 }
 
-inline Component * GameObj::GetComponent(string name)
+inline Component * GameObject::GetComponent(string name)
 {
 	return components[name];
 }
 
-inline void GameObj::Draw()
+inline void GameObject::Draw()
 {
 	if (!isEmpty)
 	{
@@ -45,7 +48,7 @@ inline void GameObj::Draw()
 	ComponentAction();
 }
 
-inline void GameObj::ComponentAction()
+inline void GameObject::ComponentAction()
 {
 	map <string, Component*>::iterator it;
 	for (it = components.begin(); it != components.end(); ++it)
@@ -54,12 +57,17 @@ inline void GameObj::ComponentAction()
 	}
 }
 
-inline GameObj::GameObj(Material* _material)
+inline GameObject::GameObject(Material* _material)
 {
 	material = _material; 
 }
 
-inline GameObj::GameObj()
+inline GameObject::GameObject()
 {
 	isEmpty = true;
+}
+
+inline GameObject::~GameObject()
+{
+	components.clear();
 }

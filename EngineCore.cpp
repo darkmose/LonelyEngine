@@ -1,15 +1,13 @@
 #include "FirstInitHeader.h"
-#include "Light.h"
 #include "Texture2D.h"
 #include "Shader.h"
 #include "Material.h"
 #include "Matrix.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "Light.h"
 #include "GameObj.h"
-#include "PointLight.h"
-#include "SpotLight.h"
-#include "DirectionalLight.h"
+#include "TestClass.h"
 #include "Callbacks.h"
 
 
@@ -168,17 +166,11 @@ int main()
 	Material *material = new Material("Default/Light", vertices2, sizeof(vertices2), GL_STATIC_DRAW, lightParam, GL_FALSE, GL_TRUE, 1, 36);
 
 	//GameObjects
-	GameObj *LightCube = new GameObj(material);
-	GameObj *LC2 = new GameObj(*LightCube);
-	GameObj *LC3 = new GameObj(*LightCube);
-	GameObj *LC4 = new GameObj(*LightCube);
-	//LightCube->AddComponent("PL1", new PointLight(LightCube->transform));
-	LightCube->AddComponent("DirL", new DirectionalLight(vec3(1,-1,0)));
-	//LC2->AddComponent("PL2", new PointLight(LightCube->transform));
-	//LC3->AddComponent("PL3", new PointLight(LightCube->transform));
-	//LC4->AddComponent("PL4", new PointLight(LightCube->transform));
+	GameObject *LightCube = new GameObject(material);
+	LightCube->AddComponent("PLight", new PointLight(LightCube->transform));
+	LightCube->AddComponent("script", new TestClass(LightCube));
 
-	GameObj *CubeBox = new GameObj(vertex);
+	GameObject *CubeBox = new GameObject(vertex);
 	
 	//Texture
 	Texture2D box("Textures/metal.jpg", SOIL_LOAD_RGB, GL_RGB, GL_RGB);
@@ -196,11 +188,11 @@ int main()
 	mainCamera->transform._position = vec3(0, 1.5f, 0);
 	LightCube->transform._scale = vec3(0.4f);
 	LightCube->transform._position = vec3(4);
-	DirectionalLight *d = (DirectionalLight*)LightCube->GetComponent("DirL");
+
+
 	CubeBox->transform.Scale(vec3(wi, 1, he));
 	CubeBox->transform._position = vec3(0, 0, 0);
 	CubeBox->material->params.stretch = vec2(wi, he);
-	d->color = vec3(0, 1, 0);
 
 	GLbyte sss = 0;
 
@@ -213,6 +205,8 @@ int main()
 
 		_callbacks->do_movement();
 		
+
+
 		glClearColor(0.10f, 0.11f, 0.15f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		
 		mainCamera->View();
@@ -221,15 +215,12 @@ int main()
 		 
 		if ( sss%15 == 0)
 		{
-			cout << "FPS:  " << 1 / Time::deltaTime << endl;
+		//	cout << "FPS:  " << 1 / Time::deltaTime << endl;
 		}
 
 		CubeBox->Draw();
 
 		LightCube->Draw();		
-	//	LC2->Draw();
-	//	LC3->Draw();
-	//	LC4->Draw();
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
@@ -238,6 +229,9 @@ int main()
 	delete[] vertex;
 	delete[] CubeBox;
 	delete[] LightCube;
+	Light::pointLs.clear();
+	Light::spotLs.clear();
+	Light::dirLs.clear();
 
 
 	glfwTerminate();
