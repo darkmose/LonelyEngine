@@ -168,6 +168,7 @@ int main()
 	//GameObjects
 	GameObject *LightCube = new GameObject(material);
 	LightCube->AddComponent("PLight", new PointLight(LightCube->transform));
+	LightCube->AddComponent("DLight", new DirectionalLight(vec3(-1)));
 	LightCube->AddComponent("script", new TestClass(LightCube));
 
 	GameObject *CubeBox = new GameObject(vertex);
@@ -188,7 +189,8 @@ int main()
 	mainCamera->transform._position = vec3(0, 1.5f, 0);
 	LightCube->transform._scale = vec3(0.4f);
 	LightCube->transform._position = vec3(4);
-
+	DirectionalLight *dir = (DirectionalLight*)LightCube->GetComponent("DLight");
+	dir->color = vec3(0.28f, 0.47f, 0.67f);
 
 	CubeBox->transform.Scale(vec3(wi, 1, he));
 	CubeBox->transform._position = vec3(0, 0, 0);
