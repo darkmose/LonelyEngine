@@ -2,13 +2,10 @@
 #include "Light.h"
 #include "Camera.h"
 
+
 class Material
 {
 private:
-	GLuint VbO, VaO, EbO;
-	mat4 modelMatrix;
-	GLint vertCount;
-	GLint isArray;
 	struct Params {
 		vec2 stretch = vec2(1);
 		vec2 offset = vec2(0);
@@ -22,14 +19,14 @@ public:
 	Params params;
 	void ActiveUniforms();
 	Shader * shader;
-	void Draw();
 	void ActiveShader();
-	Material(const GLchar*,GLfloat*,GLsizei, GLenum, GLint*, GLint, GLint, GLint, GLint, GLint*, GLsizei );
 	void SetUnifVec3(const GLchar*, vec3);
 	void SetUnifMat4(const GLchar*, mat4);
 	void SetUnifVec2(const GLchar*, vec2);
 	void SetUnifFloat(const GLchar*, GLfloat);
 	void SetUnifInt(const GLchar*, GLint);
+	
+	Material(const GLchar*);
 	~Material();
 };
 
@@ -43,9 +40,7 @@ void Material::ActiveUniforms()
 	SetUnifFloat("Props.ambient", params.ambient);
 	SetUnifFloat("Props.diffuse", params.diffuse);
 	SetUnifFloat("Props.specularStr", params.specularStr);
-	SetUnifFloat("Props.specular", params.specular);
-	SetUnifInt("Textures.main", 0);
-	
+	SetUnifFloat("Props.specular", params.specular);	
 
 	for (size_t i = 0; i < Light::pointLs.size(); i++)
 	{
@@ -96,47 +91,11 @@ void Material::ActiveUniforms()
 		SetUnifVec3(col.c_str(), (*Light::dirLs[i]).color);
 		SetUnifFloat(str.c_str(), (*Light::dirLs[i]).strengh);		
 	}
-
-
 }
 
-Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray, GLenum drawMod, GLint* params, GLint isNDC, GLint drawArrays, GLint paramCount, GLint _vertCount, GLint* indices = 0, GLsizei sizeElem = 0)
+Material::Material(const GLchar* _shader)
 {
-		shader = new Shader(_shader);
-		vertCount = _vertCount;
-		isArray = drawArrays;
-		glGenVertexArrays(1, &VaO);
-		glBindVertexArray(VaO);
-		glGenBuffers(1, &VbO);
-		glBindBuffer(GL_ARRAY_BUFFER, VbO);
-		glBufferData(GL_ARRAY_BUFFER, sizeArray, vertexArray, drawMod);
-		if (drawArrays == GL_FALSE)
-		{
-			glGenBuffers(1, &EbO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EbO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeElem, indices, drawMod);
-		}
-
-
-		GLint elemCount = 0;
-
-		for (GLint i = 0; i < paramCount; i++)
-		{
-			elemCount += params[i];
-		}
-
-		GLsizei size = elemCount * sizeof(float);
-
-		GLint prev = 0;
-		for (GLint i = 0; i < paramCount; i++)
-		{
-			glVertexAttribPointer(i, params[i], GL_FLOAT, isNDC, size, (GLvoid*)(prev * sizeof(float)));
-			prev += params[i];
-			glEnableVertexAttribArray(i);
-		}
-		glBindVertexArray(0);
-	
-	
+	shader = new Shader(_shader);	
 }
 
 inline void Material::SetUnifVec3(const GLchar * name, vec3 param)
@@ -166,33 +125,9 @@ inline void Material::SetUnifInt(const GLchar * name, GLint param)
 
 Material::~Material()
 {
-	glBindVertexArray(0);
-	glDeleteBuffers(1,&VaO);
-	glDeleteBuffers(1,&VbO);
-	if (isArray == GL_FALSE)
-	{
-		glDeleteBuffers(1, &EbO);
-	}
+	delete[] shader;
 }
 
-
-void Material::Draw()
-{
-	if (isArray == GL_FALSE)
-	{
-		glBindVertexArray(VaO);
-		glDrawElements(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0);
-		
-		return;
-	}
-	else
-	{	
-		glBindVertexArray(VaO);
-		glDrawArrays(GL_TRIANGLES, 0, vertCount);
-		
-		return;
-	}	
-}
 
 inline void Material::ActiveShader()
 {

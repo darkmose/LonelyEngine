@@ -120,13 +120,14 @@ public:
 		 Kl = 0.014f,
 		 Kq = 0.0007f;
 	 int id;
+	 void GetParams();
+
  public:
 	 float radius;
 	 Transform * transform;
 	 PointLight(Transform&);
 	 ~PointLight();
 	 void Update();
-	 void GetParams();
 	 PointL PLight;
  };
 
