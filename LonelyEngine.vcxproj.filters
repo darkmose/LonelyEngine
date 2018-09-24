@@ -51,7 +51,13 @@
     <ClInclude Include="Transform.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="TestClass.h">
+    <ClInclude Include="PointLight.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">

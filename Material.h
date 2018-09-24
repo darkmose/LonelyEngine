@@ -40,8 +40,15 @@ void Material::ActiveUniforms()
 	SetUnifFloat("Props.ambient", params.ambient);
 	SetUnifFloat("Props.diffuse", params.diffuse);
 	SetUnifFloat("Props.specularStr", params.specularStr);
+<<<<<<< HEAD
 	SetUnifFloat("Props.specular", params.specular);	
+=======
+	SetUnifFloat("Props.specular", params.specular);
+	SetUnifInt("Textures.main", 0);
+>>>>>>> parent of 065523d... 7
 
+	cout << "DirCount" << Light::dirLs.size();
+	
 	for (size_t i = 0; i < Light::pointLs.size(); i++)
 	{
 		char* intValue = new char[2];

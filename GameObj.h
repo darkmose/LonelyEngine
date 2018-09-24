@@ -1,8 +1,6 @@
 #pragma once
-#include "Component.h"
-#include "Light.h"
 
-class GameObject
+class GameObj 
 {
 private:	
 	GLboolean isEmpty;
@@ -15,25 +13,30 @@ public:
 	Component* GetComponent(string);
 	void Draw();
 	void ComponentAction();
+<<<<<<< HEAD
 	GameObject();
 	~GameObject();
 	GameObject(Material*);
 	GameObject(Material*,const GLchar*);
+=======
+	GameObj();
+	GameObj(Material*);
+>>>>>>> parent of 065523d... 7
 };
 
 
 
-inline void GameObject::AddComponent(string name, Component *component)
+inline void GameObj::AddComponent(string name, Component *component)
 {
 	components[name] = component;
 }
 
-inline Component * GameObject::GetComponent(string name)
+inline Component * GameObj::GetComponent(string name)
 {
 	return components[name];
 }
 
-inline void GameObject::Draw()
+inline void GameObj::Draw()
 {
 	if (isEmpty)
 	{
@@ -52,7 +55,7 @@ inline void GameObject::Draw()
 	ComponentAction();
 }
 
-inline void GameObject::ComponentAction()
+inline void GameObj::ComponentAction()
 {
 	map <string, Component*>::iterator it;
 	for (it = components.begin(); it != components.end(); ++it)
@@ -61,7 +64,7 @@ inline void GameObject::ComponentAction()
 	}
 }
 
-inline GameObject::GameObject(Material* _material)
+inline GameObj::GameObj(Material* _material)
 {
 	Texture2D box("Textures/metal.jpg", SOIL_LOAD_RGB, GL_RGB, GL_RGB);
 	box.Active();
@@ -75,13 +78,16 @@ inline GameObject::GameObject(Material * mat, const GLchar * modelPath)
 	model = new Model(modelPath, *material);
 }
 
-inline GameObject::GameObject()
+inline GameObj::GameObj()
 {
 	isEmpty = true;
 }
+<<<<<<< HEAD
 
 inline GameObject::~GameObject()
 {
 	components.clear();
 	delete[] model;
 }
+=======
+>>>>>>> parent of 065523d... 7
