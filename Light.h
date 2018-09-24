@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Transform.h"
+#include "Camera.h"
 #include <vector>
 
 struct DirectionalL
@@ -50,7 +51,6 @@ public:
  vector<DirectionalL*> Light::dirLs(0);
  vector<SpotL*> Light::spotLs(0);
 
-<<<<<<< HEAD
  class SpotLight : public Light
  {
  private:
@@ -120,14 +120,13 @@ public:
 		 Kl = 0.014f,
 		 Kq = 0.0007f;
 	 int id;
-	 void GetParams();
-
  public:
 	 float radius;
 	 Transform * transform;
 	 PointLight(Transform&);
 	 ~PointLight();
 	 void Update();
+	 void GetParams();
 	 PointL PLight;
  };
 
@@ -228,5 +227,3 @@ public:
 	 DLight.direction = this->direction;
 	 DLight.strengh = this->strengh;
  }
-=======
->>>>>>> parent of 065523d... 7

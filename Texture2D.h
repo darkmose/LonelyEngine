@@ -5,9 +5,9 @@ class Texture2D
 private:
 
 	GLuint texture;
+
 public:
 
-	static GLuint TexFromPath(const GLchar* path, GLenum soilRGB, GLint RGBStore, GLint RGBSource);
 	static void FilterTextures(GLint);	
 
 	GLuint Texture();
@@ -15,32 +15,6 @@ public:
 	Texture2D(const GLchar*, GLenum, GLint, GLint);
 	~Texture2D();
 };
-
-GLuint Texture2D::TexFromPath(const GLchar * path, GLenum soilRGB, GLint RGBStore, GLint RGBSource)
-{
-	GLuint tex;
-
-	glGenTextures(1, &tex);
-
-	int w, h;
-	unsigned char* image = SOIL_load_image(path, &w, &h, 0, soilRGB);
-	//if (image)
-	//{
-		glBindTexture(GL_TEXTURE_2D, tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, RGBStore, w, h, 0, RGBSource, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		SOIL_free_image_data(image);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	//}
-	//else
-	//{
-	//	cerr << "Error";
-	//	SOIL_free_image_data(image);
-	//}
-
-	return tex;
-}
 
 void Texture2D::FilterTextures(GLint filterMod)
 {
@@ -69,18 +43,17 @@ Texture2D::Texture2D(const GLchar* path, GLenum soilRGB, GLint RGBStore, GLint R
 	int w, h;
 	unsigned char* image = SOIL_load_image(path, &w, &h, 0, soilRGB);
 
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, RGBStore, w, h, 0, RGBSource, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, RGBStore, w, h, 0, RGBSource, GL_UNSIGNED_BYTE, image);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
-		SOIL_free_image_data(image);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0);	
 }
 
 
 Texture2D::~Texture2D()
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glDeleteTextures(1, &texture);	
+	glDeleteTextures(1, &texture);
 }

@@ -81,7 +81,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>assimp.lib;opengl32.lib;glew32s.lib;glfw3.lib;soil.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;soil.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -124,20 +124,13 @@
     <ClInclude Include="Callbacks.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="FirstInitHeader.h" />
     <ClInclude Include="GameObj.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix.h" />
-<<<<<<< HEAD
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-=======
-    <ClInclude Include="PointLight.h" />
->>>>>>> parent of 065523d... 7
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="TestClass.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
