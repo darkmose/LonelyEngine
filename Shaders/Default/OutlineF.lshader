@@ -1,0 +1,57 @@
+#version 330 core
+
+	struct Texture
+	{
+		sampler2D main;	
+	};
+	struct  MatProp
+	{
+		vec3 objectColor;
+		float ambient;
+		float diffuse;
+		float specular;		
+		float specularStr;
+	};
+
+	
+	struct DirectionalL
+	{
+		vec3 direction;
+		vec3 color;	
+		float strengh;
+	};
+	
+	struct PointL
+	{
+		vec3 position;
+		vec3 color;
+		float strengh;
+		float Kc;
+		float Kl;
+		float Kq;
+	};
+	
+	struct SpotL
+	{
+		vec3 position;
+		vec3 color;
+		vec3 direction;
+		float strengh;
+		float innerCutOff;
+		float outerCutOff;
+	};
+	
+	uniform Texture Textures;
+	uniform MatProp Props;
+	uniform PointL Point[1];
+	uniform vec3 cameraPos;
+	uniform vec3 outline;
+	out vec4 color;
+
+
+
+void main()
+{
+    color = vec4(outline,1.f);	
+}
+

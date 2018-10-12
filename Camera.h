@@ -22,7 +22,10 @@ Camera* Camera::mainCamera;
 
 inline Camera::Camera(vec3 position)
 {
-	mainCamera = this;
+	if (mainCamera == NULL)
+	{
+		mainCamera = this;
+	}	
 	transform._position = vec3(0.f, 0.f, 0.f);	
 }
 

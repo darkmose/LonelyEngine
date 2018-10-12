@@ -21,10 +21,13 @@ private:
 public:
 	Params params;
 	void ActiveUniforms();
+	void ActiveTextures();
 	Shader * shader;
 	void Draw();
 	void ActiveShader();
+	void ActiveLight();
 	Material(const GLchar*,GLfloat*,GLsizei, GLenum, GLint*, GLint, GLint, GLint, GLint, GLint*, GLsizei );
+	Material(const GLchar*);
 	void SetUnifVec3(const GLchar*, vec3);
 	void SetUnifMat4(const GLchar*, mat4);
 	void SetUnifVec2(const GLchar*, vec2);
@@ -33,42 +36,30 @@ public:
 	~Material();
 };
 
-
-void Material::ActiveUniforms()
+void Material::ActiveLight() 
 {
-	SetUnifVec2("stretch", params.stretch);
-	SetUnifVec2("offset", params.offset);
-	SetUnifVec3("Props.objectColor", params.objectCol);
-	SetUnifVec3("cameraPos", Camera::mainCamera->transform._position);
-	SetUnifFloat("Props.ambient", params.ambient);
-	SetUnifFloat("Props.diffuse", params.diffuse);
-	SetUnifFloat("Props.specularStr", params.specularStr);
-	SetUnifFloat("Props.specular", params.specular);
-	SetUnifInt("Textures.main", 0);
-	
-
 	for (size_t i = 0; i < Light::pointLs.size(); i++)
 	{
 		char* intValue = new char[2];
-		_itoa_s(i,intValue,2,10);
-		string Kc = "Point["+string(intValue)+"].Kc";
-		string Kl = "Point["+string(intValue)+"].Kl";
-		string Kq = "Point["+string(intValue)+"].Kq";
-		string str = "Point["+string(intValue)+"].strengh";
-		string col = "Point["+string(intValue)+"].color";
+		_itoa_s(i, intValue, 2, 10);
+		string Kc = "Point[" + string(intValue) + "].Kc";
+		string Kl = "Point[" + string(intValue) + "].Kl";
+		string Kq = "Point[" + string(intValue) + "].Kq";
+		string str = "Point[" + string(intValue) + "].strengh";
+		string col = "Point[" + string(intValue) + "].color";
 		string pos = "Point[" + string(intValue) + "].position";
 
-		SetUnifFloat(Kc.c_str(),(*Light::pointLs[i]).Kc);
-		SetUnifFloat(Kl.c_str(),(*Light::pointLs[i]).Kl);
-		SetUnifFloat(Kq.c_str(),(*Light::pointLs[i]).Kq);
-		SetUnifFloat(str.c_str(),(*Light::pointLs[i]).strengh);
-		SetUnifVec3(col.c_str(),(*Light::pointLs[i]).color);
-		SetUnifVec3(pos.c_str(),(*Light::pointLs[i]).position);
+		SetUnifFloat(Kc.c_str(), (*Light::pointLs[i]).Kc);
+		SetUnifFloat(Kl.c_str(), (*Light::pointLs[i]).Kl);
+		SetUnifFloat(Kq.c_str(), (*Light::pointLs[i]).Kq);
+		SetUnifFloat(str.c_str(), (*Light::pointLs[i]).strengh);
+		SetUnifVec3(col.c_str(), (*Light::pointLs[i]).color);
+		SetUnifVec3(pos.c_str(), (*Light::pointLs[i]).position);
 	}
 	for (size_t i = 0; i < Light::spotLs.size(); i++)
 	{
 		char* intValue = new char[2];
-		_itoa_s(i, intValue,2,10);
+		_itoa_s(i, intValue, 2, 10);
 		string pos = "Spot[" + string(intValue) + "].position";
 		string dir = "Spot[" + string(intValue) + "].direction";
 		string Icutoff = "Spot[" + string(intValue) + "].innerCutOff";
@@ -86,19 +77,37 @@ void Material::ActiveUniforms()
 	for (size_t i = 0; i < Light::dirLs.size(); i++)
 	{
 		char* intValue = new char[2];
-		_itoa_s(i, intValue,2, 10);
-		
-		string dir = "Directional["+string(intValue)+"].direction";
-		string col = "Directional["+string(intValue)+"].color";
-		string str = "Directional["+string(intValue)+"].strengh";
+		_itoa_s(i, intValue, 2, 10);
+
+		string dir = "Directional[" + string(intValue) + "].direction";
+		string col = "Directional[" + string(intValue) + "].color";
+		string str = "Directional[" + string(intValue) + "].strengh";
 
 		SetUnifVec3(dir.c_str(), (*Light::dirLs[i]).direction);
 		SetUnifVec3(col.c_str(), (*Light::dirLs[i]).color);
-		SetUnifFloat(str.c_str(), (*Light::dirLs[i]).strengh);		
+		SetUnifFloat(str.c_str(), (*Light::dirLs[i]).strengh);
 	}
-
-
 }
+
+void Material::ActiveUniforms()
+{
+	SetUnifVec2("stretch", params.stretch);
+	SetUnifVec2("offset", params.offset);
+	SetUnifVec3("Props.objectColor", params.objectCol);
+	SetUnifVec3("cameraPos", Camera::mainCamera->transform._position);
+	SetUnifFloat("Props.ambient", params.ambient);
+	SetUnifFloat("Props.diffuse", params.diffuse);
+	SetUnifFloat("Props.specularStr", params.specularStr);
+	SetUnifFloat("Props.specular", params.specular);
+}
+
+inline void Material::ActiveTextures()
+{
+	SetUnifInt("Textures.main", 0);
+}
+
+
+
 
 Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray, GLenum drawMod, GLint* params, GLint isNDC, GLint drawArrays, GLint paramCount, GLint _vertCount, GLint* indices = 0, GLsizei sizeElem = 0)
 {
@@ -137,6 +146,11 @@ Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray
 		glBindVertexArray(0);
 	
 	
+}
+
+inline Material::Material(const GLchar * sh)
+{
+	shader = new Shader(sh);
 }
 
 inline void Material::SetUnifVec3(const GLchar * name, vec3 param)

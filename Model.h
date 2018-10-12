@@ -1,9 +1,7 @@
 #pragma once
-class Model : public Component
+class Model
 {
     public:
-
-		void Update() { Draw(); }
 
         Model(const GLchar *path, Material& material)
         {
@@ -92,7 +90,7 @@ inline Mesh Model::processMesh(aiMesh * mesh, const aiScene * scene)
 		else
 			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 
-
+		
 			vertices.push_back(vertex);
 	}
 
@@ -105,10 +103,10 @@ inline Mesh Model::processMesh(aiMesh * mesh, const aiScene * scene)
 
 	if (mesh->mMaterialIndex >= 0)
 	{
-		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-		vector<Texture> diffuseMaps = loadMaterialTextures(material,aiTextureType_DIFFUSE, "texture_diffuse");
+		aiMaterial *materiall = scene->mMaterials[mesh->mMaterialIndex];
+		vector<Texture> diffuseMaps = loadMaterialTextures(materiall,aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
+		vector<Texture> specularMaps = loadMaterialTextures(materiall,aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
 	return Mesh(vertices, indices, textures);	
@@ -124,7 +122,7 @@ inline vector<Texture> Model::loadMaterialTextures(aiMaterial * mat, aiTextureTy
 		bool skip = false;
 		for (unsigned int j = 0; j < textures_loaded.size(); j++)
 		{
-			if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
+			if (std::strcmp(textures_loaded[j].name.C_Str(), str.C_Str()) == 0)
 			{
 				textures.push_back(textures_loaded[j]);
 				skip = true;
@@ -136,7 +134,7 @@ inline vector<Texture> Model::loadMaterialTextures(aiMaterial * mat, aiTextureTy
 			Texture texture;
 			texture.id = TextureFromFile(str.C_Str(), directory);
 			texture.type = typeName;
-			texture.path = str;
+			texture.name = str;
 			textures.push_back(texture);
 			textures_loaded.push_back(texture);
 		}
@@ -146,5 +144,5 @@ inline vector<Texture> Model::loadMaterialTextures(aiMaterial * mat, aiTextureTy
 
 inline GLuint Model::TextureFromFile(const GLchar * path, string dir)
 {	
-	return Texture2D::TexFromPath((dir + '/' + path).c_str(), SOIL_LOAD_RGB, GL_RGB, GL_RGB);
+	return Texture2D::TexFromPath((dir + '/' + path).c_str());
 }

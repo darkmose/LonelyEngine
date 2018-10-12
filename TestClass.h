@@ -15,13 +15,8 @@ public:
 
 void TestClass::myFunc() 
 {
-	PointLight* var = (PointLight*)gameObject->GetComponent("PLight");
-	if (var!=nullptr)
 	{
-		var->radius = 2;
-		var->strengh = sin(Time::currenttime);
-		var->color = vec3(1.f, 0.5f, 0.2f)*sin(Time::currenttime);
-		var->reset = true;
+
 	}
 }
 

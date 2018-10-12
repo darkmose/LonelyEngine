@@ -61,6 +61,7 @@ public:
 	 vec3 direction;
 	 vec3 position;
 	 SpotLight();
+
 	 ~SpotLight();
 	 void Update();
 	 void GetParams();
@@ -71,7 +72,7 @@ public:
 
  SpotLight::SpotLight()
  {
-	 color = vec3(1);
+	 this->color = vec3(1);
 	 strengh = 1.f;
 	 outerCutOff = cos(radians(30.f));
 	 innerCutOff = cos(radians(20.f));
@@ -94,11 +95,11 @@ public:
 
  inline void SpotLight::Update()
  {
-	 if (reset)
-	 {
+	 //if (reset)
+	 //{
 		 GetParams();
-		 reset = !reset;
-	 }
+		// reset = !reset;
+	 //}
  }
 
  inline void SpotLight::GetParams()
@@ -159,11 +160,8 @@ public:
 
  inline void PointLight::Update()
  {
-	 if (reset)
-	 {
-		 GetParams();
-		 reset = !reset;
-	 }
+	 
+		 GetParams(); 
 
  }
 
@@ -214,11 +212,9 @@ public:
 
  inline void DirectionalLight::Update()
  {
-	 if (reset)
-	 {
+	
 		 GetParams();
-		 reset = !reset;
-	 }
+	 
  }
 
  inline void DirectionalLight::GetParams()
