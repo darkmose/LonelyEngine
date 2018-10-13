@@ -9,8 +9,6 @@ struct MatrixMVP
 	mat4 view;
 	mat4 projection;
 };
-uniform vec2 stretch;
-uniform vec2 offset;
 uniform MatrixMVP Matrix;
 
 

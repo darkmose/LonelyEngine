@@ -159,10 +159,8 @@ public:
  }
 
  inline void PointLight::Update()
- {
-	 
-		 GetParams(); 
-
+ { 
+	GetParams(); 
  }
 
  inline void PointLight::GetParams()

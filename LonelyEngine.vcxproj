@@ -126,6 +126,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="FirstInitHeader.h" />
     <ClInclude Include="GameObj.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix.h" />

@@ -37,8 +37,7 @@ public:
 
 
 inline void GameObject::Draw()
-{
-	
+{	
 	if (!isEmpty)
 	{
 		material->ActiveShader();

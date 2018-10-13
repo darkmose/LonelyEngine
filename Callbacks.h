@@ -1,5 +1,4 @@
 #pragma once
-#include "Light.h"
 
 static class Callbacks 
 {	
@@ -20,7 +19,7 @@ private:
 public:
 	static bool getKey(int nKey);
 	static bool getMod(int nMod);
-	static void do_movement(float&);
+	static void do_movement();
 	static void initCallbacks(GLFWwindow*);
 };
 
@@ -35,7 +34,7 @@ bool Callbacks::mods[10];
 float Callbacks::speed = 1.f;
 
 
-void Callbacks::do_movement(float &a)
+void Callbacks::do_movement()
 {
 	cameraSpeed = Time::deltaTime * 5* speed;	
 
@@ -55,12 +54,7 @@ void Callbacks::do_movement(float &a)
 	if (keys[GLFW_KEY_SPACE])
 		Camera::mainCamera->transform.TranslatePos(vec3(0, 4 * Time::deltaTime, 0));
 	if (keys[GLFW_KEY_F])
-		Camera::mainCamera->transform.TranslatePos(vec3(0, -4 * Time::deltaTime, 0));	
-	if (keys[GLFW_KEY_DOWN])
-		a -= 10 * Time::deltaTime;
-	if (keys[GLFW_KEY_UP])
-		a += 10 * Time::deltaTime;
-			
+		Camera::mainCamera->transform.TranslatePos(vec3(0, -4 * Time::deltaTime, 0));				
 }
 
 void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)

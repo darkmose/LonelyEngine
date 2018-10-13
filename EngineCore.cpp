@@ -9,8 +9,7 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "GameObj.h"
-#include "TestClass.h"
-#include "Callbacks.h"
+
 
 
 
@@ -162,19 +161,18 @@ int main()
 	//Callbacks 
 	Callbacks::initCallbacks(window);
 	//Material
-	Material *outline = new Material("Default/Outline");
+	Material *outline = new Material("ForTest/Outline", vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
 	Material *vertex = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
 	Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
-	Material *material = new Material("Default/Light", vertices2, sizeof(vertices2), GL_STATIC_DRAW, lightParam, GL_FALSE, GL_TRUE, 1, 36);
+	Material *material = new Material("Default/Color", vertices2, sizeof(vertices2), GL_STATIC_DRAW, lightParam, GL_FALSE, GL_TRUE, 1, 36);
 	
 
 	//GameObjects
 	GameObject *LightCube = new GameObject(material);
 	LightCube->AddComponent<PointLight>(new PointLight(LightCube->transform));
 
-	LightCube->GetComponent<PointLight>()->strengh = 3;
-	
-	GameObject *CubeBox = new GameObject(vertex);
+
+	GameObject *floor = new GameObject(vertex);
 	GameObject *CubeBoxOutline = new GameObject(vertex2);
 	
 	//Texture
@@ -196,9 +194,9 @@ int main()
 	LightCube->transform._scale = vec3(0.4f);
 	LightCube->transform._position = vec3(4);
 
-	CubeBox->transform.Scale(vec3(wi, 1, he));
-	CubeBox->transform._position = vec3(0, 0, 0);
-	CubeBox->material->params.stretch = vec2(wi, he);
+	floor->transform.Scale(vec3(wi, 1, he));
+	floor->transform._position = vec3(0, 0, 0);
+	floor->material->params.stretch = vec2(wi, he);
 
 	CubeBoxOutline->transform._position.y = 3;
 	CubeBoxOutline->transform._position.z = 3;
@@ -211,7 +209,7 @@ int main()
 		glfwPollEvents();
 		mainCamera->View();
 
-		Callbacks::do_movement(LightCube->GetComponent<PointLight>()->strengh);		
+		Callbacks::do_movement();		
 		
 		glClearColor(0.10f, 0.11f, 0.15f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);			
@@ -219,27 +217,31 @@ int main()
 		glStencilMask(0x00);	
 
 		box.Active();
-		CubeBox->Draw();
-		LightCube->Draw();		
+		floor->Draw();
 
 		box.Active();
-		CubeBoxOutline->transform.Scale(vec3(1));
-		CubeBoxOutline->material = vertex2;
+		LightCube->Draw();
 
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
+
+		CubeBoxOutline->transform.Scale(vec3(1));
+		CubeBoxOutline->material = vertex2;
 		CubeBoxOutline->Draw();
 
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
 
-		CubeBoxOutline->transform.Scale(vec3(1.4f));
+		CubeBoxOutline->transform.Scale(vec3(1.1f));
 		CubeBoxOutline->material = outline;
-		outline->SetUnifVec3("outline", vec3(0.78f, 0.56f, 0.07f));
-
+		CubeBoxOutline->material->ActiveShader();
+		CubeBoxOutline->material->SetUnifVec4("col", vec4(0.78f, 0.56f, 0.07f, 1.f));
 		CubeBoxOutline->Draw();
+
+
 
 		glStencilMask(0xFF);
 		glEnable(GL_DEPTH_TEST);
@@ -249,7 +251,7 @@ int main()
 	}
 
 	delete[] vertex;
-	delete[] CubeBox;
+	delete[] floor;
 	delete[] LightCube;
 	Light::pointLs.clear();
 	Light::spotLs.clear();

@@ -29,6 +29,7 @@ public:
 	Material(const GLchar*,GLfloat*,GLsizei, GLenum, GLint*, GLint, GLint, GLint, GLint, GLint*, GLsizei );
 	Material(const GLchar*);
 	void SetUnifVec3(const GLchar*, vec3);
+	void SetUnifVec4(const GLchar*, vec4);
 	void SetUnifMat4(const GLchar*, mat4);
 	void SetUnifVec2(const GLchar*, vec2);
 	void SetUnifFloat(const GLchar*, GLfloat);
@@ -156,6 +157,11 @@ inline Material::Material(const GLchar * sh)
 inline void Material::SetUnifVec3(const GLchar * name, vec3 param)
 {
 	glUniform3f(glGetUniformLocation(shader->Sprogram(), name), param.x, param.y, param.z);
+}
+
+inline void Material::SetUnifVec4(const GLchar * name, vec4 param)
+{
+	glUniform4f(glGetUniformLocation(shader->Sprogram(), name), param.x, param.y, param.z,param.w);
 }
 
 inline void Material::SetUnifMat4(const GLchar * name, mat4 param)
