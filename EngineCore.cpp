@@ -1,20 +1,7 @@
 #include "FirstInitHeader.h"
-#include "Texture2D.h"
-#include "Shader.h"
-#include "Material.h"
-#include "Matrix.h"
-#include "Camera.h"
-#include "Transform.h"
-#include "Light.h"
-#include "Mesh.h"
-#include "Model.h"
-#include "GameObj.h"
-
-
-
+#include "TestClass.h"
 
 GLFWwindow* window;
-Camera* mainCamera;
 GLfloat vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,0.0f,  0.0f, -1.0f,
 	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,0.0f,  0.0f, -1.0f,
@@ -156,13 +143,12 @@ int main()
 	int x, y;
 	glfwGetWindowSize(window, &x, &y);
 	Matrix::SetProjection(float(x), float(y), true);
-	//Camera
-	mainCamera = new Camera(vec3(0, 0, 0));
 	//Callbacks 
 	Callbacks::initCallbacks(window);
 	//Material
 	Material *outline = new Material("ForTest/Outline", vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
 	Material *vertex = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
+	Material *model = new Material("Default/Model");
 	Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
 	Material *material = new Material("Default/Color", vertices2, sizeof(vertices2), GL_STATIC_DRAW, lightParam, GL_FALSE, GL_TRUE, 1, 36);
 	
@@ -170,8 +156,10 @@ int main()
 	//GameObjects
 	GameObject *LightCube = new GameObject(material);
 	LightCube->AddComponent<PointLight>(new PointLight(LightCube->transform));
+	LightCube->AddComponent<TestClass>(new TestClass());
 
-
+	GameObject *camera = new GameObject();
+	camera->AddComponent<Camera>(new Camera(&camera->transform));
 	GameObject *floor = new GameObject(vertex);
 	GameObject *CubeBoxOutline = new GameObject(vertex2);
 	
@@ -190,7 +178,6 @@ int main()
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-	mainCamera->transform._position = vec3(0, 1.5f, 0);
 	LightCube->transform._scale = vec3(0.4f);
 	LightCube->transform._position = vec3(4);
 
@@ -201,14 +188,16 @@ int main()
 	CubeBoxOutline->transform._position.y = 3;
 	CubeBoxOutline->transform._position.z = 3;
 
+	camera->transform._position = vec3(1, 3, 1);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		Time::currenttime = glfwGetTime();
 		Time::CalculateDelta();
+		
+		
+	
 		glfwPollEvents();
-		mainCamera->View();
-
 		Callbacks::do_movement();		
 		
 		glClearColor(0.10f, 0.11f, 0.15f,1);
@@ -218,6 +207,7 @@ int main()
 
 		box.Active();
 		floor->Draw();
+		camera->Draw();
 
 		box.Active();
 		LightCube->Draw();
@@ -241,7 +231,11 @@ int main()
 		CubeBoxOutline->material->SetUnifVec4("col", vec4(0.78f, 0.56f, 0.07f, 1.f));
 		CubeBoxOutline->Draw();
 
-
+		if (Input::GetKey(GLFW_KEY_UP))
+			LightCube->GetComponent<PointLight>()->strengh += Time::deltaTime;
+		if (Input::GetKey(GLFW_KEY_DOWN))
+			LightCube->GetComponent<PointLight>()->strengh -= Time::deltaTime;	
+		
 
 		glStencilMask(0xFF);
 		glEnable(GL_DEPTH_TEST);
@@ -253,6 +247,7 @@ int main()
 	delete[] vertex;
 	delete[] floor;
 	delete[] LightCube;
+	delete[] camera;
 	Light::pointLs.clear();
 	Light::spotLs.clear();
 	Light::dirLs.clear();

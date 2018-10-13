@@ -13,10 +13,15 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include "Time.h"
-#include "Callbacks.h"
+#include <vector>
 
 using namespace std;
 using namespace glm;
 
-mat4 viewMatrix;
+#include "Time.h"
+#include "Texture2D.h"
+#include "GameObject.h"
+#include "Callbacks.h"
+#include "Input.h"
+
+

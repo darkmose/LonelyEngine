@@ -1,22 +1,22 @@
 #pragma once
-#include "Component.h"
 
 class TestClass : public Component
 {
 private:
-	GameObject * gameObject;
 public:
 	void Update();
 	void myFunc();
 
-	TestClass(GameObject* game) : gameObject(game) {}
+	TestClass() {}
 	~TestClass() {}
 };
 
 void TestClass::myFunc() 
 {
+	gameObject->GetComponent<PointLight>()->radius = Time::deltaTime;
+	if (Input::GetKey(GLFW_KEY_UP))
 	{
-
+		gameObject->GetComponent<PointLight>()->strengh += Time::deltaTime;
 	}
 }
 

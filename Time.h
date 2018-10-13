@@ -1,4 +1,5 @@
 #pragma once
+//Time Class
 static class Time
 {
 private:

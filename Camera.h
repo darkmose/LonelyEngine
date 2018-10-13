@@ -1,38 +1,39 @@
 #pragma once
-#include "Transform.h"
 
-class Camera
+class Camera : public Component
 {
 private:
 	vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 	vec3 direction;
 	GLfloat p = 0.f, y = -90.f;
+	void Update();
 public:
 	static Camera* mainCamera;
-	Transform transform;
+	Transform *transform;
 	void Look(GLfloat, GLfloat);
 	void View();
-	Camera(vec3);
+	Camera(Transform*);
 	vec3 Forward(float);
 	vec3 Right(float);
 	vec3 Direction();
+	~Camera();
 };
 
 Camera* Camera::mainCamera;
 
-inline Camera::Camera(vec3 position)
+inline Camera::Camera(Transform* trans)
 {
 	if (mainCamera == NULL)
 	{
 		mainCamera = this;
 	}	
-	transform._position = vec3(0.f, 0.f, 0.f);	
+	transform = trans;
 }
 
 
  vec3 Camera::Forward(float scale = 1)
 {
-	return vec3(cameraFront.x,0,cameraFront.z)*scale;
+	return normalize(vec3(cameraFront.x,0,cameraFront.z))*scale;
 }
 
  vec3 Camera::Right(float scale = 1)
@@ -46,7 +47,22 @@ inline Camera::Camera(vec3 position)
 	 return cameraFront;
  }
 
-void Camera::Look(GLfloat pitch, GLfloat yaw)
+ inline Camera::~Camera()
+ {
+	 if (mainCamera == this)
+	 {
+		 mainCamera = NULL;
+	 }
+	 transform = NULL;
+ }
+
+
+ inline void Camera::Update()
+ {
+	 View();
+ }
+
+ void Camera::Look(GLfloat pitch, GLfloat yaw)
 {
 	p += pitch*Time::deltaTime*10;
 	y += yaw*Time::deltaTime*10;
@@ -63,7 +79,7 @@ void Camera::Look(GLfloat pitch, GLfloat yaw)
 
 void Camera::View() 
 {	
-	Matrix::view = lookAt(transform._position, (transform._position + cameraFront), Transform::up);
+	Matrix::view = lookAt(transform->_position, (transform->_position + cameraFront), Transform::up);
 }
 
 

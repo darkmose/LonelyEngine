@@ -1,8 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "Transform.h"
 #include "Camera.h"
-#include <vector>
 
 struct DirectionalL
 {
@@ -78,7 +76,7 @@ public:
 	 innerCutOff = cos(radians(20.f));
 	 SLight.color = this->color;
 	 SLight.direction = Camera::mainCamera->Direction();
-	 SLight.position = Camera::mainCamera->transform._position;
+	 SLight.position = Camera::mainCamera->transform->_position;
 	 SLight.innerCutOff = this->innerCutOff;
 	 SLight.outerCutOff = this->outerCutOff;
 	 SLight.strengh = this->strengh;
@@ -106,7 +104,7 @@ public:
  {
 	 SLight.color = this->color;
 	 SLight.direction = Camera::mainCamera->Direction();
-	 SLight.position = Camera::mainCamera->transform._position;
+	 SLight.position = Camera::mainCamera->transform->_position;
 	 SLight.innerCutOff = this->innerCutOff;
 	 SLight.outerCutOff = this->outerCutOff;
 	 SLight.strengh = this->strengh;

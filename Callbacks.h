@@ -39,22 +39,22 @@ void Callbacks::do_movement()
 	cameraSpeed = Time::deltaTime * 5* speed;	
 
 	if (keys[GLFW_KEY_W])
-		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Forward(cameraSpeed));
+		Camera::mainCamera->transform->TranslatePos(Camera::mainCamera->Forward(cameraSpeed));
 	if (keys[GLFW_KEY_S])
-		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Forward(-cameraSpeed));
+		Camera::mainCamera->transform->TranslatePos(Camera::mainCamera->Forward(-cameraSpeed));
 	if (keys[GLFW_KEY_A])
-		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Right(-cameraSpeed));
+		Camera::mainCamera->transform->TranslatePos(Camera::mainCamera->Right(-cameraSpeed));
 	if (keys[GLFW_KEY_D])
-		Camera::mainCamera->transform.TranslatePos(Camera::mainCamera->Right(cameraSpeed));
+		Camera::mainCamera->transform->TranslatePos(Camera::mainCamera->Right(cameraSpeed));
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwTerminate();
 	if (keys[340])
 		speed = 2.f;
 	else speed = 1.f;
 	if (keys[GLFW_KEY_SPACE])
-		Camera::mainCamera->transform.TranslatePos(vec3(0, 4 * Time::deltaTime, 0));
+		Camera::mainCamera->transform->TranslatePos(vec3(0, 4 * Time::deltaTime, 0));
 	if (keys[GLFW_KEY_F])
-		Camera::mainCamera->transform.TranslatePos(vec3(0, -4 * Time::deltaTime, 0));				
+		Camera::mainCamera->transform->TranslatePos(vec3(0, -4 * Time::deltaTime, 0));
 }
 
 void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)

@@ -1,6 +1,6 @@
 #pragma once
 #include "Light.h"
-#include "Camera.h"
+#include "Shader.h"
 
 class Material
 {
@@ -68,7 +68,7 @@ void Material::ActiveLight()
 		string str = "Spot[" + string(intValue) + "].color";
 		string colr = "Spot[" + string(intValue) + "].position";
 
-		SetUnifVec3(pos.c_str(), Camera::mainCamera->transform._position);
+		SetUnifVec3(pos.c_str(), Camera::mainCamera->transform->_position);
 		SetUnifVec3(dir.c_str(), Camera::mainCamera->Direction());
 		SetUnifFloat(Icutoff.c_str(), (*Light::spotLs[i]).innerCutOff);
 		SetUnifFloat(Ocutoff.c_str(), (*Light::spotLs[i]).outerCutOff);
@@ -95,7 +95,7 @@ void Material::ActiveUniforms()
 	SetUnifVec2("stretch", params.stretch);
 	SetUnifVec2("offset", params.offset);
 	SetUnifVec3("Props.objectColor", params.objectCol);
-	SetUnifVec3("cameraPos", Camera::mainCamera->transform._position);
+	SetUnifVec3("cameraPos", Camera::mainCamera->transform->_position);
 	SetUnifFloat("Props.ambient", params.ambient);
 	SetUnifFloat("Props.diffuse", params.diffuse);
 	SetUnifFloat("Props.specularStr", params.specularStr);

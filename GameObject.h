@@ -1,6 +1,8 @@
 #pragma once
-#include "Component.h"
-#include "Light.h"
+#include "Transform.h"
+class GameObject; 
+#include "Material.h"
+#include "Model.h"
 
 class GameObject
 {
@@ -15,6 +17,7 @@ public:
 	template<typename T>
 	void AddComponent(Component* component)
 	{
+		component->setParentGameObject(this);
 		T* tPtr = NULL;
 		void* ptr = dynamic_cast<void*>(tPtr);
 		components.insert(std::pair<void*, Component*>(ptr, component));
@@ -48,7 +51,7 @@ inline void GameObject::Draw()
 		material->SetUnifMat4("Matrix.model", Matrix::model);
 		material->SetUnifMat4("Matrix.view", Matrix::view);
 		material->SetUnifMat4("Matrix.projection", Matrix::projection);
-		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform._position);
+		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform->_position);
 
 		material->Draw();
 	}
@@ -61,7 +64,7 @@ inline void GameObject::Draw()
 		material->SetUnifMat4("Matrix.model", Matrix::model);
 		material->SetUnifMat4("Matrix.view", Matrix::view);
 		material->SetUnifMat4("Matrix.projection", Matrix::projection);
-		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform._position);
+		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform->_position);
 
 		model->Draw();
 	}
