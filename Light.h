@@ -37,8 +37,7 @@ public:
 	vec3 color;
 	float strengh = 1;
 	Light() {}
-
-
+	virtual ~Light(){}
 
 	static vector<PointL*> pointLs;
 	static vector<DirectionalL*> dirLs;
@@ -119,10 +118,10 @@ public:
 		 Kl = 0.014f,
 		 Kq = 0.0007f;
 	 int id;
+	 Transform * transform;
  public:
 	 float radius;
-	 Transform * transform;
-	 PointLight(Transform&);
+	 PointLight(Transform*);
 	 ~PointLight();
 	 void Update();
 	 void GetParams();
@@ -131,9 +130,13 @@ public:
 
 
 
- PointLight::PointLight(Transform& transf)
+ PointLight::PointLight(Transform* trans)
  {
-	 transform = &transf;
+	 transform = trans;
+	 if (transform == NULL)
+	 {
+		 cout << "asdasdadad";
+	 }
 	 strengh = 1.f;
 	 radius = 1.f;
 	 color = vec3(1);
@@ -144,7 +147,6 @@ public:
 	 PLight.position = this->transform->_position;
 	 PLight.strengh = this->strengh;
 
-
 	 pointLs.insert(pointLs.end(), &PLight);
 	 id = pointLs.size() - 1;
  }
@@ -152,7 +154,6 @@ public:
 
  PointLight::~PointLight()
  {
-	 delete[] transform;
 	 pointLs.erase(pointLs.begin() + id);
  }
 
@@ -177,7 +178,7 @@ public:
  private:
 	 int id;
  public:
-	 DirectionalLight(vec3);
+	 DirectionalLight();
 	 ~DirectionalLight();
 	 vec3 direction;
 	 DirectionalL DLight;
@@ -187,9 +188,9 @@ public:
 
 
 
- DirectionalLight::DirectionalLight(vec3 dir)
+ DirectionalLight::DirectionalLight()
  {
-	 direction = dir;
+	 direction = vec3(0,-1,0);
 	 color = vec3(1);
 	 strengh = 1.f;
 	 DLight.color = this->color;
@@ -209,7 +210,7 @@ public:
  inline void DirectionalLight::Update()
  {
 	
-		 GetParams();
+	GetParams();
 	 
  }
 

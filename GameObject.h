@@ -7,27 +7,64 @@ class GameObject;
 class GameObject
 {
 private:	
+	typedef multimap<void*, Component*> mmap;
+	typedef mmap::iterator iterator;
 	GLboolean isEmpty, isModel;
-	map<void*, Component*> components;
+	mmap components;
 	Model *model;
 public:
 	Material * material;
-	Transform transform;
+	Transform *transform = new Transform();
 
+	template<typename T>
+	void AddComponent()
+	{
+		Component* component = new T();
+		component->setParentGameObject(this);
+		component->Awake();
+		T* tPtr = NULL;
+		void* ptr = dynamic_cast<void*>(tPtr);
+		components.insert(mmap::value_type(ptr, component));
+	}	
 	template<typename T>
 	void AddComponent(Component* component)
 	{
 		component->setParentGameObject(this);
 		T* tPtr = NULL;
 		void* ptr = dynamic_cast<void*>(tPtr);
-		components.insert(std::pair<void*, Component*>(ptr, component));
+		components.insert(mmap::value_type(ptr, component));
 	}
 	template<typename T>
 	T* GetComponent() 
 	{
 		T* tPtr = NULL;
 		void* ptr = dynamic_cast<void*>(tPtr);
-		return (T*)components[ptr];
+		mmap::iterator it = components.lower_bound(tPtr);
+		return (T*)((*it).second);
+
+	}	
+	template<typename T>
+	T** GetComponents() 
+	{
+		T** tM;
+		T* tPtr = NULL;
+		void* ptr = dynamic_cast<void*>(tPtr);
+		pair<iterator, iterator> range;
+		range = components.equal_range(ptr);
+		tM = new T*[components.count(ptr)];
+		int index = 0;
+		for (iterator it = range.first; it != range.second; ++it)
+		{
+			tM[index++] = (T*)((*it).second);
+		}
+		return tM;
+	}
+	template<typename T>
+	int countComponents()
+	{
+		T* tPtr = NULL;
+		void* ptr = dynamic_cast<void*>(tPtr);
+		return components.count(ptr);
 	}
 	void Draw();
 	void ComponentAction();
@@ -47,7 +84,7 @@ inline void GameObject::Draw()
 		material->ActiveUniforms();
 		material->ActiveTextures();
 		material->ActiveLight();
-		transform.MoveGlobalMatrix();
+		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("Matrix.model", Matrix::model);
 		material->SetUnifMat4("Matrix.view", Matrix::view);
 		material->SetUnifMat4("Matrix.projection", Matrix::projection);
@@ -60,7 +97,7 @@ inline void GameObject::Draw()
 		material->ActiveShader();
 		material->ActiveLight();
 		material->ActiveUniforms();
-		transform.MoveGlobalMatrix();
+		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("Matrix.model", Matrix::model);
 		material->SetUnifMat4("Matrix.view", Matrix::view);
 		material->SetUnifMat4("Matrix.projection", Matrix::projection);
@@ -73,7 +110,8 @@ inline void GameObject::Draw()
 
 inline void GameObject::ComponentAction()
 {
-	map <void*, Component*>::iterator it;
+	mmap::iterator it;
+	
 	for (it = components.begin(); it != components.end(); ++it)
 	{
 		(*it).second->Update();
@@ -100,5 +138,11 @@ inline GameObject::GameObject()
 
 inline GameObject::~GameObject()
 {
+	mmap::iterator it;
+	for (it = components.begin(); it != components.end(); ++it)
+	{
+		delete (*it).second;
+	}
 	components.clear();
+	delete transform;
 }

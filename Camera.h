@@ -5,9 +5,9 @@ class Camera : public Component
 private:
 	vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 	vec3 direction;
-	GLfloat p = 0.f, y = -90.f;
-	void Update();
+	GLfloat p = 0.f, y = -90.f;	
 public:
+	void Update();
 	static Camera* mainCamera;
 	Transform *transform;
 	void Look(GLfloat, GLfloat);
@@ -59,7 +59,7 @@ inline Camera::Camera(Transform* trans)
 
  inline void Camera::Update()
  {
-	 View();
+	View();
  }
 
  void Camera::Look(GLfloat pitch, GLfloat yaw)

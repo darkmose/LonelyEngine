@@ -124,6 +124,7 @@
     <ClInclude Include="Callbacks.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="FirstInitHeader.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />
@@ -133,7 +134,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="TestClass.h" />
+    <ClInclude Include="CameraController.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />

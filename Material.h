@@ -5,10 +5,11 @@
 class Material
 {
 private:
-	GLuint VbO, VaO, EbO;
+	GLuint VaO, EbO;
 	mat4 modelMatrix;
 	GLint vertCount;
 	GLint isArray;
+	bool isEmpty = false;
 	struct Params {
 		vec2 stretch = vec2(1);
 		vec2 offset = vec2(0);
@@ -19,6 +20,7 @@ private:
 		float specularStr = 32.f;
 	};
 public:
+	GLuint VbO;
 	Params params;
 	void ActiveUniforms();
 	void ActiveTextures();
@@ -152,6 +154,7 @@ Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray
 inline Material::Material(const GLchar * sh)
 {
 	shader = new Shader(sh);
+	isEmpty = true;
 }
 
 inline void Material::SetUnifVec3(const GLchar * name, vec3 param)
@@ -186,6 +189,10 @@ inline void Material::SetUnifInt(const GLchar * name, GLint param)
 
 Material::~Material()
 {
+	if (isEmpty)
+	{
+		return;
+	}
 	glBindVertexArray(0);
 	glDeleteBuffers(1,&VaO);
 	glDeleteBuffers(1,&VbO);
