@@ -63,7 +63,7 @@
     <ClInclude Include="CameraController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Controller.h">
+    <ClInclude Include="PlayerController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

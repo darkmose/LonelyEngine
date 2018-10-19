@@ -20,6 +20,29 @@ public:
 	~Shader();
 };
 
+
+//test_progr(const GLchar*name) 
+//{
+//	std::string path = "Shaders/" + (std::string)name;
+//	
+//	resf = path + "F.lshader";
+//	{
+//		ifstream str(resv, ios::in | ios::binary | ios::ate);
+//		ifstream::pos_type size = str.tellg();
+//		GLint fSize = (GLint)str.tellg();
+//		GLchar* memblock;
+//		memblock = new char[1 + fSize];
+//		str.seekg(0, ios::beg);
+//		str.read(memblock, size);
+//		str.close();
+//		memblock[size] = '\0';
+//
+//		VertexShader = memblock;
+//		str.close();
+//	}
+//}
+
+
 inline Shader::Shader(const GLchar * name)
 {
 	std::string path = "Shaders/" + (std::string)name;

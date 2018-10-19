@@ -1,7 +1,6 @@
 #version 330 core
 layout (location = 0) in vec3 pos; 
 layout (location = 1) in vec2 textPos;
-layout (location = 2) in vec3 normal;
 
 struct MatrixMVP
 {
@@ -16,5 +15,5 @@ out vec2 TexPos;
 void main()
 {
 	TexPos = textPos;
-	gl_Position = Matrix.projection * Matrix.view * Matrix.model * vec4(pos.x,pos.y,pos.z,1);
+	gl_Position = Matrix.projection * Matrix.view * Matrix.model * vec4(pos,1);
 }

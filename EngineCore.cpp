@@ -1,6 +1,6 @@
 #include "FirstInitHeader.h"
 #include "CameraController.h"
-#include "Controller.h"
+#include "PlayerController.h"
 
 GLFWwindow* window;
 GLfloat vertices[] = {
@@ -47,53 +47,17 @@ GLfloat vertices[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,0.0f,  1.0f,  0.0f
 };
 
-GLint params[] = { 3,2,3 };
-
-GLint lightParam[] = { 3 };
-GLfloat vertices2[] = {
-	-0.5f, -0.5f, -0.5f,
-	0.5f, -0.5f, -0.5f,
-	0.5f,  0.5f, -0.5f,
-	0.5f,  0.5f, -0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-
-	-0.5f, -0.5f,  0.5f,
-	0.5f, -0.5f,  0.5f,
-	0.5f,  0.5f,  0.5f,
-	0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-
-	0.5f,  0.5f,  0.5f,
-	0.5f,  0.5f, -0.5f,
-	0.5f, -0.5f, -0.5f,
-	0.5f, -0.5f, -0.5f,
-	0.5f, -0.5f,  0.5f,
-	0.5f,  0.5f,  0.5f,
-
-	-0.5f, -0.5f, -0.5f,
-	0.5f, -0.5f, -0.5f,
-	0.5f, -0.5f,  0.5f,
-	0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f, -0.5f,
-
-	-0.5f,  0.5f, -0.5f,
-	0.5f,  0.5f, -0.5f,
-	0.5f,  0.5f,  0.5f,
-	0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f
+GLfloat quad[] = 
+{
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f
 };
 
+GLint params[] = { 3,2,3 };
 
 int WindowInit() 
 {
@@ -139,34 +103,26 @@ int main()
 		return -1;
 	}
 	
-	///Main Variables
-	//MatrixGL
 	int x, y;
 	glfwGetWindowSize(window, &x, &y);
 	Matrix::SetProjection(float(x), float(y), true);
-	//Callbacks 
+
 	Callbacks::initCallbacks(window);
-	//Material
 
 	Material *outline = new Material("ForTest/Outline", vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
 	Material *vertex = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
-	Material *model = new Material("Default/Model");
 	Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);	
-
-	//GameObjects
 
 	GameObject *camera = new GameObject();
 	camera->AddComponent<Camera>(new Camera(camera->transform));
-
 	camera->AddComponent<CameraController>();
+
 	GameObject *floor = new GameObject(vertex);
-	GameObject *CubeBoxOutline = new GameObject(vertex2);
+
 	GameObject *LightCube = new GameObject();
 	LightCube->AddComponent<PointLight>(new PointLight(LightCube->transform));
 
-	//Texture
 	Texture2D box("Textures/metal.jpg");
-
 	box.Active();
 
 
@@ -174,20 +130,11 @@ int main()
 	const int wi = 100;
 
 
-
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
 	LightCube->transform->_position = vec3(4);
-
 	floor->transform->Scale(vec3(wi, 1, he));
 	floor->transform->_position = vec3(0, 0, 0);
 	floor->material->params.stretch = vec2(wi, he);
-
-	CubeBoxOutline->transform->_position.y = 3;
-	CubeBoxOutline->transform->_position.z = 3;
-
 	camera->transform->_position = vec3(1, 3, 1);
 	
 
@@ -204,9 +151,7 @@ int main()
 		glfwPollEvents();
 		
 		glClearColor(0.10f, 0.11f, 0.15f,1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);			
-
-		glStencilMask(0x00);	
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			
 
 		box.Active();
 		floor->Draw();
@@ -216,31 +161,11 @@ int main()
 		box.Active();
 		LightCube->Draw();
 
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
-
-		CubeBoxOutline->transform->Scale(vec3(1));
-		CubeBoxOutline->material = vertex2;
-		CubeBoxOutline->Draw();
-
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00);
-		glDisable(GL_DEPTH_TEST);
-
-		CubeBoxOutline->transform->Scale(vec3(1.1f));
-		CubeBoxOutline->material = outline;
-		CubeBoxOutline->material->ActiveShader();
-		CubeBoxOutline->material->SetUnifVec4("col", vec4(0.78f, 0.56f, 0.07f, 1.f));
-		CubeBoxOutline->Draw();
-
 		if (Input::GetKey(GLFW_KEY_UP))
 			LightCube->GetComponent<PointLight>()->strengh += Time::deltaTime;
 		if (Input::GetKey(GLFW_KEY_DOWN))
 			LightCube->GetComponent<PointLight>()->strengh -= Time::deltaTime;	
-		
-
-		glStencilMask(0xFF);
-		glEnable(GL_DEPTH_TEST);
+	
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
@@ -251,11 +176,9 @@ int main()
 
 	delete outline;
 	delete vertex2;
-	delete model;
 	delete vertex;
 	delete floor;
 	delete LightCube;
-	delete CubeBoxOutline;
 	delete camera;
 	Light::pointLs.clear();
 	Light::spotLs.clear();
