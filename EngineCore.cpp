@@ -4,19 +4,19 @@
 
 GLFWwindow* window;
 GLfloat vertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,0.0f,  0.0f, -1.0f,
-	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,0.0f,  0.0f, -1.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,  0.0f, -1.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,  0.0f, -1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,0.0f,  0.0f, -1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, -1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, -1.0f,
 
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,0.0f,  0.0f, 1.0f,
-	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,0.0f,  0.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,  0.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,  0.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,0.0f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  0.0f, 1.0f,
 
 	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,-1.0f,  0.0f,  0.0f,
 	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,-1.0f,  0.0f,  0.0f,
@@ -26,38 +26,39 @@ GLfloat vertices[] = {
 	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,-1.0f,  0.0f,  0.0f,
 
 	0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f,  0.5f,  0.0f, 0.0f,1.0f,  0.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
+   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
 	0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f, -1.0f,  0.0f,
 	0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
 	0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
+   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, -1.0f,  0.0f,
+   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, -1.0f,  0.0f,
 
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,0.0f,  1.0f,  0.0f
+   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  1.0f,  0.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  1.0f,  0.0f,
+   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f,  0.0f,
+   -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f
 };
 
 GLfloat quad[] = 
 {
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f
+   -0.5f, -0.5f,  0.0f,  0.0f, 0.0f,
+	0.5f, -0.5f,  0.0f,  1.0f, 0.0f,
+	0.5f,  0.5f,  0.0f,  1.0f, 1.0f,
+	0.5f,  0.5f,  0.0f,  1.0f, 1.0f,
+   -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+   -0.5f, -0.5f,  0.0f,  0.0f, 0.0f
 };
 
 GLint params[] = { 3,2,3 };
+GLint param2[] = { 3,2 };
 
 int WindowInit() 
 {
@@ -109,34 +110,48 @@ int main()
 
 	Callbacks::initCallbacks(window);
 
+	Material *sprite = new Material("Default/Sprite",quad,sizeof(quad),GL_STATIC_DRAW,param2, GL_FALSE, GL_TRUE, 2,6);
 	Material *outline = new Material("ForTest/Outline", vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
 	Material *vertex = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);
 	Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);	
-
 	GameObject *camera = new GameObject();
 	camera->AddComponent<Camera>(new Camera(camera->transform));
 	camera->AddComponent<CameraController>();
 
 	GameObject *floor = new GameObject(vertex);
 
+	GameObject *spr = new GameObject(sprite);
+
 	GameObject *LightCube = new GameObject();
 	LightCube->AddComponent<PointLight>(new PointLight(LightCube->transform));
 
 	Texture2D box("Textures/metal.jpg");
-	box.Active();
-
+	Texture2D trava("Textures/trava.png");
 
 	const int he = 100;
 	const int wi = 100;
 
+	vector<glm::vec3> vegetation;
+	vegetation.push_back(glm::vec3(-1.5f,1, -0.48f));
+	vegetation.push_back(glm::vec3(1.5f, 1, 0.51f));
+	vegetation.push_back(glm::vec3(0.0f, 1, 0.7f));
+	vegetation.push_back(glm::vec3(-0.3f,1, -2.3f));
+	vegetation.push_back(glm::vec3(0.5f, 1, -0.6f));
+
+
+	Texture2D::FilterTextures(GL_CLAMP_TO_EDGE);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glEnable(GL_CULL_FACE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	LightCube->transform->_position = vec3(4);
 	floor->transform->Scale(vec3(wi, 1, he));
 	floor->transform->_position = vec3(0, 0, 0);
 	floor->material->params.stretch = vec2(wi, he);
 	camera->transform->_position = vec3(1, 3, 1);
-	
+	spr->transform->_position = Transform::up;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -157,7 +172,17 @@ int main()
 		floor->Draw();
 		camera->Draw();
 
-
+		trava.Active();
+		glDisable(GL_CULL_FACE);
+		for (size_t i = 0; i < vegetation.size(); i++)
+		{
+			spr->transform->_position = vegetation[i];
+			spr->material->ActiveShader();
+			spr->material->SetUnifVec3("col", vec3(0.5f,float(i)/10,0.5f));
+			spr->Draw();
+		}
+		glEnable(GL_CULL_FACE);
+		
 		box.Active();
 		LightCube->Draw();
 

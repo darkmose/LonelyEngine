@@ -23,11 +23,21 @@ public:
 
 //test_progr(const GLchar*name) 
 //{
-//	std::string path = "Shaders/" + (std::string)name;
+//	string path = "Shaders/" + (string)name;
 //	
 //	resf = path + "F.lshader";
-//	{
-//		ifstream str(resv, ios::in | ios::binary | ios::ate);
+//	{		
+//		ifstream str(resf, ios::in | ios::binary | ios::ate);
+//
+//		while (!str.eof())
+//		{
+//			char temp[100];
+//			istream s = str.get(temp, 100);
+//			if ()
+//			{
+//				cout << str;
+//			}
+//		}
 //		ifstream::pos_type size = str.tellg();
 //		GLint fSize = (GLint)str.tellg();
 //		GLchar* memblock;

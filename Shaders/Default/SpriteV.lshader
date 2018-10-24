@@ -14,6 +14,6 @@ out vec2 TexPos;
 
 void main()
 {
-	TexPos = textPos;
+	TexPos = vec2(textPos.x, 1-(textPos.y));
 	gl_Position = Matrix.projection * Matrix.view * Matrix.model * vec4(pos,1);
 }

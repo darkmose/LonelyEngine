@@ -59,8 +59,8 @@ GLuint Texture2D::TexFromPath(const GLchar * path)
 
 void Texture2D::FilterTextures(GLint filterMod)
 {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, filterMod);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, filterMod);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMod);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMod);
 }
