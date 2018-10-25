@@ -8,11 +8,14 @@ private:
 public:
 
 	static GLuint TexFromPath(const GLchar* path);
-	static void FilterTextures(GLint);	
+	static void FilterTextures(GLint, GLint);
 
 	GLuint Texture();
 	void Active(GLenum);
+	void Active(GLenum, GLenum);
 	Texture2D(const GLchar*);
+	//RenderTexture
+	Texture2D(int w, int h, GLenum, GLenum);
 	~Texture2D();
 };
 
@@ -57,12 +60,12 @@ GLuint Texture2D::TexFromPath(const GLchar * path)
 	return tex;
 }
 
-void Texture2D::FilterTextures(GLint filterMod)
+void Texture2D::FilterTextures(GLint wrap, GLint filter)
 {
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, filterMod);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, filterMod);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMod);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMod);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 }
 
 
@@ -75,6 +78,11 @@ void Texture2D::Active(GLenum activeTexture = GL_TEXTURE0)
 {
 	glActiveTexture(activeTexture);
 	glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+inline void Texture2D::Active(GLenum frameTarget, GLenum attachment)
+{
+	glFramebufferTexture2D(frameTarget, attachment, GL_TEXTURE_2D, texture, 0);
 }
 
 Texture2D::Texture2D(const GLchar* path)
@@ -116,6 +124,14 @@ Texture2D::Texture2D(const GLchar* path)
 
 }
 
+
+inline Texture2D::Texture2D(int w, int h, GLenum format = GL_RGB,GLenum type = GL_UNSIGNED_BYTE)
+{
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, type, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 Texture2D::~Texture2D()
 {

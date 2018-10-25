@@ -1,0 +1,18 @@
+#version 330 core
+in vec2 TexPos;
+
+//uniform float trans;
+out vec4 color;
+
+	struct Texture
+	{
+		sampler2D main;	
+	};
+
+	uniform Texture Textures;
+	
+void main()
+{
+    color = texture(Textures.main, TexPos);
+}
+
