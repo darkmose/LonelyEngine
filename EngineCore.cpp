@@ -2,6 +2,7 @@
 #include "CameraController.h"
 #include "PlayerController.h"
 
+
 GLFWwindow* window;
 GLfloat vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
@@ -47,15 +48,6 @@ GLfloat vertices[] = {
    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f
 };
 
-GLfloat quad[] = 
-{
-   -0.5f, -0.5f,  0.0f,  0.0f, 0.0f,
-	0.5f, -0.5f,  0.0f,  1.0f, 0.0f,
-	0.5f,  0.5f,  0.0f,  1.0f, 1.0f,
-	0.5f,  0.5f,  0.0f,  1.0f, 1.0f,
-   -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-   -0.5f, -0.5f,  0.0f,  0.0f, 0.0f
-};
 GLfloat postQuad[] = 
 {
    -1.0f,  1.0f,  0.0f, 1.0f,
@@ -68,8 +60,7 @@ GLfloat postQuad[] =
 };
 
 GLint params[] = { 3,2,3 };
-GLint param2[] = { 3,2 };
-GLint param3[] = { 2,2 };
+GLint params2[] = { 2,2 };
 
 int WindowInit() 
 {
@@ -122,8 +113,7 @@ int main()
 
 	Callbacks::initCallbacks(window);
 
-	Material *sprite = new Material("Default/Sprite",quad,sizeof(quad),GL_STATIC_DRAW,param2, GL_FALSE, GL_TRUE, 2,6);
-	Material *postProc = new Material("ForTest/Postprocess",postQuad,sizeof(postQuad),GL_STATIC_DRAW, param3, GL_FALSE, GL_TRUE, 2,6);
+	Material *postProc = new Material("ForTest/Postprocess",postQuad,sizeof(postQuad),GL_STATIC_DRAW, params2, GL_FALSE, GL_TRUE, 2,6);
 	Material *model = new Material("Default/Model");
 	Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);	
 	GameObject *camera = new GameObject();
@@ -131,30 +121,29 @@ int main()
 	camera->AddComponent<Camera>(new Camera(camera->transform));
 	camera->AddComponent<CameraController>();
 
-	GameObject *spr = new GameObject(sprite);
+	Sprite* spr = new Sprite("Textures/trava.png");
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", *model);
 
 	GameObject *LightCube = new GameObject();
 	LightCube->AddComponent<PointLight>(new PointLight(LightCube->transform));
 
 	Texture2D box("Textures/metal.jpg");
-	Texture2D trava("Textures/trava.png");
 
 	const int he = 100;
 	const int wi = 100;
 
 	vector<glm::vec3> vegetation;
-	vegetation.push_back(glm::vec3(-1.5f,1, -0.48f));
-	vegetation.push_back(glm::vec3(1.5f, 1, 0.51f));
-	vegetation.push_back(glm::vec3(0.0f, 1, 0.7f));
-	vegetation.push_back(glm::vec3(-0.3f,1, -2.3f));
-	vegetation.push_back(glm::vec3(0.5f, 1, -0.6f));
+	vegetation.push_back(glm::vec3(-1.5f,3, -0.48f));
+	vegetation.push_back(glm::vec3(1.5f, 3, 0.51f));
+	vegetation.push_back(glm::vec3(0.0f, 3, 0.7f));
+	vegetation.push_back(glm::vec3(-0.3f,3, -2.3f));
+	vegetation.push_back(glm::vec3(0.5f, 3, -0.6f));
 
-
+	spr->transform->Scale(vec3(2));
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	LightCube->transform->_position = vec3(4);
@@ -162,25 +151,10 @@ int main()
 	spr->transform->_position = Transform::up;
 	city->transform->_position.y++;
 
-	GLuint buffer;
-	glGenFramebuffers(1, &buffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, buffer);
-
-	Texture2D *rTex = new Texture2D(x, y,GL_RGB); //GL_DEPTH_COMPONENT, GL_STENCIL_INDEX, GL_DEPTH24_STENCIL8
-	rTex->BufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0);
-
-	Texture2D::FilterTextures(GL_CLAMP_TO_EDGE, GL_LINEAR);
-
-	GLuint rbo;
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, x, y); 
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
+	RenderTexture *rTex = new RenderTexture(x, y, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RGB);
 
 	GameObject* rSprite = new GameObject(postProc);
 
-	
 	while (!glfwWindowShouldClose(window))
 	{
 		if (Input::GetKey(GLFW_KEY_ESCAPE))
@@ -193,36 +167,32 @@ int main()
 		if (Input::GetKey(GLFW_KEY_DOWN))
 			LightCube->GetComponent<PointLight>()->strengh -= Time::deltaTime;
 
+
 		Time::currenttime = glfwGetTime();
 		Time::CalculateDelta();		
 		
 		glfwPollEvents();
-
-		glBindFramebuffer(GL_FRAMEBUFFER, buffer);
-
+		
+		rTex->ActiveBuffer();     //renderTexture On
 
 		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+		
 		glEnable(GL_DEPTH_TEST);
-
-		box.Active();
-		camera->Draw();
-		city->Draw();
-		trava.Active();
 
 		for (size_t i = 0; i < vegetation.size(); i++)
 		{
-			spr->transform->_position = vegetation[i];
-			spr->material->ActiveShader();
-			spr->material->SetUnifVec3("col", vec3(0.5f,float(i)/10,0.5f));
+			spr->transform->_position = vegetation[i]*vec3(i,1,i);
 			spr->Draw();
 		}
+		box.Active();
+		camera->Draw();
+		city->Draw();
 		
 		box.Active();
 		LightCube->Draw();
 
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		rTex->DeactiveBuffer();		//renderTexture Off
 
 		glClearColor(0.10f, 0.11f, 0.15f, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -231,6 +201,8 @@ int main()
 
 		rTex->Active();
 		rSprite->material->ActiveShader();
+
+		rSprite->material->SetUnifInt("_case", 0);
 		rSprite->material->Draw();
 
 		glBindVertexArray(0);
@@ -243,11 +215,8 @@ int main()
 	delete vertex2;
 	delete rTex;
 	delete postProc;
-	delete sprite;
 	delete spr;
 	delete model;
-	glDeleteFramebuffers(1, &buffer);
-	glDeleteRenderbuffers(1, &rbo);
 	delete city;
 	delete LightCube;
 	delete camera;

@@ -1,7 +1,7 @@
 #version 330 core
 in vec2 TexPos;
 
-//uniform float trans;
+uniform float transparent = 1;
 out vec4 color;
 
 	struct Texture
@@ -15,8 +15,8 @@ out vec4 color;
 void main()
 {
     vec4 texColor = texture(Textures.main, TexPos);
-    if(texColor.a < 0.1)
+    if(texColor.a < 0.05)
         discard;
-    color = texColor * vec4(col,1);
+    color = texColor * vec4(col,transparent);
 }
 

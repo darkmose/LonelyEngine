@@ -13,7 +13,7 @@ private:
 	mmap components;
 	Model *model;
 public:
-	Material * material;
+	Material *material;
 	Transform *transform = new Transform();
 
 	template<typename T>
@@ -68,8 +68,9 @@ public:
 	}
 	void Draw();
 	void ComponentAction();
+	
 	GameObject();
-	~GameObject();
+	virtual ~GameObject();
 	GameObject(Material*);
 	GameObject(string model,Material&);
 };

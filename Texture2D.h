@@ -3,19 +3,15 @@
 class Texture2D
 {
 private:
-
 	GLuint texture;
 public:
-
 	static GLuint TexFromPath(const GLchar* path);
 	static void FilterTextures(GLint, GLint);
 
 	GLuint Texture();
 	void Active(GLenum);
-	void BufferTexture(GLenum, GLenum);
 	Texture2D(const GLchar*);
 	//RenderTexture
-	Texture2D(int w, int h, GLenum, GLenum);
 	~Texture2D();
 };
 
@@ -80,11 +76,6 @@ void Texture2D::Active(GLenum activeTexture = GL_TEXTURE0)
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-inline void Texture2D::BufferTexture(GLenum frameTarget, GLenum attachment)
-{
-	glFramebufferTexture2D(frameTarget, attachment, GL_TEXTURE_2D, texture, 0);
-}
-
 Texture2D::Texture2D(const GLchar* path)
 {
 	glGenTextures(1, &texture);
@@ -124,15 +115,6 @@ Texture2D::Texture2D(const GLchar* path)
 
 }
 
-
-inline Texture2D::Texture2D(int w, int h, GLenum format = GL_RGB,GLenum type = GL_UNSIGNED_BYTE)
-{
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, type, NULL);	
-	FilterTextures(GL_CLAMP_TO_EDGE, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
 
 Texture2D::~Texture2D()
 {

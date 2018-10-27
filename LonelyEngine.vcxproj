@@ -133,8 +133,11 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="Primitive.h" />
+    <ClInclude Include="RenderTexture.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="CameraController.h" />
+    <ClInclude Include="Sprite.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
