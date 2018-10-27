@@ -1,7 +1,6 @@
 #version 330 core
 in vec2 TexPos;
 
-//uniform float trans;
 out vec4 color;
 
 	struct Texture
@@ -13,6 +12,6 @@ out vec4 color;
 	
 void main()
 {
-    color = texture(Textures.main, TexPos);
+    color = texture(Textures.main, TexPos)
 }
 

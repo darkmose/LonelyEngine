@@ -142,9 +142,9 @@ Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray
 		GLint prev = 0;
 		for (GLint i = 0; i < paramCount; i++)
 		{
-			glVertexAttribPointer(i, params[i], GL_FLOAT, isNDC, size, (GLvoid*)(prev * sizeof(float)));
-			prev += params[i];
 			glEnableVertexAttribArray(i);
+			glVertexAttribPointer(i, params[i], GL_FLOAT, isNDC, size, (GLvoid*)(prev * sizeof(float)));
+			prev += params[i];			
 		}
 		glBindVertexArray(0);
 	

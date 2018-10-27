@@ -123,7 +123,7 @@ int main()
 	Callbacks::initCallbacks(window);
 
 	Material *sprite = new Material("Default/Sprite",quad,sizeof(quad),GL_STATIC_DRAW,param2, GL_FALSE, GL_TRUE, 2,6);
-	Material *postProc = new Material("ForTest/Postprocess",postQuad,sizeof(postQuad),GL_DYNAMIC_DRAW, param3, GL_FALSE, GL_TRUE, 2,6);
+	Material *postProc = new Material("ForTest/Postprocess",postQuad,sizeof(postQuad),GL_STATIC_DRAW, param3, GL_FALSE, GL_TRUE, 2,6);
 	Material *model = new Material("Default/Model");
 	Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);	
 	GameObject *camera = new GameObject();
@@ -151,7 +151,6 @@ int main()
 	vegetation.push_back(glm::vec3(0.5f, 1, -0.6f));
 
 
-	Texture2D::FilterTextures(GL_CLAMP_TO_EDGE, GL_LINEAR);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -168,20 +167,16 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, buffer);
 
 	Texture2D *rTex = new Texture2D(x, y,GL_RGB); //GL_DEPTH_COMPONENT, GL_STENCIL_INDEX, GL_DEPTH24_STENCIL8
-	rTex->Active(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0);
-	
-	unsigned int rbo;
+	rTex->BufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0);
+
+	Texture2D::FilterTextures(GL_CLAMP_TO_EDGE, GL_LINEAR);
+
+	GLuint rbo;
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, x, y);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, x, y); 
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
 
 	GameObject* rSprite = new GameObject(postProc);
 
@@ -192,6 +187,11 @@ int main()
 		{
 			goto exit;
 		}
+		
+		if (Input::GetKey(GLFW_KEY_UP))
+			LightCube->GetComponent<PointLight>()->strengh += Time::deltaTime;
+		if (Input::GetKey(GLFW_KEY_DOWN))
+			LightCube->GetComponent<PointLight>()->strengh -= Time::deltaTime;
 
 		Time::currenttime = glfwGetTime();
 		Time::CalculateDelta();		
@@ -200,10 +200,11 @@ int main()
 
 		glBindFramebuffer(GL_FRAMEBUFFER, buffer);
 
-		glClearColor(0.10f, 0.11f, 0.15f,1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 
+		glClearColor(0.10f, 0.11f, 0.14f,1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 		glEnable(GL_DEPTH_TEST);
+
 		box.Active();
 		camera->Draw();
 		city->Draw();
@@ -220,18 +221,17 @@ int main()
 		box.Active();
 		LightCube->Draw();
 
-		if (Input::GetKey(GLFW_KEY_UP))
-			LightCube->GetComponent<PointLight>()->strengh += Time::deltaTime;
-		if (Input::GetKey(GLFW_KEY_DOWN))
-			LightCube->GetComponent<PointLight>()->strengh -= Time::deltaTime;	
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		glClearColor(0.10f, 0.11f, 0.15f, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glDisable(GL_DEPTH_TEST);
+
 		rTex->Active();
-		rSprite->Draw();
+		rSprite->material->ActiveShader();
+		rSprite->material->Draw();
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);

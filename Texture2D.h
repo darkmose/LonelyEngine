@@ -12,7 +12,7 @@ public:
 
 	GLuint Texture();
 	void Active(GLenum);
-	void Active(GLenum, GLenum);
+	void BufferTexture(GLenum, GLenum);
 	Texture2D(const GLchar*);
 	//RenderTexture
 	Texture2D(int w, int h, GLenum, GLenum);
@@ -80,7 +80,7 @@ void Texture2D::Active(GLenum activeTexture = GL_TEXTURE0)
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-inline void Texture2D::Active(GLenum frameTarget, GLenum attachment)
+inline void Texture2D::BufferTexture(GLenum frameTarget, GLenum attachment)
 {
 	glFramebufferTexture2D(frameTarget, attachment, GL_TEXTURE_2D, texture, 0);
 }
@@ -129,7 +129,8 @@ inline Texture2D::Texture2D(int w, int h, GLenum format = GL_RGB,GLenum type = G
 {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, type, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, type, NULL);	
+	FilterTextures(GL_CLAMP_TO_EDGE, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
