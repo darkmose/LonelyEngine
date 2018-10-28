@@ -6,7 +6,7 @@ out vec4 color;
 
 	struct Texture
 	{
-		sampler2D main;	
+		sampler2D texture_diffuse1;	
 	};
 
 	uniform Texture Textures;
@@ -14,7 +14,7 @@ out vec4 color;
 	
 void main()
 {
-    vec4 texColor = texture(Textures.main, TexPos);
+    vec4 texColor = texture(Textures.texture_diffuse1, TexPos);
     if(texColor.a < 0.05)
         discard;
     color = texColor * vec4(col,transparent);

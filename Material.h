@@ -5,11 +5,6 @@
 class Material
 {
 private:
-	GLuint VaO, EbO;
-	mat4 modelMatrix;
-	GLint vertCount;
-	GLint isArray;
-	bool isEmpty = false;
 	struct Params {
 		vec2 stretch = vec2(1);
 		vec2 offset = vec2(0);
@@ -20,16 +15,16 @@ private:
 		float specularStr = 32.f;
 	};
 public:
-	GLuint VbO;
 	Params params;
 	void ActiveUniforms();
-	void ActiveTextures();
 	Shader * shader;
-	void Draw();
 	void ActiveShader();
 	void ActiveLight();
-	Material(const GLchar*,GLfloat*,GLsizei, GLenum, GLint*, GLint, GLint, GLint, GLint, GLint*, GLsizei );
 	Material(const GLchar*);
+	vector<Texture> textures;
+	void SetSingleTexture(Texture2D*, string);
+	void AddTexture(Texture2D*, string);
+
 	void SetUnifVec3(const GLchar*, vec3);
 	void SetUnifVec4(const GLchar*, vec4);
 	void SetUnifMat4(const GLchar*, mat4);
@@ -104,57 +99,25 @@ void Material::ActiveUniforms()
 	SetUnifFloat("Props.specular", params.specular);
 }
 
-inline void Material::ActiveTextures()
-{
-	SetUnifInt("Textures.main", 0);
-}
-
-
-
-
-Material::Material(const GLchar* _shader,GLfloat* vertexArray, GLsizei sizeArray, GLenum drawMod, GLint* params, GLint isNDC, GLint drawArrays, GLint paramCount, GLint _vertCount, GLint* indices = 0, GLsizei sizeElem = 0)
-{
-		shader = new Shader(_shader);
-		vertCount = _vertCount;
-		isArray = drawArrays;
-		glGenVertexArrays(1, &VaO);
-		glBindVertexArray(VaO);
-		glGenBuffers(1, &VbO);
-		glBindBuffer(GL_ARRAY_BUFFER, VbO);
-		glBufferData(GL_ARRAY_BUFFER, sizeArray, vertexArray, drawMod);
-		if (drawArrays == GL_FALSE)
-		{
-			glGenBuffers(1, &EbO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EbO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeElem, indices, drawMod);
-		}
-
-
-		GLint elemCount = 0;
-
-		for (GLint i = 0; i < paramCount; i++)
-		{
-			elemCount += params[i];
-		}
-
-		GLsizei size = elemCount * sizeof(float);
-
-		GLint prev = 0;
-		for (GLint i = 0; i < paramCount; i++)
-		{
-			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, params[i], GL_FLOAT, isNDC, size, (GLvoid*)(prev * sizeof(float)));
-			prev += params[i];			
-		}
-		glBindVertexArray(0);
-	
-	
-}
-
 inline Material::Material(const GLchar * sh)
 {
 	shader = new Shader(sh);
-	isEmpty = true;
+}
+
+inline void Material::SetSingleTexture(Texture2D* tex, string textureType)
+{
+	textures.clear();
+	Texture texture;
+	texture.id = tex->Texture();
+	texture.type = textureType;
+	textures.push_back(texture);
+}
+inline void Material::AddTexture(Texture2D * tex, string textureType)
+{
+	Texture texture;
+	texture.id = tex->Texture();
+	texture.type = textureType;
+	textures.push_back(texture);
 }
 
 inline void Material::SetUnifVec3(const GLchar * name, vec3 param)
@@ -188,37 +151,7 @@ inline void Material::SetUnifInt(const GLchar * name, GLint param)
 }
 
 Material::~Material()
-{
-	if (isEmpty)
-	{
-		return;
-	}
-	glBindVertexArray(0);
-	glDeleteBuffers(1,&VaO);
-	glDeleteBuffers(1,&VbO);
-	if (isArray == GL_FALSE)
-	{
-		glDeleteBuffers(1, &EbO);
-	}
-}
-
-
-void Material::Draw()
-{
-	if (isArray == GL_FALSE)
-	{
-		glBindVertexArray(VaO);
-		glDrawElements(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0);
-		
-		return;
-	}
-	else
-	{	
-		glBindVertexArray(VaO);
-		glDrawArrays(GL_TRIANGLES, 0, vertCount);
-		
-		return;
-	}	
+{	
 }
 
 inline void Material::ActiveShader()

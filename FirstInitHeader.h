@@ -18,7 +18,18 @@
 using namespace std;
 using namespace glm;
 
-#include "Primitive.h"
+struct Vertex {
+	vec3 Position;
+	vec3 Normal;
+	vec2 TexCoords;
+};
+struct Texture
+{
+	string type;
+	GLuint id;
+	aiString name;
+};
+
 #include "Time.h"
 #include "Texture2D.h"
 #include "GameObject.h"
@@ -26,4 +37,6 @@ using namespace glm;
 #include "Input.h"
 #include "RenderTexture.h"
 #include "Sprite.h"
+#include "Primitive.h"
+
 

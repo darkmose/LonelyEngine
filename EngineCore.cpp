@@ -4,7 +4,7 @@
 
 
 GLFWwindow* window;
-GLfloat vertices[] = {
+vector <GLfloat> vertices = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,  0.0f, -1.0f,
 	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,  0.0f, -1.0f,
 	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  0.0f, -1.0f,
@@ -48,7 +48,7 @@ GLfloat vertices[] = {
    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f,  1.0f,  0.0f
 };
 
-GLfloat postQuad[] = 
+vector <GLfloat> postQuad = 
 {
    -1.0f,  1.0f,  0.0f, 1.0f,
    -1.0f, -1.0f,  0.0f, 0.0f,
@@ -59,8 +59,8 @@ GLfloat postQuad[] =
 	1.0f,  1.0f,  1.0f, 1.0f
 };
 
-GLint params[] = { 3,2,3 };
-GLint params2[] = { 2,2 };
+vector<GLint> params = { 3,2,3 };
+vector<GLint> params2 = { 2,2 };
 
 int WindowInit() 
 {
@@ -113,21 +113,27 @@ int main()
 
 	Callbacks::initCallbacks(window);
 
-	Material *postProc = new Material("ForTest/Postprocess",postQuad,sizeof(postQuad),GL_STATIC_DRAW, params2, GL_FALSE, GL_TRUE, 2,6);
+	//Material *postProc = new Material("ForTest/Postprocess",postQuad,sizeof(postQuad),GL_STATIC_DRAW, params2, GL_FALSE, GL_TRUE, 2,6);
+	Material *postProc = new Material("ForTest/Postprocess");
 	Material *model = new Material("Default/Model");
-	Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);	
+	//Material *vertex2 = new Material("Default/Standart",vertices, sizeof(vertices), GL_DYNAMIC_DRAW, params, GL_FALSE, GL_TRUE, 3, 36);	
+	Material *vertex2 = new Material("Default/Standart");	
 	GameObject *camera = new GameObject();
 
 	camera->AddComponent<Camera>(new Camera(camera->transform));
 	camera->AddComponent<CameraController>();
 
 	Sprite* spr = new Sprite("Textures/trava.png");
-	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", *model);
+	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 
 	GameObject *LightCube = new GameObject();
 	LightCube->AddComponent<PointLight>(new PointLight(LightCube->transform));
 
 	Texture2D box("Textures/metal.jpg");
+	vertex2->SetSingleTexture(&box,"texture_diffuse");
+	GameObject *cube = new GameObject(vertex2, new Mesh(vertices, vector<GLuint>::vector(), params));
+	cube->transform->_position += vec3(1, 5, 1);
+	
 
 	const int he = 100;
 	const int wi = 100;
@@ -153,7 +159,7 @@ int main()
 
 	RenderTexture *rTex = new RenderTexture(x, y, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RGB);
 
-	GameObject* rSprite = new GameObject(postProc);
+	GameObject* rSprite = new GameObject(postProc, new Mesh(postQuad,vector<GLuint>::vector(),params2));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -188,6 +194,7 @@ int main()
 		box.Active();
 		camera->Draw();
 		city->Draw();
+		cube->Draw();
 		
 		box.Active();
 		LightCube->Draw();
@@ -201,9 +208,8 @@ int main()
 
 		rTex->Active();
 		rSprite->material->ActiveShader();
-
-		rSprite->material->SetUnifInt("_case", 0);
-		rSprite->material->Draw();
+		rSprite->material->SetUnifInt("_case", 2);
+		rSprite->mesh->Draw(rSprite->material, true);
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
@@ -220,6 +226,7 @@ int main()
 	delete city;
 	delete LightCube;
 	delete camera;
+	delete cube;
 	Light::pointLs.clear();
 	Light::spotLs.clear();
 	Light::dirLs.clear();

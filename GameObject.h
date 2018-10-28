@@ -15,6 +15,7 @@ private:
 public:
 	Material *material;
 	Transform *transform = new Transform();
+	Mesh* mesh;
 
 	template<typename T>
 	void AddComponent()
@@ -71,19 +72,18 @@ public:
 	
 	GameObject();
 	virtual ~GameObject();
-	GameObject(Material*);
-	GameObject(string model,Material&);
+	GameObject(Material*, Mesh*);
+	GameObject(string model,Material*);
 };
 
 
 
 inline void GameObject::Draw()
 {	
-	if (!isEmpty)
+	if (mesh != NULL)
 	{
 		material->ActiveShader();
 		material->ActiveUniforms();
-		material->ActiveTextures();
 		material->ActiveLight();
 		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("Matrix.model", Matrix::model);
@@ -91,9 +91,9 @@ inline void GameObject::Draw()
 		material->SetUnifMat4("Matrix.projection", Matrix::projection);
 		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform->_position);
 
-		material->Draw();
+		mesh->Draw(material, true);
 	}
-	if (isModel)
+	if (model != NULL)
 	{
 		material->ActiveShader();
 		material->ActiveLight();
@@ -119,17 +119,18 @@ inline void GameObject::ComponentAction()
 	}
 }
 
-inline GameObject::GameObject(Material* _material)
+inline GameObject::GameObject(Material* _material,Mesh* mesh)
 {
+	this->mesh = mesh;
 	material = _material; 
 }
 
-inline GameObject::GameObject(string model, Material& material)
+inline GameObject::GameObject(string model, Material* material)
 {
-	this->material = &material;
-	this->model = new Model(model.c_str(), *this->material);
-	isEmpty = true;
-	isModel = true;
+	this->material = material;
+	this->model = new Model(model.c_str(), *material);
+	//isEmpty = true;
+	//isModel = true;
 }
 
 inline GameObject::GameObject()
