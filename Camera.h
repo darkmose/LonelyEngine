@@ -12,6 +12,7 @@ public:
 	Transform *transform;
 	void Look(GLfloat, GLfloat);
 	void View();
+	void SetMain();
 	Camera(Transform*);
 	vec3 Forward(float);
 	vec3 Right(float);
@@ -25,7 +26,7 @@ inline Camera::Camera(Transform* trans)
 {
 	if (mainCamera == NULL)
 	{
-		mainCamera = this;
+		Camera::mainCamera = this;
 	}	
 	transform = trans;
 }
@@ -80,6 +81,11 @@ inline Camera::Camera(Transform* trans)
 void Camera::View() 
 {	
 	Matrix::view = lookAt(transform->_position, (transform->_position + cameraFront), Transform::up);
+}
+
+inline void Camera::SetMain()
+{
+	mainCamera = this;
 }
 
 

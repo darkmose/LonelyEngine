@@ -31,9 +31,31 @@ public:
 	void AddComponent(Component* component)
 	{
 		component->setParentGameObject(this);
+		component->Awake();
 		T* tPtr = NULL;
 		void* ptr = dynamic_cast<void*>(tPtr);
 		components.insert(mmap::value_type(ptr, component));
+	}	
+	template<typename T>
+	T* AddComponentR()
+	{
+		Component* component = new T();
+		component->setParentGameObject(this);
+		component->Awake();
+		T* tPtr = NULL;
+		void* ptr = dynamic_cast<void*>(tPtr);
+		components.insert(mmap::value_type(ptr, component));
+		return (T*)component;
+	}	
+	template<typename T>
+	T* AddComponentR(Component* component)
+	{
+		component->setParentGameObject(this);
+		component->Awake();
+		T* tPtr = NULL;
+		void* ptr = dynamic_cast<void*>(tPtr);
+		components.insert(mmap::value_type(ptr, component));
+		return (T*)component;
 	}
 	template<typename T>
 	T* GetComponent() 
@@ -146,5 +168,6 @@ inline GameObject::~GameObject()
 		delete (*it).second;
 	}
 	components.clear();
+	delete mesh;
 	delete transform;
 }

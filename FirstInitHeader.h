@@ -33,10 +33,11 @@ struct Texture
 #include "Time.h"
 #include "Texture2D.h"
 #include "GameObject.h"
+#include "Primitive.h"
 #include "Callbacks.h"
 #include "Input.h"
 #include "RenderTexture.h"
 #include "Sprite.h"
-#include "Primitive.h"
+
 
 

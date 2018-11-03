@@ -36,7 +36,6 @@ void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int acti
 	{
 		keys[key] = false;		
 	}	
-
 }
 
 void Callbacks::cursorpos_callback(GLFWwindow* window, double xpos, double ypos)

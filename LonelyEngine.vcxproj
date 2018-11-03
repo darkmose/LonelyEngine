@@ -137,6 +137,7 @@
     <ClInclude Include="RenderTexture.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="CameraController.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Time.h" />

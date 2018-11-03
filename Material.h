@@ -112,6 +112,7 @@ inline void Material::SetSingleTexture(Texture2D* tex, string textureType)
 	texture.type = textureType;
 	textures.push_back(texture);
 }
+
 inline void Material::AddTexture(Texture2D * tex, string textureType)
 {
 	Texture texture;
@@ -152,6 +153,7 @@ inline void Material::SetUnifInt(const GLchar * name, GLint param)
 
 Material::~Material()
 {	
+	textures.clear();
 }
 
 inline void Material::ActiveShader()
