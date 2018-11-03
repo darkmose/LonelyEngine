@@ -151,8 +151,6 @@ inline GameObject::GameObject(string model, Material* material)
 {
 	this->material = material;
 	this->model = new Model(model.c_str(), *material);
-	//isEmpty = true;
-	//isModel = true;
 }
 
 inline GameObject::GameObject()

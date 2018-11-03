@@ -68,25 +68,19 @@ int main()
 	};
 
 
-	//Skybox *skybox = new Skybox(faces);
+	Skybox *skybox = new Skybox(faces);
 
-	//Material *postProc = new Material("ForTest/Postprocess");
 	Material *model = new Material("Default/Model");
-	//Material *vertex2 = new Material("Default/Standart");	
-	GameObject *camera = new GameObject();
-	
+	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
+	city->transform->_position.y++;
+
+	GameObject *camera = new GameObject();	
 	camera->AddComponent<Camera>(new Camera(camera->transform));
 	camera->AddComponent<CameraController>();
-	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
+	camera->transform->_position = vec3(1, 3, 1);
 
 	GameObject *LightCube = new GameObject();
-	LightCube->AddComponent<DirectionalLight>(new DirectionalLight());
-
-	//Texture2D box("Textures/metal.jpg");
-	//vertex2->SetSingleTexture(&box,"texture_diffuse");
-
-	//GameObject *cube = new GameObject(vertex2, Primitive::Cube());
-	//cube->transform->_position += vec3(1, 5, 1);
+	PointLight *pLight = LightCube->AddComponentR<PointLight>(new PointLight(LightCube->transform));
 
 
 	glEnable(GL_DEPTH_TEST);
@@ -94,69 +88,33 @@ int main()
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	LightCube->transform->_position = vec3(4);
-	camera->transform->_position = vec3(1, 3, 1);
-	city->transform->_position.y++;
 
-	//RenderTexture *rTex = new RenderTexture(x, y, GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RGB);
-	//Sprite *mirror = new Sprite();
-	//mirror->SetTexture(rTex);
-
-	//	GameObject *mirCam = new GameObject();
-	//	mirCam->AddComponent<Camera>(new Camera(mirCam->transform)); //Сделать автоматический возврат адреса при создании
-
-	//Camera *mainCam = camera->GetComponent<Camera>();
-	//Camera *renderCam = mirCam->GetComponent<Camera>();
-	
-	//mainCam->SetMain();
 
 	while (!glfwWindowShouldClose(window))
 	{
 		if (Input::GetKey(GLFW_KEY_ESCAPE))
 		{
 			goto exit;
-		}
-		
+		}		
+		Time::currenttime = glfwGetTime();
+		Time::CalculateDelta();
+//-------------------------------------------------------------------------------------//
+
 		glfwPollEvents();
 		if (Input::GetKey(GLFW_KEY_UP))
-			LightCube->GetComponent<DirectionalLight>()->strengh += Time::deltaTime;
+			pLight->strengh += Time::deltaTime;
 		if (Input::GetKey(GLFW_KEY_DOWN))
-			LightCube->GetComponent<DirectionalLight>()->strengh -= Time::deltaTime;
-
-
-		Time::currenttime = glfwGetTime();
-		Time::CalculateDelta();				
+			pLight->strengh -= Time::deltaTime;		
 		
-//		rTex->ActiveBuffer();     //renderTexture On
-
-		//renderCam->SetMain();
+		
 		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 
-		city->Draw();
-
-		//box.Active();
-		//cube->Draw();		
+		city->Draw();	
 
 		LightCube->Draw();
-	//	skybox->Draw();
+		skybox->Draw();		
 
-	//	rTex->DeactiveBuffer();		//renderTexture Off
-		
-	/*	
-		glClearColor(0.10f, 0.11f, 0.14f, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		box.Active();
-		camera->Draw();
-		city->Draw();
-		cube->Draw();
-
-		box.Active();
-		LightCube->Draw();
-
-		skybox->Draw();
-		mirror->DrawR();*/
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
 	}
@@ -164,15 +122,11 @@ int main()
 
 	exit:
 
-//	delete skybox;
-	//delete vertex2;
-	//delete rTex;
-//	delete postProc;
+	delete skybox;
 	delete model;
 	delete city;
 	delete LightCube;
 	delete camera;
-	//delete cube;
 	Light::pointLs.clear();
 	Light::spotLs.clear();
 	Light::dirLs.clear();

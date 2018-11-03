@@ -1,6 +1,7 @@
 #pragma once
 #include "Light.h"
 #include "Shader.h"
+#include "RenderTexture.h"
 
 class Material
 {
@@ -23,6 +24,7 @@ public:
 	Material(const GLchar*);
 	vector<Texture> textures;
 	void SetSingleTexture(Texture2D*, string);
+	void SetSingleTexture(RenderTexture*, string);
 	void AddTexture(Texture2D*, string);
 
 	void SetUnifVec3(const GLchar*, vec3);
@@ -105,6 +107,15 @@ inline Material::Material(const GLchar * sh)
 }
 
 inline void Material::SetSingleTexture(Texture2D* tex, string textureType)
+{
+	textures.clear();
+	Texture texture;
+	texture.id = tex->Texture();
+	texture.type = textureType;
+	textures.push_back(texture);
+}
+
+inline void Material::SetSingleTexture(RenderTexture* tex, string textureType)
 {
 	textures.clear();
 	Texture texture;

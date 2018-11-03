@@ -11,7 +11,7 @@ public:
 	Sprite(const GLchar*);
 	~Sprite();
 	void Draw();
-	void DrawR();
+	void DrawRender();
 	void SetTexture(Texture2D*);
 	void SetTexture(RenderTexture*);
 };
@@ -55,19 +55,18 @@ inline void Sprite::Draw()
 	glEnable(GL_CULL_FACE);
 }
 
-inline void Sprite::DrawR()
+inline void Sprite::DrawRender()
 {
 	glDisable(GL_CULL_FACE);
 
 	material->ActiveShader();
-	material->SetUnifFloat("transparent", transparent);
+	material->SetUnifFloat("transparent", 1);
 	transform->MoveGlobalMatrix();
 	material->SetUnifMat4("Matrix.model", Matrix::model);
 	material->SetUnifMat4("Matrix.view", Matrix::view);
 	material->SetUnifMat4("Matrix.projection", Matrix::projection);
 	material->SetUnifVec3("col", color);
 
-	rTex->Active();
 	mesh->Draw(material, true);
 
 	glEnable(GL_CULL_FACE);
@@ -82,4 +81,5 @@ inline void Sprite::SetTexture(Texture2D * tex)
 inline void Sprite::SetTexture(RenderTexture *rTexture)
 {
 	rTex = rTexture;
+	material->SetSingleTexture(rTex, "texture_diffuse");
 }
