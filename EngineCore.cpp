@@ -3,6 +3,52 @@
 #include "Skybox.h"
 
 
+vector<GLfloat> cubeVert = 
+{
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};
+
+
 GLFWwindow* window;
 
 int WindowInit() 
@@ -65,12 +111,37 @@ int main()
 		"Textures/Skybox/bottom.jpg",
 		"Textures/Skybox/front.jpg",
 		"Textures/Skybox/back.jpg"
+	};	
+	vector<string> ice =
+	{
+		"Textures/ice.png",
+		"Textures/ice.png",		
+		"Textures/ice.png",		
+		"Textures/ice.png",		
+		"Textures/ice.png",
+		"Textures/ice.png", 
 	};
-
-
+	Texture2D *iceTexCube = new Texture2D(ice);
+	
+	//==========================================
+	GLuint vao, vbo;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, cubeVert.size() * sizeof(GLfloat), &cubeVert[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+	glBindVertexArray(0);
+	//===========================================
+	Material* reflectMaterial = new Material("Default/Reflective");
+	
 	Skybox *skybox = new Skybox(faces);
 
 	Material *model = new Material("Default/Model");
+	Material *modelR = new Material("ForTest/ModelReflective");
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 	city->transform->_position.y++;
 
@@ -83,12 +154,15 @@ int main()
 	PointLight *pLight = LightCube->AddComponentR<PointLight>(new PointLight(LightCube->transform));
 
 
+	GameObject* nano = new GameObject("Models/suit/nanosuit.obj", modelR);
+	nano->transform->_position = vec3(10, 10, 20);
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+	vec3 _scale = vec3(1);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -98,22 +172,51 @@ int main()
 		}		
 		Time::currenttime = glfwGetTime();
 		Time::CalculateDelta();
-//-------------------------------------------------------------------------------------//
 
 		glfwPollEvents();
+//-------------------------------------------------------------------------------------//
+
 		if (Input::GetKey(GLFW_KEY_UP))
 			pLight->strengh += Time::deltaTime;
 		if (Input::GetKey(GLFW_KEY_DOWN))
-			pLight->strengh -= Time::deltaTime;		
-		
+			pLight->strengh -= Time::deltaTime;
+		if (Input::GetKey(GLFW_KEY_Q))
+			_scale += Time::deltaTime;
+
+//-------------------------------------------------------------------------------------//		
 		
 		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 
-		city->Draw();	
+		camera->Draw();
+		//city->Draw();	
 
 		LightCube->Draw();
-		skybox->Draw();		
+		skybox->Draw();
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
+		nano->Draw();
+
+		glDisable(GL_CULL_FACE);
+		glBindVertexArray(vao);
+		reflectMaterial->ActiveShader();
+		Matrix::model = translate(mat4(),vec3(3, 4, 3))*scale(mat4(), _scale);
+		reflectMaterial->SetUnifMat4("Matrix.model", Matrix::model);
+		reflectMaterial->SetUnifMat4("Matrix.view", Matrix::view);
+		reflectMaterial->SetUnifMat4("Matrix.projection", Matrix::projection);
+		reflectMaterial->SetUnifVec3("cameraPos", camera->transform->_position);
+		reflectMaterial->SetUnifInt("Textures.cubeMap", 0);
+		reflectMaterial->SetUnifInt("Textures.cube_diffuse", 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, iceTexCube->Texture());
+
+		glDrawArrays(GL_TRIANGLES,0,36);
+		glEnable(GL_CULL_FACE);
+
+//------------------------------------------------------------------------------------//
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
@@ -121,6 +224,10 @@ int main()
 
 
 	exit:
+
+	delete reflectMaterial;
+	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &vao);
 
 	delete skybox;
 	delete model;
