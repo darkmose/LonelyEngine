@@ -96,7 +96,7 @@ int main()
 		cout << "OpenGL Init error!";
 		return -1;
 	}
-	
+
 	int x, y;
 	glfwGetWindowSize(window, &x, &y);
 	Matrix::SetProjection(float(x), float(y), true);
@@ -111,39 +111,32 @@ int main()
 		"Textures/Skybox/bottom.jpg",
 		"Textures/Skybox/front.jpg",
 		"Textures/Skybox/back.jpg"
-	};	
+	};
 	vector<string> ice =
 	{
 		"Textures/ice.png",
-		"Textures/ice.png",		
-		"Textures/ice.png",		
-		"Textures/ice.png",		
 		"Textures/ice.png",
-		"Textures/ice.png", 
+		"Textures/ice.png",
+		"Textures/ice.png",
+		"Textures/ice.png",
+		"Textures/ice.png",
 	};
-	Texture2D *iceTexCube = new Texture2D(ice);
 	
+
 	//==========================================
-	GLuint vao, vbo;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, cubeVert.size() * sizeof(GLfloat), &cubeVert[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
-	glBindVertexArray(0);
-	//===========================================
+	Mesh* iceBlock = new Mesh({Primitive::_Cube_Pos,Primitive::_Cube_Norm, Primitive::Empty });
 	Material* reflectMaterial = new Material("Default/Reflective");
+	Texture2D *iceTexCube = new Texture2D(ice);
+	//===========================================
+	
 	
 	Skybox *skybox = new Skybox(faces);
 
 	Material *model = new Material("Default/Model");
-	Material *modelR = new Material("ForTest/ModelReflective");
+	Material *modelR = new Material("ForTest/ModelGlass");
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 	city->transform->_position.y++;
+	
 
 	GameObject *camera = new GameObject();	
 	camera->AddComponent<Camera>(new Camera(camera->transform));
@@ -194,12 +187,11 @@ int main()
 		LightCube->Draw();
 		skybox->Draw();
 		
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
 		nano->Draw();
 
-		glDisable(GL_CULL_FACE);
-		glBindVertexArray(vao);
 		reflectMaterial->ActiveShader();
 		Matrix::model = translate(mat4(),vec3(3, 4, 3))*scale(mat4(), _scale);
 		reflectMaterial->SetUnifMat4("Matrix.model", Matrix::model);
@@ -213,8 +205,7 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, iceTexCube->Texture());
 
-		glDrawArrays(GL_TRIANGLES,0,36);
-		glEnable(GL_CULL_FACE);
+	//	iceBlock->Draw(reflectMaterial, true);
 
 //------------------------------------------------------------------------------------//
 
@@ -226,8 +217,9 @@ int main()
 	exit:
 
 	delete reflectMaterial;
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
+	delete iceTexCube;
+	delete iceBlock;
+	ice.clear();
 
 	delete skybox;
 	delete model;

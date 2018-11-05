@@ -23,6 +23,11 @@ struct Vertex {
 	vec3 Normal;
 	vec2 TexCoords;
 };
+struct VertexVec {
+	GLfloat pos[];
+	GLfloat normal[];
+	GLfloat texCoords[];
+};
 struct Texture
 {
 	string type;
