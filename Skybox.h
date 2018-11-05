@@ -53,7 +53,6 @@ private:
 public:
 	Skybox(vector<string>);
 	Skybox() {}
-	GLuint CubeMap();
 	~Skybox();
 	void Draw();
 };
@@ -73,11 +72,6 @@ Skybox::Skybox(vector<string> paths)
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
 	glBindVertexArray(0);
-}
-
-inline GLuint Skybox::CubeMap()
-{
-	return sky;
 }
 
 Skybox::~Skybox()

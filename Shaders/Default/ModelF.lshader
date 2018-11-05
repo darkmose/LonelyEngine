@@ -48,9 +48,9 @@ in vec3 FragPos;
 	
 	uniform Texture Textures;
 	uniform MatProp Props;
-	uniform PointL Point[1];
+	//uniform PointL Point[1];
 	//uniform SpotL Spot[1];
-	//uniform DirectionalL Directional[1];
+	uniform DirectionalL Directional[1];
 	uniform vec3 cameraPos;
 	
 	vec3 DirectionOut(in DirectionalL,in vec3);
@@ -65,11 +65,11 @@ void main()
     vec3 cameraDir = normalize(cameraPos - FragPos);
     vec3 result;
    
-  //  for(int i = 0; i < 1; i++){
-   // result += DirectionOut(Directional[i],cameraDir);}
+    for(int i = 0; i < 1; i++){
+    result += DirectionOut(Directional[i],cameraDir);}
     
-	for(int i = 0; i < 1; i++){
-	result += PointOut(Point[i], cameraDir);}
+	//for(int i = 0; i < 1; i++){
+	//result += PointOut(Point[i], cameraDir);}
     
 	//for(int i = 0; i < 1; i++){
     //result += SpotOut(Spot[i], cameraDir); }   
