@@ -50,7 +50,7 @@ int main()
 		cout << "OpenGL Init error!";
 		return -1;
 	}
-	
+
 	int x, y;
 	glfwGetWindowSize(window, &x, &y);
 	Matrix::SetProjection(float(x), float(y), true);
@@ -65,14 +65,41 @@ int main()
 		"Textures/Skybox/bottom.jpg",
 		"Textures/Skybox/front.jpg",
 		"Textures/Skybox/back.jpg"
+<<<<<<< HEAD
 	};
 
 
 	Skybox *skybox = new Skybox(faces);
 
 	Material *model = new Material("Default/Model");
+=======
+	};
+	vector<string> ice =
+	{
+		"Textures/ice.png",
+		"Textures/ice.png",
+		"Textures/ice.png",
+		"Textures/ice.png",
+		"Textures/ice.png",
+		"Textures/ice.png",
+	};
+	
+
+	//==========================================
+	Mesh* iceBlock = new Mesh({Primitive::_Cube_Pos,Primitive::_Cube_Norm, Primitive::Empty });
+	Material* reflectMaterial = new Material("Default/Reflective");
+	Texture2D *iceTexCube = new Texture2D(ice);
+	//===========================================
+	
+	
+	Skybox *skybox = new Skybox(faces);
+
+	Material *model = new Material("Default/Model");
+	Material *modelR = new Material("ForTest/ModelGlass");
+>>>>>>> parent of 2d87208... Revert "24"
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 	city->transform->_position.y++;
+	
 
 	GameObject *camera = new GameObject();	
 	camera->AddComponent<Camera>(new Camera(camera->transform));
@@ -113,7 +140,33 @@ int main()
 		city->Draw();	
 
 		LightCube->Draw();
+<<<<<<< HEAD
 		skybox->Draw();		
+=======
+		skybox->Draw();
+		
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
+		nano->Draw();
+
+		reflectMaterial->ActiveShader();
+		Matrix::model = translate(mat4(),vec3(3, 4, 3))*scale(mat4(), _scale);
+		reflectMaterial->SetUnifMat4("Matrix.model", Matrix::model);
+		reflectMaterial->SetUnifMat4("Matrix.view", Matrix::view);
+		reflectMaterial->SetUnifMat4("Matrix.projection", Matrix::projection);
+		reflectMaterial->SetUnifVec3("cameraPos", camera->transform->_position);
+		reflectMaterial->SetUnifInt("Textures.cubeMap", 0);
+		reflectMaterial->SetUnifInt("Textures.cube_diffuse", 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, iceTexCube->Texture());
+
+	//	iceBlock->Draw(reflectMaterial, true);
+
+//------------------------------------------------------------------------------------//
+>>>>>>> parent of 2d87208... Revert "24"
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
@@ -122,6 +175,14 @@ int main()
 
 	exit:
 
+<<<<<<< HEAD
+=======
+	delete reflectMaterial;
+	delete iceTexCube;
+	delete iceBlock;
+	ice.clear();
+
+>>>>>>> parent of 2d87208... Revert "24"
 	delete skybox;
 	delete model;
 	delete city;
