@@ -17,7 +17,7 @@ public:
 	void Draw(Material*, bool);
 	
 	Mesh(vector<Vertex>, vector<unsigned int>, vector<Texture>);
-	Mesh(const VertexVec&, vector<GLuint>, GLenum);
+	Mesh(vector<GLfloat>, vector<GLuint>, vector<GLint>, GLenum);
 	~Mesh();
 };
 
@@ -121,46 +121,26 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
 		SetupMesh();
 }
 
-inline Mesh::Mesh(const VertexVec& verts, vector<GLuint> ind = vector<GLuint>::vector(), GLenum drawMod = GL_STATIC_DRAW)
+inline Mesh::Mesh(vector<GLfloat> vert, vector<GLuint> ind, vector<GLint> params, GLenum drawMod = GL_STATIC_DRAW)
 {
-	char p=0, n=0, t=0;
 
 	if (ind.size() != 0) {
 		indices = ind;
 		isArray = GL_FALSE;
 	}
-	
-	vertCount = sizeof(verts.pos) / sizeof(GLfloat);
-	
-	if (sizeof(verts.pos) == 4)	
-		p = 0;
-	else
-		p = 1;	
-	if (sizeof(verts.normal) == 4)	
-		n = 0;
-	else
-		n = 1;	
-	if (sizeof(verts.texCoords) == 4)	
-		t = 0;
-	else
-		t = 1;
 
-	
-	
+	int shag = 0;
+	for(int i = 0; i<params.size();i++)
+		shag += params[i];
+
+	vertCount = int(vert.size() / shag);
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts.pos), &verts.pos);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(verts.pos), sizeof(verts.normal), &verts.normal);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(verts.pos) + sizeof(verts.normal), sizeof(verts.texCoords), &verts.texCoords);
+	GLfloat* data = &vert[0];
+	glBufferData(GL_ARRAY_BUFFER, vert.size()*sizeof(GLfloat), data, drawMod);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, p*3 * sizeof(float), 0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, n*3 * sizeof(float), (void*)(sizeof(verts.pos)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, t*2 * sizeof(float), (void*)(sizeof(verts.pos) + sizeof(verts.normal)));
 	if (ind.size() != 0)
 	{
 		GLuint* _data = &ind[0];
@@ -169,6 +149,13 @@ inline Mesh::Mesh(const VertexVec& verts, vector<GLuint> ind = vector<GLuint>::v
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size()*sizeof(GLuint), _data, drawMod);
 	}
 
+	GLint prev = 0;
+	for (GLint i = 0; i < params.size(); i++)
+	{
+		glEnableVertexAttribArray(i);
+		glVertexAttribPointer(i, params[i], GL_FLOAT, GL_FALSE, shag*sizeof(GLfloat), (GLvoid*)(prev * sizeof(float)));
+		prev += params[i];
+	}
 	glBindVertexArray(0);	
 }
 
