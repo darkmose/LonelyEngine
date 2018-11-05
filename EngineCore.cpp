@@ -65,19 +65,13 @@ int main()
 		"Textures/Skybox/bottom.jpg",
 		"Textures/Skybox/front.jpg",
 		"Textures/Skybox/back.jpg"
-<<<<<<< HEAD
-<<<<<<< HEAD
 	};
 
 
 	Skybox *skybox = new Skybox(faces);
 
 	Material *model = new Material("Default/Model");
-=======
-	};
-=======
-	};	
->>>>>>> parent of 9c47750... 24
+
 	vector<string> ice =
 	{
 		"Textures/ice.png",
@@ -107,12 +101,8 @@ int main()
 	Skybox *skybox = new Skybox(faces);
 
 	Material *model = new Material("Default/Model");
-<<<<<<< HEAD
 	Material *modelR = new Material("ForTest/ModelGlass");
->>>>>>> parent of 2d87208... Revert "24"
-=======
 	Material *modelR = new Material("ForTest/ModelReflective");
->>>>>>> parent of 9c47750... 24
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 	city->transform->_position.y++;
 
@@ -155,9 +145,7 @@ int main()
 		city->Draw();	
 
 		LightCube->Draw();
-<<<<<<< HEAD
 		skybox->Draw();		
-=======
 		skybox->Draw();
 		
 		glActiveTexture(GL_TEXTURE0);
@@ -183,7 +171,6 @@ int main()
 		glEnable(GL_CULL_FACE);
 
 //------------------------------------------------------------------------------------//
->>>>>>> parent of 2d87208... Revert "24"
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
@@ -192,13 +179,10 @@ int main()
 
 	exit:
 
-<<<<<<< HEAD
-=======
 	delete reflectMaterial;
 	glDeleteBuffers(1, &vbo);
 	glDeleteVertexArrays(1, &vao);
 
->>>>>>> parent of 2d87208... Revert "24"
 	delete skybox;
 	delete model;
 	delete city;
