@@ -1,11 +1,11 @@
 #version 330 core
-layout (location = 0) in vec3 pos; 
-layout (location = 1) in vec2 textPos;
-layout (location = 2) in vec3 normal;
 
-out vec2 TexturePos;
+layout (location = 0) in vec3 pos; 
+layout (location = 1) in vec3 normal;
+
 out vec3 Normal;
 out vec3 FragPos;
+out vec3 Pos;
 
 struct MatrixMVP
 {
@@ -19,8 +19,8 @@ uniform MatrixMVP Matrix;
 
 void main()
 {
-    Normal = mat3(transpose(inverse(Matrix.model))) * normal;
+	Pos = pos;
+    Normal = normal;
     FragPos = vec3(Matrix.model * vec4(pos, 1.0));
     gl_Position = Matrix.projection * Matrix.view * Matrix.model * vec4(pos, 1.0);
-	TexturePos = textPos;
 }

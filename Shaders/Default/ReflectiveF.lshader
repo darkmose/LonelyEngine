@@ -1,0 +1,22 @@
+#version 330 core
+
+in vec3 Pos;
+in vec3 FragPos;
+in vec3 Normal;
+	
+	struct Texture
+	{
+		samplerCube cubeMap;
+		samplerCube cube_diffuse;
+	};
+	uniform Texture Textures;
+	uniform vec3 cameraPos;
+	out vec4 color;
+
+void main()
+{	
+	float k = 1/1.309;
+	vec3 I = normalize(FragPos - cameraPos);
+    vec3 R = refract(I, normalize(Normal),k);
+    color = mix(texture(Textures.cubeMap, R),texture(Textures.cube_diffuse, Pos), 0.45f);
+}

@@ -1,4 +1,5 @@
 #version 330 core
+
 layout (location = 0) in vec3 pos; 
 layout (location = 1) in vec2 textPos;
 layout (location = 2) in vec3 normal;
@@ -13,13 +14,14 @@ struct MatrixMVP
 	mat4 view;
 	mat4 projection;
 };
+
 uniform MatrixMVP Matrix;
 
 
 void main()
 {
-	FragPos = vec3(Matrix.model*vec4(pos,1));
-	Normal = normalize(normal);
-	gl_Position = Matrix.projection * Matrix.view * Matrix.model * vec4(pos.x,pos.y,pos.z,1);
+    Normal = mat3(transpose(inverse(Matrix.model))) * normal;
+    FragPos = vec3(Matrix.model * vec4(pos, 1.0));
+    gl_Position = Matrix.projection * Matrix.view * Matrix.model * vec4(pos, 1.0);
 	TexturePos = textPos;
 }

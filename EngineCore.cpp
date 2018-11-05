@@ -3,6 +3,51 @@
 #include "Skybox.h"
 
 
+vector<GLfloat> cubeVert =
+{
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+};
+
 GLFWwindow* window;
 
 int WindowInit() 
@@ -97,12 +142,8 @@ int main()
 	glBindVertexArray(0);
 	//===========================================
 	Material* reflectMaterial = new Material("Default/Reflective");
-	
-	Skybox *skybox = new Skybox(faces);
 
-	Material *model = new Material("Default/Model");
-	Material *modelR = new Material("ForTest/ModelGlass");
-	Material *modelR = new Material("ForTest/ModelReflective");
+	Material *modelGlass = new Material("ForTest/ModelGlass");
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 	city->transform->_position.y++;
 
@@ -114,13 +155,15 @@ int main()
 	GameObject *LightCube = new GameObject();
 	PointLight *pLight = LightCube->AddComponentR<PointLight>(new PointLight(LightCube->transform));
 
+	GameObject* nano = new GameObject("Models/suit/nanosuit.obj", modelGlass);
+	nano->transform->_position = vec3(10, 10, 20);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+	vec3 _scale = vec3(1);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -142,20 +185,18 @@ int main()
 		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 
-		city->Draw();	
-
+		//city->Draw();	
+		camera->Draw();
 		LightCube->Draw();
-		skybox->Draw();		
-		skybox->Draw();
-		
+		nano->Draw();
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
-		nano->Draw();
 
 		glDisable(GL_CULL_FACE);
 		glBindVertexArray(vao);
 		reflectMaterial->ActiveShader();
-		Matrix::model = translate(mat4(),vec3(3, 4, 3))*scale(mat4(), _scale);
+		Matrix::model = translate(scale(mat4(), _scale),vec3(1,4,1));
 		reflectMaterial->SetUnifMat4("Matrix.model", Matrix::model);
 		reflectMaterial->SetUnifMat4("Matrix.view", Matrix::view);
 		reflectMaterial->SetUnifMat4("Matrix.projection", Matrix::projection);
@@ -170,6 +211,8 @@ int main()
 		glDrawArrays(GL_TRIANGLES,0,36);
 		glEnable(GL_CULL_FACE);
 
+
+		skybox->Draw();
 //------------------------------------------------------------------------------------//
 
 		glBindVertexArray(0);

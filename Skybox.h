@@ -55,6 +55,7 @@ public:
 	Skybox() {}
 	~Skybox();
 	void Draw();
+	GLuint CubeMap();
 };
 
 Skybox::Skybox(vector<string> paths)
@@ -100,4 +101,9 @@ inline void Skybox::Draw()
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthFunc(GL_LESS);
+}
+
+inline GLuint Skybox::CubeMap()
+{
+	return sky;
 }
