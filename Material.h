@@ -6,10 +6,14 @@
 class Material
 {
 private:
-	struct Params {
+	struct Params
+	{
 		vec2 stretch = vec2(1);
 		vec2 offset = vec2(0);
 		vec3 objectCol = vec3(1);
+	};
+	struct MatProps
+	{
 		float ambient = 0.1f;
 		float diffuse = 0.8f;
 		float specular = 0.3f;
@@ -17,6 +21,7 @@ private:
 	};
 public:
 	Params params;
+	MatProps matProps;
 	void ActiveUniforms();
 	Shader * shader;
 	void ActiveShader();
@@ -26,7 +31,6 @@ public:
 	void SetSingleTexture(Texture2D*, string);
 	void SetSingleTexture(RenderTexture*, string);
 	void AddTexture(Texture2D*, string);
-
 	void SetUnifVec3(const GLchar*, vec3);
 	void SetUnifVec4(const GLchar*, vec4);
 	void SetUnifMat4(const GLchar*, mat4);
@@ -34,6 +38,7 @@ public:
 	void SetUnifFloat(const GLchar*, GLfloat);
 	void SetUnifInt(const GLchar*, GLint);
 	~Material();
+	void SetShaderUnifBlockBind(const GLchar*, GLuint);
 };
 
 void Material::ActiveLight() 
@@ -94,11 +99,6 @@ void Material::ActiveUniforms()
 	SetUnifVec2("stretch", params.stretch);
 	SetUnifVec2("offset", params.offset);
 	SetUnifVec3("Props.objectColor", params.objectCol);
-	SetUnifVec3("cameraPos", Camera::mainCamera->transform->_position);
-	SetUnifFloat("Props.ambient", params.ambient);
-	SetUnifFloat("Props.diffuse", params.diffuse);
-	SetUnifFloat("Props.specularStr", params.specularStr);
-	SetUnifFloat("Props.specular", params.specular);
 }
 
 inline Material::Material(const GLchar * sh)
@@ -165,6 +165,12 @@ inline void Material::SetUnifInt(const GLchar * name, GLint param)
 Material::~Material()
 {	
 	textures.clear();
+}
+
+inline void Material::SetShaderUnifBlockBind(const GLchar * unifName, GLuint idBlock)
+{
+	GLuint idUnifBlock = glGetUniformBlockIndex(shader->Sprogram(), unifName);
+	glUniformBlockBinding(shader->Sprogram(), idUnifBlock, idBlock);
 }
 
 inline void Material::ActiveShader()

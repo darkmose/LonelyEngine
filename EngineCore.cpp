@@ -101,7 +101,7 @@ int main()
 	Matrix::SetProjection(float(x), float(y), true);
 
 	Callbacks::initCallbacks(window);
-
+	///
 	vector<string> faces =
 	{
 		"Textures/Skybox/right.jpg",
@@ -111,53 +111,42 @@ int main()
 		"Textures/Skybox/front.jpg",
 		"Textures/Skybox/back.jpg"
 	};
-
-
-	Skybox *skybox = new Skybox(faces);
-
-	Material *model = new Material("Default/Model");
-
-	vector<string> ice =
-	{
-		"Textures/ice.png",
-		"Textures/ice.png",		
-		"Textures/ice.png",		
-		"Textures/ice.png",		
-		"Textures/ice.png",
-		"Textures/ice.png", 
-	};
-	Texture2D *iceTexCube = new Texture2D(ice);
 	
-	//==========================================
-	GLuint vao, vbo;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, cubeVert.size() * sizeof(GLfloat), &cubeVert[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
-	glBindVertexArray(0);
-	//===========================================
-	Material* reflectMaterial = new Material("Default/Reflective");
-
-	Material *modelGlass = new Material("ForTest/ModelGlass");
+	Skybox *skybox = new Skybox(faces);
+	///
+	Material *model = new Material("Default/Model");
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 	city->transform->_position.y++;
-
+	///
 	GameObject *camera = new GameObject();	
 	camera->AddComponent<Camera>(new Camera(camera->transform));
 	camera->AddComponent<CameraController>();
 	camera->transform->_position = vec3(1, 3, 1);
-
+	///
+	Material *newM = new Material("Default/Reflective");
+	GameObject *newG = new GameObject(newM, Primitive::Cube());
+	newG->transform->_position = vec3(1, 5, 10);
+	///
 	GameObject *LightCube = new GameObject();
 	PointLight *pLight = LightCube->AddComponentR<PointLight>(new PointLight(LightCube->transform));
-
-	GameObject* nano = new GameObject("Models/suit/nanosuit.obj", modelGlass);
-	nano->transform->_position = vec3(10, 10, 20);
-
+	pLight->strengh = 4;
+	///
+	GLuint MatrixGlobalShader = glCreateUnifBuffer(128, 1);
+	glSetUnifBlockVariable(MatrixGlobalShader, 64, 64, &Matrix::projection);
+	model->SetShaderUnifBlockBind("Matrices", 1);
+	newM->SetShaderUnifBlockBind("Matrices", 1);
+	skybox->SetShaderUnifBlockBind("Matrices", 1);
+	GLuint CameraGlobalShader = glCreateUnifBuffer(16, 2);
+	model->SetShaderUnifBlockBind("Camera", 2);
+	newM->SetShaderUnifBlockBind("Camera", 2);
+	skybox->SetShaderUnifBlockBind("Camera", 2);
+	GLuint MatPropsGlobalShafer = glCreateUnifBuffer(16, 3);
+	model->SetShaderUnifBlockBind("MatProps", 3);
+	glSetUnifBlockVariable(MatPropsGlobalShafer, 0,	4, &model->matProps.ambient);
+	glSetUnifBlockVariable(MatPropsGlobalShafer, 4, 4, &model->matProps.diffuse);
+	glSetUnifBlockVariable(MatPropsGlobalShafer, 8, 4, &model->matProps.specular);
+	glSetUnifBlockVariable(MatPropsGlobalShafer, 12, 4, &model->matProps.specularStr);
+	///
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
@@ -173,59 +162,34 @@ int main()
 		}		
 		Time::currenttime = glfwGetTime();
 		Time::CalculateDelta();
+
+
 //-------------------------------------------------------------------------------------//
 
 		glfwPollEvents();
 		if (Input::GetKey(GLFW_KEY_UP))
 			pLight->strengh += Time::deltaTime;
 		if (Input::GetKey(GLFW_KEY_DOWN))
-			pLight->strengh -= Time::deltaTime;		
-		
+			pLight->strengh -= Time::deltaTime;				
 		
 		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 
-		//city->Draw();	
+		city->Draw();	
+		newG->Draw();
 		camera->Draw();
 		LightCube->Draw();
-		nano->Draw();
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
-
-		glDisable(GL_CULL_FACE);
-		glBindVertexArray(vao);
-		reflectMaterial->ActiveShader();
-		Matrix::model = translate(scale(mat4(), _scale),vec3(1,4,1));
-		reflectMaterial->SetUnifMat4("Matrix.model", Matrix::model);
-		reflectMaterial->SetUnifMat4("Matrix.view", Matrix::view);
-		reflectMaterial->SetUnifMat4("Matrix.projection", Matrix::projection);
-		reflectMaterial->SetUnifVec3("cameraPos", camera->transform->_position);
-		reflectMaterial->SetUnifInt("Textures.cubeMap", 0);
-		reflectMaterial->SetUnifInt("Textures.cube_diffuse", 1);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->CubeMap());
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, iceTexCube->Texture());
-
-		glDrawArrays(GL_TRIANGLES,0,36);
-		glEnable(GL_CULL_FACE);
-
-
-		skybox->Draw();
 //------------------------------------------------------------------------------------//
+		skybox->Draw();
 
+		glSetUnifBlockVariable(CameraGlobalShader, 0, 16, &Camera::mainCamera->transform->_position);
+		glSetUnifBlockVariable(MatrixGlobalShader, 0, 64, &Matrix::view);
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
 	}
 
 
 	exit:
-
-	delete reflectMaterial;
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
-
 	delete skybox;
 	delete model;
 	delete city;
@@ -234,6 +198,10 @@ int main()
 	Light::pointLs.clear();
 	Light::spotLs.clear();
 	Light::dirLs.clear();
+	faces.clear();
+	cubeVert.clear();
+	glDeleteBuffers(1, &MatrixGlobalShader);
+	glDeleteBuffers(1, &CameraGlobalShader);
 
 	glfwTerminate();
 	return 0;

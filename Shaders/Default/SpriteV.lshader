@@ -2,11 +2,15 @@
 layout (location = 0) in vec2 pos; 
 layout (location = 1) in vec2 textPos;
 
+layout (std140) uniform Matrices
+{
+	mat4 view;
+	mat4 projection;
+};
+
 struct MatrixMVP
 {
 	mat4 model;
-	mat4 view;
-	mat4 projection;
 };
 uniform MatrixMVP Matrix;
 
@@ -15,5 +19,5 @@ out vec2 TexPos;
 void main()
 {
 	TexPos = textPos;
-	gl_Position = Matrix.projection * Matrix.view * Matrix.model * vec4(pos,0,1);
+	gl_Position = projection * view * Matrix.model * vec4(pos,0,1);
 }

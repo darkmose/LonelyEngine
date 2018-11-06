@@ -1,14 +1,16 @@
 #version 330 core
 layout (location = 0) in vec3 pos; 
-
-uniform mat4 projection;
-uniform mat4 view;
+layout (std140) uniform Matrices
+{
+	mat4 view;
+	mat4 projection;
+};
 
 out vec3 TexPos;
 
 void main()
 {
 	TexPos = pos;
-	vec4 poss = projection * view * vec4(pos,1.f);
+	vec4 poss = projection * mat4(mat3(view)) * vec4(pos,1.f);
 	gl_Position = poss.xyww;
 }

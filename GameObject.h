@@ -109,10 +109,6 @@ inline void GameObject::Draw()
 		material->ActiveLight();
 		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("Matrix.model", Matrix::model);
-		material->SetUnifMat4("Matrix.view", Matrix::view);
-		material->SetUnifMat4("Matrix.projection", Matrix::projection);
-		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform->_position);
-
 		mesh->Draw(material, true);
 	}
 	if (model != NULL)
@@ -122,10 +118,6 @@ inline void GameObject::Draw()
 		material->ActiveUniforms();
 		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("Matrix.model", Matrix::model);
-		material->SetUnifMat4("Matrix.view", Matrix::view);
-		material->SetUnifMat4("Matrix.projection", Matrix::projection);
-		material->SetUnifVec3("Poses.camera", Camera::mainCamera->transform->_position);
-
 		model->Draw();
 	}
 	ComponentAction();

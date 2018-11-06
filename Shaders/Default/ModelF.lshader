@@ -3,21 +3,22 @@
 in vec2 TexturePos;
 in vec3 Normal;
 in vec3 FragPos;
-
+layout (std140) uniform Camera
+{
+	vec3 cameraPos;
+};
+layout (std140) uniform MatProps
+{
+	float ambient;
+	float diffuse;
+	float specular;
+	float specularStr;
+};
 	struct Texture
 	{
 	sampler2D texture_diffuse1;
 	sampler2D texture_specular1;
 	};
-	struct  MatProp
-	{
-		vec3 objectColor;
-		float ambient;
-		float diffuse;
-		float specular;		
-		float specularStr;
-	};
-
 	
 	struct DirectionalL
 	{
@@ -47,11 +48,7 @@ in vec3 FragPos;
 	};
 	
 	uniform Texture Textures;
-	uniform MatProp Props;
 	uniform PointL Point[1];
-	//uniform SpotL Spot[1];
-	//uniform DirectionalL Directional[1];
-	uniform vec3 cameraPos;
 	
 	vec3 DirectionOut(in DirectionalL,in vec3);
 	vec3 SpotOut(in SpotL,in vec3);
@@ -64,17 +61,12 @@ void main()
 {
     vec3 cameraDir = normalize(cameraPos - FragPos);
     vec3 result;
-   
-    //for(int i = 0; i < 1; i++){
-    //result += DirectionOut(Directional[i],cameraDir);}
     
 	for(int i = 0; i < 1; i++){
 	result += PointOut(Point[i], cameraDir);}
+
     
-	//for(int i = 0; i < 1; i++){
-    //result += SpotOut(Spot[i], cameraDir); }   
-    
-    color = vec4(result,1.f);//vec4(result,1.f);
+    color = vec4(result,1.f);
 }
 
 vec3 texCol(sampler2D _texture)
@@ -85,12 +77,12 @@ vec3 texCol(sampler2D _texture)
 vec3 DirectionOut(in DirectionalL dir,in vec3 cameraDir)
 {
 	vec3 lightDir = normalize(-dir.direction);
-	vec3 ambient = dir.color * Props.ambient;
+	vec3 ambient = dir.color * ambient;
 	float d = max(dot(lightDir,Normal),0.f);
-	vec3 diffuse = dir.color * Props.diffuse * d;
+	vec3 diffuse = dir.color * diffuse * d;
 	vec3 reflectLight = reflect(-lightDir, Normal);
-	float s = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular;
-	vec3 specular = s * Props.specular * dir.color;
+	float s = pow(max(dot(cameraDir, reflectLight), 0.0), specularStr)*specular;
+	vec3 specular = s * specular * dir.color;
 	
 	return ((ambient + diffuse) * texCol(Textures.texture_diffuse1) + specular*texCol(Textures.texture_specular1))* dir.strengh;
 }
@@ -101,20 +93,20 @@ vec3 PointOut(in PointL point,in vec3 cameraDir)
 	float attenuation = 1.0f/(point.Kc + point.Kl*distance + point.Kq*distance*distance);
 	
 	vec3 lightDir = normalize(point.position - FragPos);
-	vec3 ambient = point.color * Props.ambient;
+	vec3 ambient = point.color * ambient;
 	
 	float d = max(dot(lightDir,Normal),0.f) * attenuation;
-	vec3 diffuse = point.color * Props.diffuse * d ;
+	vec3 diffuse = point.color * diffuse * d ;
 	vec3 reflectLight = reflect(-lightDir, Normal);
-	float s = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular*attenuation;
-	vec3 specular = s * Props.specular * point.color;
+	float s = pow(max(dot(cameraDir, reflectLight), 0.0), specularStr)*specular*attenuation;
+	vec3 specular = s * specular * point.color;
 	
 	return ((ambient + diffuse) * texCol(Textures.texture_diffuse1) + specular*texCol(Textures.texture_specular1))* point.strengh;
 }
 
 vec3 SpotOut(in SpotL spot,in vec3 cameraDir)
 {
-	vec3 ambient = spot.color * Props.ambient;	
+	vec3 ambient = spot.color * ambient;	
 	
 	vec3 lightDir = normalize(spot.position - FragPos);
 	float theta = dot(lightDir, normalize(-spot.direction));
@@ -123,9 +115,9 @@ vec3 SpotOut(in SpotL spot,in vec3 cameraDir)
 	{
 		float epsilon = spot.innerCutOff - spot.outerCutOff;
 		float intensity = clamp((theta - spot.outerCutOff) / epsilon, 0.0, 1.0);
-		vec3 diffuse = spot.color * Props.diffuse * intensity;
+		vec3 diffuse = spot.color * diffuse * intensity;
 		vec3 reflectLight = reflect(-lightDir, Normal);
-		float spec = pow(max(dot(cameraDir, reflectLight), 0.0), Props.specularStr)*Props.specular;
+		float spec = pow(max(dot(cameraDir, reflectLight), 0.0), specularStr)*specular;
 		vec3 specular = spec * spot.color * intensity;
 		
 		return ((ambient + diffuse) * texCol(Textures.texture_diffuse1) + specular*texCol(Textures.texture_specular1)) * spot.strengh;

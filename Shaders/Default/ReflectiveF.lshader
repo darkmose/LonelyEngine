@@ -3,14 +3,16 @@
 in vec3 Pos;
 in vec3 FragPos;
 in vec3 Normal;
-	
+layout (std140) uniform Camera
+{
+	vec3 cameraPos;
+};
 	struct Texture
 	{
 		samplerCube cubeMap;
-		samplerCube cube_diffuse;
+		samplerCube cube;
 	};
 	uniform Texture Textures;
-	uniform vec3 cameraPos;
 	out vec4 color;
 
 void main()
@@ -18,5 +20,5 @@ void main()
 	float k = 1/1.309;
 	vec3 I = normalize(FragPos - cameraPos);
     vec3 R = refract(I, normalize(Normal),k);
-    color = mix(texture(Textures.cubeMap, R),texture(Textures.cube_diffuse, Pos), 0.45f);
+    color = texture(Textures.cubeMap, R);
 }

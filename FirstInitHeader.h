@@ -39,5 +39,21 @@ struct Texture
 #include "RenderTexture.h"
 #include "Sprite.h"
 
+GLuint glCreateUnifBuffer(GLsizeiptr size, GLuint idBind)
+{
+	GLuint ubo;
+	glGenBuffers(1, &ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW); 
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBufferBase(GL_UNIFORM_BUFFER, idBind, ubo);
+	
+	return ubo;
+}
 
-
+void glSetUnifBlockVariable(GLuint unifBlockId, GLsizeiptr offset, GLsizeiptr size, void* var) 
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, unifBlockId);
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, size, var);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
