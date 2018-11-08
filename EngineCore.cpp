@@ -123,8 +123,9 @@ int main()
 	camera->AddComponent<CameraController>();
 	camera->transform->_position = vec3(1, 3, 1);
 	///
-	Material *newM = new Material("Default/Reflective");
-	GameObject *newG = new GameObject(newM, Primitive::Cube());
+	Material *newM = new Material("Default/Color");
+	newM->params.objectCol = vec3(0.25f, 0.71f, 0.71f);
+	GameObject *newG = new GameObject(newM, Primitive::Quad());
 	newG->transform->_position = vec3(1, 5, 10);
 	///
 	GameObject *LightCube = new GameObject();
@@ -132,7 +133,7 @@ int main()
 	pLight->strengh = 4;
 	///
 	GLuint MatrixGlobalShader = glCreateUnifBuffer(128, 1);
-	glSetUnifBlockVariable(MatrixGlobalShader, 64, 64, &Matrix::projection);
+	glSetUnifVariable(MatrixGlobalShader, 64, 64, &Matrix::projection);
 	model->SetShaderUnifBlockBind("Matrices", 1);
 	newM->SetShaderUnifBlockBind("Matrices", 1);
 	skybox->SetShaderUnifBlockBind("Matrices", 1);
@@ -142,10 +143,10 @@ int main()
 	skybox->SetShaderUnifBlockBind("Camera", 2);
 	GLuint MatPropsGlobalShafer = glCreateUnifBuffer(16, 3);
 	model->SetShaderUnifBlockBind("MatProps", 3);
-	glSetUnifBlockVariable(MatPropsGlobalShafer, 0,	4, &model->matProps.ambient);
-	glSetUnifBlockVariable(MatPropsGlobalShafer, 4, 4, &model->matProps.diffuse);
-	glSetUnifBlockVariable(MatPropsGlobalShafer, 8, 4, &model->matProps.specular);
-	glSetUnifBlockVariable(MatPropsGlobalShafer, 12, 4, &model->matProps.specularStr);
+	glSetUnifVariable(MatPropsGlobalShafer, 0,	4, &model->matProps.ambient);
+	glSetUnifVariable(MatPropsGlobalShafer, 4, 4, &model->matProps.diffuse);
+	glSetUnifVariable(MatPropsGlobalShafer, 8, 4, &model->matProps.specular);
+	glSetUnifVariable(MatPropsGlobalShafer, 12, 4, &model->matProps.specularStr);
 	///
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -153,7 +154,7 @@ int main()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	vec3 _scale = vec3(1);
-
+	glEnable(GL_PROGRAM_POINT_SIZE);
 	while (!glfwWindowShouldClose(window))
 	{
 		if (Input::GetKey(GLFW_KEY_ESCAPE))
@@ -182,14 +183,16 @@ int main()
 //------------------------------------------------------------------------------------//
 		skybox->Draw();
 
-		glSetUnifBlockVariable(CameraGlobalShader, 0, 16, &Camera::mainCamera->transform->_position);
-		glSetUnifBlockVariable(MatrixGlobalShader, 0, 64, &Matrix::view);
+		glSetUnifVariable(CameraGlobalShader, 0, 16, &Camera::mainCamera->transform->_position);
+		glSetUnifVariable(MatrixGlobalShader, 0, 64, &Matrix::view);
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
 	}
 
 
 	exit:
+	delete newM;
+	delete newG;
 	delete skybox;
 	delete model;
 	delete city;

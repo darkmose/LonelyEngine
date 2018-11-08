@@ -51,7 +51,7 @@ GLuint glCreateUnifBuffer(GLsizeiptr size, GLuint idBind)
 	return ubo;
 }
 
-void glSetUnifBlockVariable(GLuint unifBlockId, GLsizeiptr offset, GLsizeiptr size, void* var) 
+void glSetUnifVariable(GLuint unifBlockId, GLsizeiptr offset, GLsizeiptr size, void* var) 
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, unifBlockId);
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, size, var);

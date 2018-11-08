@@ -1,0 +1,19 @@
+#version 330 core
+layout (location = 0) in vec2 pos; 
+
+layout (std140) uniform Matrices
+{
+	mat4 view;
+	mat4 projection;
+};
+
+struct MatrixMVP
+{
+	mat4 model;
+};
+uniform MatrixMVP Matrix;
+
+void main()
+{
+	gl_Position = projection * view * Matrix.model * vec4(pos,0,1);
+}

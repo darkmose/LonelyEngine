@@ -108,7 +108,7 @@ inline void Mesh::Draw(Material* mater,bool isNotModel)
 	if (isArray == GL_FALSE)
 		glDrawElements(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0);
 	else
-		glDrawArrays(GL_TRIANGLES, 0, vertCount);
+		glDrawArrays(GL_POINTS, 0, vertCount);
 
 }
 

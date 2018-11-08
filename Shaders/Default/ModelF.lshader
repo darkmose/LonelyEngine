@@ -14,10 +14,12 @@ layout (std140) uniform MatProps
 	float specular;
 	float specularStr;
 };
+
+
 	struct Texture
 	{
-	sampler2D texture_diffuse1;
-	sampler2D texture_specular1;
+		sampler2D texture_diffuse1;
+		sampler2D texture_specular1;
 	};
 	
 	struct DirectionalL
