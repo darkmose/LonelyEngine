@@ -3,18 +3,55 @@
 class Mesh
 {
 private:
+	GLint maxAttribPointer = 0;
 	GLint vertCount;
 	GLint isArray = GL_TRUE;
 	GLuint VAO, VBO, EBO;
+	vector<GLuint> IAO;// - instanced array buffers;
 public:
+	
 	Material * material;
 	vector<Vertex> vertices;
 	vector<GLuint> indices;
 	vector<Texture> textures;
-
+	
 	void SetupMesh();
 	void Draw(Material&);
 	void Draw(Material*, bool);
+	void DrawInstanced(GLsizei);
+	
+	template<typename T>
+	void InstanceArray(void * data, GLint dataCount, GLint paramCount, GLenum paramType)
+	{
+		GLuint iao;
+		glBindVertexArray(VAO);
+		glGenBuffers(1, &iao);
+		glBindBuffer(GL_ARRAY_BUFFER, iao);
+		glBufferData(GL_ARRAY_BUFFER, dataCount*sizeof(T), data, GL_STATIC_DRAW);
+		
+		GLint countAttrib;
+		GLsizeiptr nStride, offset = 0;
+
+		if (sizeof(T) > sizeof(vec4)) {
+			countAttrib = int(sizeof(T) / sizeof(vec4));
+			nStride = sizeof(vec4);
+		}
+		else {
+			nStride = 4;
+			countAttrib = 1;
+		}
+		for (int i = 1; i <= countAttrib; i++)
+		{			
+			glEnableVertexAttribArray(maxAttribPointer + i);
+			glVertexAttribPointer(maxAttribPointer + i, paramCount, paramType, GL_FALSE, nStride*paramCount, (void*)offset);
+			glVertexAttribDivisor(maxAttribPointer + i, 1);
+			offset += nStride;
+		}
+
+		maxAttribPointer += countAttrib;
+		IAO.push_back(iao);
+		glBindVertexArray(0);
+	}
 	
 	Mesh(vector<Vertex>, vector<unsigned int>, vector<Texture>);
 	Mesh(vector<GLfloat>, vector<GLuint>, vector<GLint>, GLenum);
@@ -39,7 +76,7 @@ inline void Mesh::SetupMesh()
 	glEnableVertexAttribArray(1);	
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex,Normal));
 	glEnableVertexAttribArray(2);
-
+	maxAttribPointer = 2;
 	glBindVertexArray(0);
 }
 
@@ -108,9 +145,21 @@ inline void Mesh::Draw(Material* mater,bool isNotModel)
 	if (isArray == GL_FALSE)
 		glDrawElements(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0);
 	else
-		glDrawArrays(GL_POINTS, 0, vertCount);
+		glDrawArrays(GL_TRIANGLES, 0, vertCount);
 
 }
+
+inline void Mesh::DrawInstanced(GLsizei countDraws)
+{
+	glBindVertexArray(VAO);
+
+	if (isArray == GL_FALSE)
+		glDrawElementsInstanced(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0, countDraws);
+	else
+		glDrawArraysInstanced(GL_TRIANGLES, 0, vertCount, countDraws);
+}
+
+
 
 Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
 {
@@ -148,7 +197,7 @@ inline Mesh::Mesh(vector<GLfloat> vert, vector<GLuint> ind, vector<GLint> params
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size()*sizeof(GLuint), _data, drawMod);
 	}
-
+	maxAttribPointer = params.size() - 1;
 	GLint prev = 0;
 	for (GLint i = 0; i < params.size(); i++)
 	{
@@ -162,6 +211,10 @@ inline Mesh::Mesh(vector<GLfloat> vert, vector<GLuint> ind, vector<GLint> params
 
 Mesh::~Mesh()
 {
+	for (size_t i = 0; i < IAO.size(); i++)
+	{
+		glDeleteBuffers(1, &IAO[i]);
+	}
 	vertices.clear();
 	indices.clear();
 	textures.clear();

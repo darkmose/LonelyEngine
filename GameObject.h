@@ -108,7 +108,7 @@ inline void GameObject::Draw()
 		material->ActiveUniforms();
 		material->ActiveLight();
 		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("Matrix.model", Matrix::model);
+		material->SetUnifMat4("model", Matrix::model);
 		mesh->Draw(material, true);
 	}
 	if (model != NULL)
@@ -117,7 +117,7 @@ inline void GameObject::Draw()
 		material->ActiveLight();
 		material->ActiveUniforms();
 		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("Matrix.model", Matrix::model);
+		material->SetUnifMat4("model", Matrix::model);
 		model->Draw();
 	}
 	ComponentAction();

@@ -34,9 +34,9 @@ void CameraController::myFunc()
 		speed = 2.f;
 	else speed = 1.f;
 	if (Input::GetKey(GLFW_KEY_SPACE))
-		camera->transform->TranslatePos(vec3(0, 4 * Time::deltaTime, 0));
+		camera->transform->TranslatePos(vec3(0, 4 * Time::deltaTime*speed, 0));
 	if (Input::GetKey(GLFW_KEY_F))
-		camera->transform->TranslatePos(vec3(0, -4 * Time::deltaTime, 0));
+		camera->transform->TranslatePos(vec3(0, -4 * Time::deltaTime*speed, 0));
 }
 
 void CameraController::Update()

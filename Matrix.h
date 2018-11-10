@@ -24,7 +24,7 @@ void Matrix::SetProjection(float w, float h, bool isPerspective)
 	if (isPerspective)
 	{
 		ratio = w / h;
-		projection = perspective(angle, ratio, 0.1f, 100.0f);
+		projection = perspective(angle, ratio, 0.1f, 400.0f);
 	}
 	else
 	{

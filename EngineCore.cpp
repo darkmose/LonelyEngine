@@ -153,8 +153,8 @@ int main()
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
 	vec3 _scale = vec3(1);
-	glEnable(GL_PROGRAM_POINT_SIZE);
 	while (!glfwWindowShouldClose(window))
 	{
 		if (Input::GetKey(GLFW_KEY_ESCAPE))
@@ -180,6 +180,7 @@ int main()
 		newG->Draw();
 		camera->Draw();
 		LightCube->Draw();
+
 //------------------------------------------------------------------------------------//
 		skybox->Draw();
 
@@ -190,7 +191,7 @@ int main()
 	}
 
 
-	exit:
+exit:
 	delete newM;
 	delete newG;
 	delete skybox;
