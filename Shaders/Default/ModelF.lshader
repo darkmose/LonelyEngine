@@ -50,8 +50,7 @@ layout (std140) uniform MatProps
 	};
 	
 	uniform Texture Textures;
-//	uniform PointL Point[1];
-	uniform DirectionalL Directional[1];
+	uniform PointL Point[1];
 	
 	vec3 DirectionOut(in DirectionalL,in vec3);
 	vec3 SpotOut(in SpotL,in vec3);
@@ -66,7 +65,7 @@ void main()
     vec3 result;
     
 	for(int i = 0; i < 1; i++){
-	result += DirectionOut(Directional[i], cameraDir);}
+	result += PointOut(Point[i], cameraDir);}
 
     
     color = vec4(result,1.f);

@@ -57,7 +57,6 @@ int WindowInit()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	glfwWindowHint(GLFW_SAMPLES, 1);
 	
 	
 
@@ -99,8 +98,7 @@ int main()
 	
 	int x, y;
 	glfwGetWindowSize(window, &x, &y);
-	
-	Matrix::projection = Matrix::GenPerspective(float(x), float(y));
+	Matrix::SetProjection(float(x), float(y), true);
 
 	Callbacks::initCallbacks(window);
 	///
@@ -116,61 +114,45 @@ int main()
 	
 	Skybox *skybox = new Skybox(faces);
 	///
-	Material *model = new Material("Default/ModelShadow");
+	Material *model = new Material("Default/Model");
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
+	city->transform->_position.y++;
 	///
 	GameObject *camera = new GameObject();	
 	camera->AddComponent<Camera>(new Camera(camera->transform));
 	camera->AddComponent<CameraController>();
 	camera->transform->_position = vec3(1, 3, 1);
 	///
-	GameObject *LightCube = new GameObject();
-	DirectionalLight *dLight = LightCube->AddComponentR<DirectionalLight>(new DirectionalLight());
-	dLight->strengh = 4;
-	dLight->color = vec3(1, 0.78f, 0.5f);
-	dLight->direction = vec3(-5, -1, 0);
+	Material *newM = new Material("Default/Color");
+	newM->params.objectCol = vec3(0.25f, 0.71f, 0.71f);
+	GameObject *newG = new GameObject(newM, Primitive::Quad());
+	newG->transform->_position = vec3(1, 5, 10);
 	///
-#pragma region GlobalUniforms
-
+	GameObject *LightCube = new GameObject();
+	PointLight *pLight = LightCube->AddComponentR<PointLight>(new PointLight(LightCube->transform));
+	pLight->strengh = 4;
+	///
 	GLuint MatrixGlobalShader = glCreateUnifBuffer(128, 1);
 	glSetUnifVariable(MatrixGlobalShader, 64, 64, &Matrix::projection);
 	model->SetShaderUnifBlockBind("Matrices", 1);
+	newM->SetShaderUnifBlockBind("Matrices", 1);
 	skybox->SetShaderUnifBlockBind("Matrices", 1);
 	GLuint CameraGlobalShader = glCreateUnifBuffer(16, 2);
 	model->SetShaderUnifBlockBind("Camera", 2);
+	newM->SetShaderUnifBlockBind("Camera", 2);
 	skybox->SetShaderUnifBlockBind("Camera", 2);
 	GLuint MatPropsGlobalShafer = glCreateUnifBuffer(16, 3);
 	model->SetShaderUnifBlockBind("MatProps", 3);
-	glSetUnifVariable(MatPropsGlobalShafer, 0, 4, &model->matProps.ambient);
+	glSetUnifVariable(MatPropsGlobalShafer, 0,	4, &model->matProps.ambient);
 	glSetUnifVariable(MatPropsGlobalShafer, 4, 4, &model->matProps.diffuse);
 	glSetUnifVariable(MatPropsGlobalShafer, 8, 4, &model->matProps.specular);
 	glSetUnifVariable(MatPropsGlobalShafer, 12, 4, &model->matProps.specularStr);
-
-#pragma endregion	
 	///
-	const GLuint W = 1024, H = 1024;
-	RenderTexture *depthMap = new RenderTexture(W, H, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-
-	mat4 shadowProj = Matrix::GenOrtho(-100.f, 100.f, -100.f, 100.f, 0.1f, 50.f);
-	mat4 lightView = lookAt(vec3(0, 50, 0),vec3(0.0f, 0.0f, 0.0f),vec3(0.0f, 1.0f, 0.0f));
-	mat4 lightSpaceMatrix = shadowProj * lightView;
-
-	Material *depthMaterial = new Material("Default/Depth");
-	
-	///
-	Texture2D *box = new Texture2D("Textures/Box.jpg");
-	GameObject* cube = new GameObject(model, Primitive::Cube());
-	cube->transform->_position.y += 5;
-	///
-	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_FRAMEBUFFER_SRGB);
 
-	glClearColor(0.10f, 0.11f, 0.14f, 1);
-	Mesh *depthMesh = Primitive::Quad();
-	Material screen("ForTest/Screen");
 
 	vec3 _scale = vec3(1);
 	while (!glfwWindowShouldClose(window))
@@ -187,43 +169,20 @@ int main()
 
 		glfwPollEvents();
 		if (Input::GetKey(GLFW_KEY_UP))
-			dLight->strengh += Time::deltaTime;
+			pLight->strengh += Time::deltaTime;
 		if (Input::GetKey(GLFW_KEY_DOWN))
-			dLight->strengh -= Time::deltaTime;				
+			pLight->strengh -= Time::deltaTime;				
 		
-		//glViewport(0, 0, W, H);
-		//depthMap->ActiveBuffer();
-		//glEnable(GL_DEPTH_TEST);
-		//glClear(GL_DEPTH_BUFFER_BIT);
-		//depthMaterial->ActiveShader();
-		//depthMaterial->SetUnifMat4("lightSpaceMatrix", lightSpaceMatrix);
-		//city->Draw(depthMaterial);
-		//cube->Draw(depthMaterial);
-
-		//glViewport(0, 0, x, y);
-		//depthMap->DeactiveBuffer();
-		//glDisable(GL_DEPTH_TEST);
-		glClear(GL_COLOR_BUFFER_BIT);
-		//depthMap->Active(GL_TEXTURE5);
-		//screen.SetUnifInt("_main", 5);
-		depthMesh->Draw(&screen);	
-		
-		
-		/*
+		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+
+		city->Draw();	
+		newG->Draw();
 		camera->Draw();
 		LightCube->Draw();
-		city->material->ActiveShader();
-		city->material->SetUnifInt("shadowMap", 7);
-		city->material->SetUnifMat4("lightSpaceMatrix", lightSpaceMatrix);
-		city->Draw();	
-		box->Active(GL_TEXTURE0);
-		cube->Draw();
-*/
-
 
 //------------------------------------------------------------------------------------//
-		//skybox->Draw();
+		skybox->Draw();
 
 		glSetUnifVariable(CameraGlobalShader, 0, 16, &Camera::mainCamera->transform->_position);
 		glSetUnifVariable(MatrixGlobalShader, 0, 64, &Matrix::view);
@@ -233,8 +192,8 @@ int main()
 
 
 exit:
-	delete depthMap;
-	delete depthMaterial;
+	delete newM;
+	delete newG;
 	delete skybox;
 	delete model;
 	delete city;
