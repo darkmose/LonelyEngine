@@ -10,9 +10,19 @@ class Model
 			this->material = &material;
             loadModel(path);
         }
+		template<typename T>
+		void InstanceArray(void * data, GLint dataCount, GLint paramCount, GLenum paramType)
+		{
+			for (size_t i = 0; i < meshes.size(); i++)
+			{
+				meshes[i].InstanceArray<T>(data, dataCount, paramCount, paramType);
+			}
+		}
         void Draw();	
-    private:
+        void InstanceDraw(GLuint);	
 		Material * material;
+
+    private:
         vector<Mesh> meshes;
         string directory;
 
@@ -31,6 +41,11 @@ inline void Model::Draw()
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(*material);
+}
+inline void Model::InstanceDraw(GLuint drawCount)
+{
+	for (unsigned int i = 0; i < meshes.size(); i++)
+		meshes[i].DrawInstanced(drawCount,material);
 }
 
 

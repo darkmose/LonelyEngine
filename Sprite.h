@@ -45,12 +45,10 @@ inline void Sprite::Draw()
 	material->SetUnifFloat("transparent", transparent);
 	transform->MoveGlobalMatrix();
 	material->SetUnifMat4("Matrix.model", Matrix::model);
-	material->SetUnifMat4("Matrix.view", Matrix::view);
-	material->SetUnifMat4("Matrix.projection", Matrix::projection);
 	material->SetUnifVec3("col", color);
 
 	texture->Active();
-	mesh->Draw(material,true);
+	mesh->Draw(material);
 
 	glEnable(GL_CULL_FACE);
 }
@@ -63,11 +61,9 @@ inline void Sprite::DrawRender()
 	material->SetUnifFloat("transparent", 1);
 	transform->MoveGlobalMatrix();
 	material->SetUnifMat4("Matrix.model", Matrix::model);
-	material->SetUnifMat4("Matrix.view", Matrix::view);
-	material->SetUnifMat4("Matrix.projection", Matrix::projection);
 	material->SetUnifVec3("col", color);
 
-	mesh->Draw(material, true);
+	mesh->Draw(material);
 
 	glEnable(GL_CULL_FACE);
 }
