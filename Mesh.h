@@ -17,8 +17,8 @@ public:
 	
 	void SetupMesh();
 	void Draw(Material&);
-	void Draw(Material*);
-	void DrawInstanced(GLsizei, Material*, GLenum);
+	void Draw(Material*, bool);
+	void DrawInstanced(GLsizei);
 	
 	template<typename T>
 	void InstanceArray(void * data, GLint dataCount, GLint paramCount, GLenum paramType)
@@ -112,7 +112,7 @@ inline void Mesh::Draw(Material& materialRef)
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);		
 }
 
-inline void Mesh::Draw(Material* mater)
+inline void Mesh::Draw(Material* mater,bool isNotModel)
 {
 	textures = mater->textures;
 	GLuint diffuseNr = 1,
@@ -146,42 +146,15 @@ inline void Mesh::Draw(Material* mater)
 		glDrawElements(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0);
 	else
 		glDrawArrays(GL_TRIANGLES, 0, vertCount);
+
 }
 
-inline void Mesh::DrawInstanced(GLsizei countDraws, Material* mater, GLenum isDrawArr = GL_FALSE)
+inline void Mesh::DrawInstanced(GLsizei countDraws)
 {
-	if (this->textures.size() == 0)
-	{
-		textures = mater->textures;
-	}
-	GLuint diffuseNr = 1,
-		specularNr = 1;
-	string name, number;
-	stringstream ss;
-
-	for (size_t i = 0; i < textures.size(); i++)
-	{
-		glActiveTexture(GL_TEXTURE0 + i);
-
-		name = textures[i].type;
-		if (name == "texture_diffuse")
-		{
-			ss << diffuseNr++;
-		}
-		else if (name == "texture_specular")
-		{
-			ss << specularNr++;
-		}
-		number = ss.str();
-
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
-		mater->SetUnifInt(("Textures." + name + number).c_str(), i);
-	}
-	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(VAO);
 
-	if (isDrawArr == GL_FALSE)
-		glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, countDraws);
+	if (isArray == GL_FALSE)
+		glDrawElementsInstanced(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0, countDraws);
 	else
 		glDrawArraysInstanced(GL_TRIANGLES, 0, vertCount, countDraws);
 }

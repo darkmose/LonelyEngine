@@ -13,7 +13,6 @@ private:
 	mmap components;
 	Model *model;
 public:
-	Model * GetModel() { return model; }
 	Material *material;
 	Transform *transform = new Transform();
 	Mesh* mesh;
@@ -90,8 +89,6 @@ public:
 		void* ptr = dynamic_cast<void*>(tPtr);
 		return components.count(ptr);
 	}
-	void Draw(GLuint);
-	void Draw(Material*);
 	void Draw();
 	void ComponentAction();
 	
@@ -103,7 +100,7 @@ public:
 
 
 
-inline void GameObject::Draw(GLuint countDraws)
+inline void GameObject::Draw()
 {	
 	if (mesh != NULL)
 	{
@@ -112,59 +109,7 @@ inline void GameObject::Draw(GLuint countDraws)
 		material->ActiveLight();
 		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("model", Matrix::model);
-		mesh->DrawInstanced(countDraws, material);
-
-	}
-	if (model != NULL)
-	{
-		material->ActiveShader();
-		material->ActiveLight();
-		material->ActiveUniforms();
-		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("model", Matrix::model);
-		model->InstanceDraw(countDraws);
-	}
-	ComponentAction();
-}
-
-inline void GameObject::Draw(Material * newMaterial)
-{
-	Material* tempMat = material;
-	material = newMaterial;
-	if (mesh != NULL)
-	{
-		material->ActiveShader();
-		material->ActiveUniforms();
-		material->ActiveLight();
-		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("model", Matrix::model);
-		mesh->Draw(material);
-	}
-	if (model != NULL)
-	{
-		model->material = material;
-		material->ActiveShader();
-		material->ActiveLight();
-		material->ActiveUniforms();
-		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("model", Matrix::model);
-		model->Draw();
-		model->material = tempMat;
-	}
-	ComponentAction();
-	material = tempMat;
-}
-
-inline void GameObject::Draw()
-{
-	if (mesh != NULL)
-	{
-		material->ActiveShader();
-		material->ActiveUniforms();
-		material->ActiveLight();
-		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("model", Matrix::model);
-		mesh->Draw(material);
+		mesh->Draw(material, true);
 	}
 	if (model != NULL)
 	{
