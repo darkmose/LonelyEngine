@@ -10,10 +10,10 @@ layout (std140) uniform Camera
 };
 layout (std140) uniform MatProps
 {
-	float ambient;
-	float diffuse;
-	float specular;
-	float specularStr;
+	float _ambient;
+	float _diffuse;
+	float _specular;
+	float _specularStr;
 };
 
 	struct Texture
@@ -80,12 +80,12 @@ void main()
 vec3 DirectionOut(in DirectionalL dir,in vec3 cameraDir)
 {
 	vec3 lightDir = normalize(-dir.direction);
-	vec3 ambient = dir.color * ambient;
+	vec3 ambient = dir.color * _ambient;
 	float d = max(dot(lightDir,Normal),0.f);
-	vec3 diffuse = dir.color * diffuse * d;
+	vec3 diffuse = dir.color * _diffuse * d;
 	vec3 reflectLight = reflect(-lightDir, Normal);
-	float s = pow(max(dot(cameraDir, reflectLight), 0.0), specularStr)*specular;
-	vec3 specular = s * specular * dir.color;
+	float s = pow(max(dot(cameraDir, reflectLight), 0.0), _specularStr)*_specular;
+	vec3 specular = s * dir.color;
 	
 	return (ambient + diffuse + specular)* dir.strengh;
 }
@@ -96,20 +96,20 @@ vec3 PointOut(in PointL point,in vec3 cameraDir)
 	float attenuation = 1.0f/(point.Kc + point.Kl*distance + point.Kq*distance*distance);
 	
 	vec3 lightDir = normalize(point.position - FragPos);
-	vec3 ambient = point.color * ambient;
+	vec3 ambient = point.color * _ambient;
 	
 	float d = max(dot(lightDir,Normal),0.f) * attenuation;
-	vec3 diffuse = point.color * diffuse * d ;
+	vec3 diffuse = point.color * _diffuse * d ;
 	vec3 reflectLight = reflect(-lightDir, Normal);
-	float s = pow(max(dot(cameraDir, reflectLight), 0.0), specularStr)*specular*attenuation;
-	vec3 specular = s * specular * point.color;
+	float s = pow(max(dot(cameraDir, reflectLight), 0.0), _specularStr)*_specular*attenuation;
+	vec3 specular = s * point.color;
 	
 	return (ambient + diffuse + specular)* point.strengh;
 }
 
 vec3 SpotOut(in SpotL spot,in vec3 cameraDir)
 {
-	vec3 ambient = spot.color * ambient;	
+	vec3 ambient = spot.color * _ambient;	
 	
 	vec3 lightDir = normalize(spot.position - FragPos);
 	float theta = dot(lightDir, normalize(-spot.direction));
@@ -118,9 +118,9 @@ vec3 SpotOut(in SpotL spot,in vec3 cameraDir)
 	{
 		float epsilon = spot.innerCutOff - spot.outerCutOff;
 		float intensity = clamp((theta - spot.outerCutOff) / epsilon, 0.0, 1.0);
-		vec3 diffuse = spot.color * diffuse * intensity;
+		vec3 diffuse = spot.color * _diffuse * intensity;
 		vec3 reflectLight = reflect(-lightDir, Normal);
-		float spec = pow(max(dot(cameraDir, reflectLight), 0.0), specularStr)*specular;
+		float spec = pow(max(dot(cameraDir, reflectLight), 0.0), _specularStr)*_specular;
 		vec3 specular = spec * spot.color * intensity;
 		
 		return (ambient + diffuse + specular) * spot.strengh;

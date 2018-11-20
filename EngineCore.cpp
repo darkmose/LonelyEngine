@@ -57,6 +57,7 @@ int WindowInit()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 1);
 	
 	
 
@@ -98,7 +99,7 @@ int main()
 	
 	int x, y;
 	glfwGetWindowSize(window, &x, &y);
-	Matrix::SetProjection(float(x), float(y), true);
+	Matrix::projection = Matrix::GenPerspective(x, y, 0.1f, 400.f);
 
 	Callbacks::initCallbacks(window);
 	///
@@ -123,23 +124,18 @@ int main()
 	camera->AddComponent<CameraController>();
 	camera->transform->_position = vec3(1, 3, 1);
 	///
-	Material *newM = new Material("Default/Color");
-	newM->params.objectCol = vec3(0.25f, 0.71f, 0.71f);
-	GameObject *newG = new GameObject(newM, Primitive::Quad());
-	newG->transform->_position = vec3(1, 5, 10);
-	///
 	GameObject *LightCube = new GameObject();
-	PointLight *pLight = LightCube->AddComponentR<PointLight>(new PointLight(LightCube->transform));
-	pLight->strengh = 4;
+	DirectionalLight *dLight = LightCube->AddComponentR<DirectionalLight>(new DirectionalLight());
+	dLight->strengh = 2;
+	dLight->direction = vec3(-1, -4, 0);
+	dLight->color = vec3(1,0.86f,0.55f);
 	///
 	GLuint MatrixGlobalShader = glCreateUnifBuffer(128, 1);
 	glSetUnifVariable(MatrixGlobalShader, 64, 64, &Matrix::projection);
 	model->SetShaderUnifBlockBind("Matrices", 1);
-	newM->SetShaderUnifBlockBind("Matrices", 1);
 	skybox->SetShaderUnifBlockBind("Matrices", 1);
 	GLuint CameraGlobalShader = glCreateUnifBuffer(16, 2);
 	model->SetShaderUnifBlockBind("Camera", 2);
-	newM->SetShaderUnifBlockBind("Camera", 2);
 	skybox->SetShaderUnifBlockBind("Camera", 2);
 	GLuint MatPropsGlobalShafer = glCreateUnifBuffer(16, 3);
 	model->SetShaderUnifBlockBind("MatProps", 3);
@@ -148,6 +144,7 @@ int main()
 	glSetUnifVariable(MatPropsGlobalShafer, 8, 4, &model->matProps.specular);
 	glSetUnifVariable(MatPropsGlobalShafer, 12, 4, &model->matProps.specularStr);
 	///
+	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
@@ -169,15 +166,14 @@ int main()
 
 		glfwPollEvents();
 		if (Input::GetKey(GLFW_KEY_UP))
-			pLight->strengh += Time::deltaTime;
+			dLight->strengh += Time::deltaTime;
 		if (Input::GetKey(GLFW_KEY_DOWN))
-			pLight->strengh -= Time::deltaTime;				
+			dLight->strengh -= Time::deltaTime;
 		
 		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 
 		city->Draw();	
-		newG->Draw();
 		camera->Draw();
 		LightCube->Draw();
 
@@ -192,8 +188,6 @@ int main()
 
 
 exit:
-	delete newM;
-	delete newG;
 	delete skybox;
 	delete model;
 	delete city;

@@ -2,7 +2,6 @@
 layout (location = 0) in vec3 pos; 
 layout (location = 1) in vec2 textPos;
 layout (location = 2) in vec3 normal;
-layout (location = 3) in mat4 models;
 
 layout (std140) uniform Matrices
 {
@@ -21,8 +20,8 @@ uniform vec2 offset;
 
 void main()
 {
-	FragPos = vec3(models*vec4(pos,1));
+	FragPos = vec3(model*vec4(pos,1));
 	Normal = normalize(normal);
-	gl_Position = projection * view * models * vec4(pos.x,pos.y,pos.z,1);
+	gl_Position = projection * view * model * vec4(pos.x,pos.y,pos.z,1);
 	TexturePos = vec2(textPos.x * stretch.x + offset.x ,1-(textPos.y * stretch.y + offset.y));
 }

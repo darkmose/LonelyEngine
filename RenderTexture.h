@@ -6,7 +6,7 @@ private:
 	GLuint frameBuffer;
 	GLuint rbo;
 public:
-	RenderTexture(int,int,GLenum,GLenum,GLenum,GLenum);
+	RenderTexture(int,int,GLenum,GLenum,GLenum,GLenum,GLenum,GLenum);
 	~RenderTexture();
 	void Active(GLenum);
 	void ActiveBuffer();
@@ -16,10 +16,10 @@ public:
 
 
 
-RenderTexture::RenderTexture(int w, int h, GLenum frameTarget, GLenum attachment, GLenum formatTexture = GL_RGB, GLenum typeTextureData = GL_UNSIGNED_BYTE)
+RenderTexture::RenderTexture(int w, int h, GLenum frameTarget, GLenum frameAttach, GLenum formatTexture = GL_RGB, GLenum typeTextureData = GL_UNSIGNED_BYTE, GLenum renderAttach = GL_DEPTH_STENCIL_ATTACHMENT, GLenum renderStorage = GL_DEPTH24_STENCIL8)
 {
 	glGenFramebuffers(1, &frameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+	glBindFramebuffer(frameTarget, frameBuffer);
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -30,14 +30,20 @@ RenderTexture::RenderTexture(int w, int h, GLenum frameTarget, GLenum attachment
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glFramebufferTexture2D(frameTarget, attachment, GL_TEXTURE_2D, texture, 0);
-	
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
+	glFramebufferTexture2D(frameTarget, frameAttach, GL_TEXTURE_2D, texture, 0);
+	if (frameAttach == GL_DEPTH_ATTACHMENT)
+	{
+		//glReadBuffer(GL_NONE);
+		//glDrawBuffer(GL_NONE);
+	}
+	if (renderAttach == 0)
+	{
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, renderStorage, w, h);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, renderAttach, GL_RENDERBUFFER, rbo);
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

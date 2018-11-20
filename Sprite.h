@@ -50,7 +50,7 @@ inline void Sprite::Draw()
 	material->SetUnifVec3("col", color);
 
 	texture->Active();
-	mesh->Draw(material,true);
+	mesh->Draw(material);
 
 	glEnable(GL_CULL_FACE);
 }
@@ -67,7 +67,7 @@ inline void Sprite::DrawRender()
 	material->SetUnifMat4("Matrix.projection", Matrix::projection);
 	material->SetUnifVec3("col", color);
 
-	mesh->Draw(material, true);
+	mesh->Draw(material);
 
 	glEnable(GL_CULL_FACE);
 }
