@@ -113,7 +113,7 @@ int main()
 	
 	Skybox *skybox = new Skybox(faces);
 	///
-	Material *model = new Material("Default/Model");
+	Material *model = new Material("Default/ModelShadow");
 	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
 	city->transform->_position.y++;
 	///
@@ -152,11 +152,16 @@ int main()
 
 	RenderTexture depthMap(DPTH_W, DPTH_H, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT);
 
-	mat4 lightView = lookAt(vec3(0,50,0), dLight->direction, Transform::up);
-	mat4 lightProj = Matrix::GenOrtho(-10.,10.,-10.,10.,0.1,100.);
+	mat4 lightView = lookAt(vec3(0,30,0), vec3(0,0,0), Transform::up);
+	mat4 lightProj = Matrix::GenOrtho(-10.,10.,-10.,10.,0.1,40.);
 	mat4 lightSpaceMatrix = lightProj * lightView;
-
+	Material depth("Default/Depth");
+	depth.SetShaderUnifBlockBind("Matrices", 1);
 	
+	Material forScreen("ForTest/Screen");
+
+	Mesh * screen = Primitive::Quad();
+	Texture2D testTex("Textures/testDepth.png");
 	vec3 _scale = vec3(1);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -176,12 +181,31 @@ int main()
 		if (Input::GetKey(GLFW_KEY_DOWN))
 			dLight->strengh -= Time::deltaTime;
 		
+		depthMap.ActiveBuffer();
+		glViewport(0, 0, DPTH_W, DPTH_H);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		depth.ActiveShader();
+		depth.SetUnifMat4("lightSpaceMatrix", lightSpaceMatrix);
+		city->Draw(&depth);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, SCR_W, SCR_H);
 		glClearColor(0.10f, 0.11f, 0.14f,1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			
 
+		model->ActiveShader();
+		model->SetUnifMat4("lightSpaceMatrix", lightSpaceMatrix);
+		model->SetUnifInt("shadowMap", 5);
+
+///test
+
+		depthMap.Active(5);
+		forScreen.ActiveShader();
+		forScreen.SetUnifInt("_main", 5);
+		screen->Draw(&forScreen);
 		
-
-		city->Draw();	
+		//city->Draw();	
 		camera->Draw();
 		LightCube->Draw();
 

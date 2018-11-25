@@ -8,7 +8,7 @@ public:
 	static GLuint TexFromPath(const GLchar* path);
 	static void FilterTextures(GLint, GLint);
 	GLuint Texture();
-	void Active(GLenum);
+	void Active(int);
 	Texture2D(const GLchar*);
 	Texture2D(vector<std::string>);
 	~Texture2D();
@@ -115,9 +115,9 @@ GLuint Texture2D::Texture()
 	return texture;
 }
 
-void Texture2D::Active(GLenum activeTexture = GL_TEXTURE0)
+void Texture2D::Active(int activeTex = 0)
 {
-	glActiveTexture(activeTexture);
+	glActiveTexture(GL_TEXTURE0 + activeTex);
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 

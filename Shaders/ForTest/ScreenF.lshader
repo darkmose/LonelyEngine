@@ -3,11 +3,12 @@ in vec2 TexPos;
 
 out vec4 color;
 
-	uniform sampler2D _main; 
+uniform sampler2D _main; 
 
 void main()
 {	
-	float depth = texture(_main, TexPos).r;
-	color = vec4(vec3(0.7f),1);//vec4(vec3(depth),1.f);
+	float data = texture(_main, TexPos).r;
+	color = vec4(vec3(data),1);
+	
 }
 

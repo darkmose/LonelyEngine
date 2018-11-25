@@ -8,9 +8,10 @@ private:
 public:
 	RenderTexture(int,int,GLenum,GLenum,GLenum,GLenum,GLenum,GLenum);
 	~RenderTexture();
-	void Active(GLenum);
+	void Active(int);
 	void ActiveBuffer();
 	void DeactiveBuffer();
+	GLuint BufferObject();
 	GLuint Texture();	
 };
 
@@ -24,10 +25,10 @@ RenderTexture::RenderTexture(int w, int h, GLenum frameTarget, GLenum frameAttac
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, formatTexture, w, h, 0, formatTexture, typeTextureData, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glFramebufferTexture2D(frameTarget, frameAttach, GL_TEXTURE_2D, texture, 0);
@@ -46,9 +47,9 @@ RenderTexture::RenderTexture(int w, int h, GLenum frameTarget, GLenum frameAttac
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-inline void RenderTexture::Active(GLenum activeTexture = GL_TEXTURE0)
+inline void RenderTexture::Active(int activeTex = 0)
 {
-	glActiveTexture(activeTexture);
+	glActiveTexture(GL_TEXTURE0 + activeTex);
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
@@ -60,6 +61,11 @@ inline void RenderTexture::ActiveBuffer()
 inline void RenderTexture::DeactiveBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+inline GLuint RenderTexture::BufferObject()
+{
+	return frameBuffer;
 }
 
 inline GLuint RenderTexture::Texture()
