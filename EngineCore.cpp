@@ -2,6 +2,7 @@
 #include "CameraController.h"
 #include "Skybox.h"
 
+int SCR_W, SCR_H;
 
 vector<GLfloat> cubeVert =
 {
@@ -80,9 +81,8 @@ int WindowInit()
 	}
 
 	int w, h;
-	glfwGetFramebufferSize(window, &w, &h);
-	glfwSetCursorPos(window, w / 2, h / 2);
-	glViewport(0, 0, w, h);
+	glfwGetFramebufferSize(window, &SCR_W, &SCR_H);
+	glViewport(0, 0, SCR_W, SCR_H);
 
 	
 
@@ -97,9 +97,7 @@ int main()
 		return -1;
 	}
 	
-	int x, y;
-	glfwGetWindowSize(window, &x, &y);
-	Matrix::projection = Matrix::GenPerspective(x, y, 0.1f, 400.f);
+	Matrix::projection = Matrix::GenPerspective(SCR_W, SCR_H, 0.1f, 400.f);
 
 	Callbacks::initCallbacks(window);
 	///
@@ -150,7 +148,15 @@ int main()
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	int DPTH_W = 1024, DPTH_H = 1024;
 
+	RenderTexture depthMap(DPTH_W, DPTH_H, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+
+	mat4 lightView = lookAt(vec3(0,50,0), dLight->direction, Transform::up);
+	mat4 lightProj = Matrix::GenOrtho(-10.,10.,-10.,10.,0.1,100.);
+	mat4 lightSpaceMatrix = lightProj * lightView;
+
+	
 	vec3 _scale = vec3(1);
 	while (!glfwWindowShouldClose(window))
 	{
@@ -172,6 +178,8 @@ int main()
 		
 		glClearColor(0.10f, 0.11f, 0.14f,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+
+		
 
 		city->Draw();	
 		camera->Draw();

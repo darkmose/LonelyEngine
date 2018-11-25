@@ -33,8 +33,7 @@ RenderTexture::RenderTexture(int w, int h, GLenum frameTarget, GLenum frameAttac
 	glFramebufferTexture2D(frameTarget, frameAttach, GL_TEXTURE_2D, texture, 0);
 	if (frameAttach == GL_DEPTH_ATTACHMENT)
 	{
-		//glReadBuffer(GL_NONE);
-		//glDrawBuffer(GL_NONE);
+
 	}
 	if (renderAttach == 0)
 	{
