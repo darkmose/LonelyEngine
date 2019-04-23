@@ -49,7 +49,6 @@ private:
 	};
 	GLuint vbo, vao;
 	Shader *shader;
-	Texture2D *cubeMap;
 public:
 	Skybox(vector<string>);
 	Skybox() {}
@@ -66,8 +65,7 @@ public:
 
 Skybox::Skybox(vector<string> paths)
 {
-	cubeMap = new Texture2D(paths);
-	sky = cubeMap->Texture();
+	sky = Texture2D::TextureCube(paths);
 	shader = new Shader("Default/Skybox");
 
 	glGenVertexArrays(1, &vao);
@@ -93,8 +91,7 @@ inline Skybox::Skybox(string path, string format)
 	paths.push_back(path + "_ft." + format);
 	paths.push_back(path + "_bk." + format);
 
-	cubeMap = new Texture2D(paths);
-	sky = cubeMap->Texture();
+	sky = Texture2D::TextureCube(paths);
 	shader = new Shader("Default/Skybox");
 
 	glGenVertexArrays(1, &vao);
@@ -114,8 +111,7 @@ Skybox::~Skybox()
 	glBindVertexArray(0);
 	glDeleteBuffers(1, &vbo);
 	glDeleteVertexArrays(1, &vao);
-	
-	delete cubeMap;
+
 	delete shader;
 }
 

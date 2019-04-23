@@ -5,9 +5,8 @@ class Model
 {
     public:
 
-        Model(const GLchar *path, Material& material)
+        Model(const GLchar *path)
         {
-			this->material = &material;
             loadModel(path);
         }
 		template<typename T>
@@ -18,9 +17,8 @@ class Model
 				meshes[i].InstanceArray<T>(data, dataCount, paramCount, paramType);
 			}
 		}
-        void Draw();	
-        void InstanceDraw(GLuint);	
-		Material * material;
+        void Draw(Material*);
+        void InstanceDraw(GLuint, Material*);
 		~Model();
 
     private:
@@ -32,16 +30,15 @@ class Model
         void processNode(aiNode *node, const aiScene *scene);
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
         vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName);
-
 		vector<Texture> textures_loaded;		
 };
 
-inline void Model::Draw()
+inline void Model::Draw(Material *material)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
-		meshes[i].Draw(*material);
+		meshes[i].Draw(material);
 }
-inline void Model::InstanceDraw(GLuint drawCount)
+inline void Model::InstanceDraw(GLuint drawCount, Material* material)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].DrawInstanced(drawCount,material);
@@ -165,5 +162,5 @@ inline vector<Texture> Model::loadMaterialTextures(aiMaterial * mat, aiTextureTy
 
 inline GLuint Model::TextureFromFile(const GLchar * path, string dir)
 {	
-	return Texture2D::TexFromPath((dir + '/' + path).c_str());
+	return Texture2D::Texture2D((dir + '/' + path).c_str());
 }

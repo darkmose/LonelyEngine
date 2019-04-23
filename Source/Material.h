@@ -27,9 +27,8 @@ public:
 	void ActiveShader();
 	Material(const GLchar*);
 	vector<Texture> textures;
-	void SetTexture(Texture2D*, string);
-	void SetTexture(RenderTexture*, string);
-	void AddTexture(Texture2D*, string);
+	void SetTexture(GLuint, string);
+	void AddTexture(GLuint, string);
 	void SetUnifVec3(const GLchar*, vec3);
 	void SetUnifVec4(const GLchar*, vec4);
 	void SetUnifMat4(const GLchar*, mat4);
@@ -44,7 +43,7 @@ void Material::ActiveUniforms()
 {
 	SetUnifVec2("stretch", params.stretch);
 	SetUnifVec2("offset", params.offset);
-	SetUnifVec3("Props.objectColor", params.objectCol);
+	SetUnifVec3("objColor", params.objectCol);
 }
 
 inline Material::Material(const GLchar * sh)
@@ -52,28 +51,19 @@ inline Material::Material(const GLchar * sh)
 	shader = new Shader(sh);
 }
 
-inline void Material::SetTexture(Texture2D* tex, string textureType)
+inline void Material::SetTexture(GLuint id, string textureType)
 {
 	textures.clear();
 	Texture texture;
-	texture.id = tex->Texture();
+	texture.id = id;
 	texture.type = textureType;
 	textures.push_back(texture);
 }
 
-inline void Material::SetTexture(RenderTexture* tex, string textureType)
-{
-	textures.clear();
-	Texture texture;
-	texture.id = tex->Texture();
-	texture.type = textureType;
-	textures.push_back(texture);
-}
-
-inline void Material::AddTexture(Texture2D * tex, string textureType)
+inline void Material::AddTexture(GLuint id, string textureType)
 {
 	Texture texture;
-	texture.id = tex->Texture();
+	texture.id = id;
 	texture.type = textureType;
 	textures.push_back(texture);
 }

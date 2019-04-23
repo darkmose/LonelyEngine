@@ -74,7 +74,6 @@ public:
 		return components.count(ptr);
 	}
 	void Draw(GLuint);
-	void Draw(Material*);
 	void Draw();
 	void ComponentAction();
 	
@@ -103,35 +102,9 @@ inline void GameObject::Draw(GLuint countDraws)
 		material->ActiveUniforms();
 		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("model", Matrix::model);
-		model->InstanceDraw(countDraws);
+		model->InstanceDraw(countDraws, material);
 	}
 	ComponentAction();
-}
-
-inline void GameObject::Draw(Material * newMaterial)
-{
-	Material* tempMat = material;
-	material = newMaterial;
-	if (mesh != NULL)
-	{
-		material->ActiveShader();
-		material->ActiveUniforms();
-		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("model", Matrix::model);
-		mesh->Draw(material);
-	}
-	if (model != NULL)
-	{
-		model->material = material;
-		material->ActiveShader();
-		material->ActiveUniforms();
-		transform->MoveGlobalMatrix();
-		material->SetUnifMat4("model", Matrix::model);
-		model->Draw();
-		model->material = tempMat;
-	}
-	ComponentAction();
-	material = tempMat;
 }
 
 inline void GameObject::Draw()
@@ -150,7 +123,7 @@ inline void GameObject::Draw()
 		material->ActiveUniforms();
 		transform->MoveGlobalMatrix();
 		material->SetUnifMat4("model", Matrix::model);
-		model->Draw();
+		model->Draw(material);
 	}
 	ComponentAction();
 }
@@ -174,7 +147,7 @@ inline GameObject::GameObject(Mesh* mesh,Material* _material)
 inline GameObject::GameObject(string model, Material* material)
 {
 	this->material = material;
-	this->model = new Model(model.c_str(), *material);
+	this->model = new Model(model.c_str());
 }
 
 inline GameObject::GameObject()

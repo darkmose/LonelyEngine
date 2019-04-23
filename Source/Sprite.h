@@ -2,18 +2,16 @@
 class Sprite : public GameObject
 {
 private: 
-	Texture2D *texture;
-	RenderTexture* rTex;
+	GLuint texture = GL_FALSE;
 public:
 	vec3 color = vec3(1);
 	float transparent = 1;
 	Sprite();
+	Sprite(GLuint);
 	Sprite(const GLchar*);
 	~Sprite();
 	void Draw();
-	void DrawRender();
-	void SetTexture(Texture2D*);
-	void SetTexture(RenderTexture*);
+	void SetTexture(GLuint);
 };
 
 
@@ -24,17 +22,28 @@ Sprite::Sprite()
 	mesh = Primitive::Quad();
 }
 
+inline Sprite::Sprite(GLuint id)
+{
+	material = new Material("Default/Sprite");
+	mesh = Primitive::Quad();
+	material->SetTexture(id, "texture_diffuse");
+}
+
 Sprite::Sprite(const GLchar* path)
 {
 	GameObject::material = new Material("Default/Sprite");
 	mesh = Primitive::Quad();
-	texture = new Texture2D(path);
+	texture = Texture2D::Texture2D(path);
 	material->SetTexture(texture, "texture_diffuse");
 }
 
 
 Sprite::~Sprite()
 {
+	if (texture != GL_FALSE)
+	{
+		glDeleteTextures(1, &texture);
+	}
 }
 
 inline void Sprite::Draw()
@@ -49,37 +58,12 @@ inline void Sprite::Draw()
 	material->SetUnifMat4("Matrix.projection", Matrix::projection);
 	material->SetUnifVec3("col", color);
 
-	texture->Active();
 	mesh->Draw(material);
 
 	glEnable(GL_CULL_FACE);
 }
 
-inline void Sprite::DrawRender()
+inline void Sprite::SetTexture(GLuint id)
 {
-	glDisable(GL_CULL_FACE);
-
-	material->ActiveShader();
-	material->SetUnifFloat("transparent", 1);
-	transform->MoveGlobalMatrix();
-	material->SetUnifMat4("Matrix.model", Matrix::model);
-	material->SetUnifMat4("Matrix.view", Matrix::view);
-	material->SetUnifMat4("Matrix.projection", Matrix::projection);
-	material->SetUnifVec3("col", color);
-
-	mesh->Draw(material);
-
-	glEnable(GL_CULL_FACE);
-}
-
-inline void Sprite::SetTexture(Texture2D * tex)
-{
-	texture = tex;
-	material->SetTexture(texture, "texture_diffuse");
-}
-
-inline void Sprite::SetTexture(RenderTexture *rTexture)
-{
-	rTex = rTexture;
-	material->SetTexture(rTex, "texture_diffuse");
+	material->SetTexture(id, "texture_diffuse");
 }

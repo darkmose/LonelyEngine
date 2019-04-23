@@ -108,6 +108,7 @@ uniform sampler2D shadowMap;
 	};
 	
 	uniform Texture Textures;
+	uniform vec3 objColor;
 	
 	vec3 DirectionOut(in DL, in vec3);
 	vec3 SpotOut(in SL, in vec3);
@@ -126,7 +127,7 @@ void main()
 	//for (int i = 0; i < N_PL; i++) result += PointOut(Point[i], cameraDir);
 	//for(int i = 0; i < N_SL; i++) result += SpotOut(Spot[i], cameraDir);
 
-	color = vec4(result, 1.f);
+	color = vec4(result*objColor, 1.f);
 }
 
 vec3 texCol(sampler2D _texture)

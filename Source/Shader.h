@@ -41,7 +41,7 @@ public:
 
 inline Shader::Shader(const GLchar * name)
 {
-	std::string path = "Shaders/" + (std::string)name;
+	std::string path = "Data/Shaders/" + (std::string)name;
 	LoadShaders(path);	
 }
 
@@ -146,7 +146,6 @@ void Shader::LoadShaders(std::string & path)
 		ss[(int)Type::Geometry].str(), 
 		ss[(int)Type::Fragment].str()};
 	
-	cout<<shaderSources.Fragment.size()<<endl;
 	InitProgram();
 }
 
