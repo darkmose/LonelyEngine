@@ -6,7 +6,6 @@ private:
 	GLuint texture;
 public:
 	static GLuint TexFromPath(const GLchar* path);
-	static void FilterTextures(GLint, GLint);
 	GLuint Texture();
 	void Active(int);
 	Texture2D(const GLchar*);
@@ -55,14 +54,6 @@ GLuint Texture2D::TexFromPath(const GLchar * path)
 	return tex;
 }
 
-void Texture2D::FilterTextures(GLint wrap, GLint filter)
-{
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-}
-
 Texture2D::Texture2D(vector<string> faces)
 {
 	glGenTextures(1, &texture);
@@ -86,7 +77,7 @@ Texture2D::Texture2D(vector<string> faces)
 			rgba = GL_RGB;
 			break;
 		case 4:
-			rgba = GL_RGBA;
+			rgba = GL_RGB;
 			break;
 		}		
 		

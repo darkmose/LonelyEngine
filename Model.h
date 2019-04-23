@@ -21,6 +21,7 @@ class Model
         void Draw();	
         void InstanceDraw(GLuint);	
 		Material * material;
+		~Model();
 
     private:
         vector<Mesh> meshes;
@@ -32,9 +33,7 @@ class Model
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
         vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName);
 
-		vector<Texture> textures_loaded;
-
-		
+		vector<Texture> textures_loaded;		
 };
 
 inline void Model::Draw()
@@ -46,6 +45,11 @@ inline void Model::InstanceDraw(GLuint drawCount)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++)
 		meshes[i].DrawInstanced(drawCount,material);
+}
+
+inline Model::~Model()
+{
+	meshes.clear();
 }
 
 

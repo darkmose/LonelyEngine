@@ -63,9 +63,6 @@
     <ClInclude Include="CameraController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerController.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="RenderTexture.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -78,10 +75,26 @@
     <ClInclude Include="Skybox.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EngineCore.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Default\Skybox.shader" />
+    <None Include="Shaders\Default\Model.shader" />
+    <None Include="Shaders\Default\Depth.shader" />
+    <None Include="Shaders\Default\Standart.shader" />
+    <None Include="Shaders\Default\Sprite.shader" />
+    <None Include="Shaders\Default\Effects.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\grass_1.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>

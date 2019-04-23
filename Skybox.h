@@ -53,10 +53,11 @@ private:
 public:
 	Skybox(vector<string>);
 	Skybox() {}
+	Skybox(string, string);
 	~Skybox();
 	void Draw();
 	GLuint CubeMap();
-	void SetShaderUnifBlockBind(const GLchar * unifName, GLuint idBlock)
+	void BindUniformBuffer(const GLchar * unifName, GLuint idBlock)
 	{
 		GLuint idUnifBlock = glGetUniformBlockIndex(shader->Sprogram(), unifName);
 		glUniformBlockBinding(shader->Sprogram(), idUnifBlock, idBlock);
@@ -73,7 +74,7 @@ Skybox::Skybox(vector<string> paths)
 	glBindVertexArray(vao);
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, box.size() * sizeof(GLfloat), &box[0], GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, box.size() * sizeof(GLfloat), &box[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
@@ -81,6 +82,31 @@ Skybox::Skybox(vector<string> paths)
 }
 
 
+
+inline Skybox::Skybox(string path, string format)
+{
+	vector<string> paths;
+	paths.push_back(path + "_rt." + format);
+	paths.push_back(path + "_lf." + format);
+	paths.push_back(path + "_up." + format);
+	paths.push_back(path + "_dn." + format);
+	paths.push_back(path + "_ft." + format);
+	paths.push_back(path + "_bk." + format);
+
+	cubeMap = new Texture2D(paths);
+	sky = cubeMap->Texture();
+	shader = new Shader("Default/Skybox");
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, box.size() * sizeof(GLfloat), &box[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+	glBindVertexArray(0);
+}
 
 Skybox::~Skybox()
 {

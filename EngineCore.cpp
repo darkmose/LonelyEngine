@@ -3,53 +3,11 @@
 #include "Skybox.h"
 
 int SCR_W, SCR_H;
+GLbyte _MSAA = 1;
 
-vector<GLfloat> cubeVert =
-{
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-};
 
 GLFWwindow* window;
+
 
 int WindowInit() 
 {
@@ -58,7 +16,7 @@ int WindowInit()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	glfwWindowHint(GLFW_SAMPLES, 1);
+	glfwWindowHint(GLFW_SAMPLES, _MSAA);
 	
 	
 
@@ -71,7 +29,9 @@ int WindowInit()
 	}
 	
 	glfwMakeContextCurrent(window);
+
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
@@ -80,17 +40,20 @@ int WindowInit()
 		return -1;
 	}
 
-	int w, h;
 	glfwGetFramebufferSize(window, &SCR_W, &SCR_H);
 	glViewport(0, 0, SCR_W, SCR_H);
 
-	
+	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glEnable(GL_CULL_FACE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	return 1;
 }
 
 int main()
-{
+{	
 	if (WindowInit() == -1)
 	{
 		cout << "OpenGL Init error!";
@@ -98,122 +61,97 @@ int main()
 	}
 	
 	Matrix::projection = Matrix::GenPerspective(SCR_W, SCR_H, 0.1f, 400.f);
-
 	Callbacks::initCallbacks(window);
-	///
-	vector<string> faces =
-	{
-		"Textures/Skybox/right.jpg",
-		"Textures/Skybox/left.jpg",
-		"Textures/Skybox/top.jpg",
-		"Textures/Skybox/bottom.jpg",
-		"Textures/Skybox/front.jpg",
-		"Textures/Skybox/back.jpg"
-	};
-	
-	Skybox *skybox = new Skybox(faces);
-	///
-	Material *model = new Material("Default/ModelShadow");
-	GameObject *city = new GameObject("Models/city/Street environment_V01.obj", model);
-	city->transform->_position.y++;
-	///
-	GameObject *camera = new GameObject();	
-	camera->AddComponent<Camera>(new Camera(camera->transform));
+
+	GameObject *camera = new GameObject();
+	camera->AddComponentR<Camera>();
 	camera->AddComponent<CameraController>();
 	camera->transform->_position = vec3(1, 3, 1);
-	///
-	GameObject *LightCube = new GameObject();
-	DirectionalLight *dLight = LightCube->AddComponentR<DirectionalLight>(new DirectionalLight());
-	dLight->strengh = 2;
-	dLight->direction = vec3(-1, -4, 0);
-	dLight->color = vec3(1,0.86f,0.55f);
-	///
-	GLuint MatrixGlobalShader = glCreateUnifBuffer(128, 1);
-	glSetUnifVariable(MatrixGlobalShader, 64, 64, &Matrix::projection);
-	model->SetShaderUnifBlockBind("Matrices", 1);
-	skybox->SetShaderUnifBlockBind("Matrices", 1);
-	GLuint CameraGlobalShader = glCreateUnifBuffer(16, 2);
-	model->SetShaderUnifBlockBind("Camera", 2);
-	skybox->SetShaderUnifBlockBind("Camera", 2);
-	GLuint MatPropsGlobalShafer = glCreateUnifBuffer(16, 3);
-	model->SetShaderUnifBlockBind("MatProps", 3);
-	glSetUnifVariable(MatPropsGlobalShafer, 0,	4, &model->matProps.ambient);
-	glSetUnifVariable(MatPropsGlobalShafer, 4, 4, &model->matProps.diffuse);
-	glSetUnifVariable(MatPropsGlobalShafer, 8, 4, &model->matProps.specular);
-	glSetUnifVariable(MatPropsGlobalShafer, 12, 4, &model->matProps.specularStr);
-	///
-	glEnable(GL_MULTISAMPLE);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glEnable(GL_CULL_FACE);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	int DPTH_W = 1024, DPTH_H = 1024;
+	GLuint U_Global_Matrix = glUniformBuffer(128, 1);
+	GLuint U_Global_MatProps = glUniformBuffer(32, 2);
 
-	RenderTexture depthMap(DPTH_W, DPTH_H, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	glUniformData(U_Global_MatProps, 4, 0, 0.1f);
+	glUniformData(U_Global_MatProps, 4, 4, 0.8f);
+	glUniformData(U_Global_MatProps, 4, 8, 0.3f);
+	glUniformData(U_Global_MatProps, 4, 12, 32.f);
+	glUniformDataObject(U_Global_Matrix, 64, 64, &Matrix::projection);
 
-	mat4 lightView = lookAt(vec3(0,30,0), vec3(0,0,0), Transform::up);
-	mat4 lightProj = Matrix::GenOrtho(-10.,10.,-10.,10.,0.1,40.);
-	mat4 lightSpaceMatrix = lightProj * lightView;
-	Material depth("Default/Depth");
-	depth.SetShaderUnifBlockBind("Matrices", 1);
+	Material model("Default/Standart");
+	Skybox *skybox = new Skybox("Textures/SkyboxN/purplenebula","tga");
 	
-	Material forScreen("ForTest/Screen");
 
-	Mesh * screen = Primitive::Quad();
-	Texture2D testTex("Textures/testDepth.png");
-	vec3 _scale = vec3(1);
+	///------------------------------------------------------------------------------------------------------------
+	model.BindUniformBuffer("Matrices", 1);
+	model.BindUniformBuffer("MatProps", 2);
+	model.BindUniformBuffer("Light", 3);
+	skybox->BindUniformBuffer("Matrices", 1);
+
+
+	///-------------------------------------------------------------------------------------------------------------
+
+	GameObject floor(Primitive::Cube(), &model);
+	floor.transform->Scale(vec3(30,1,30));
+	Texture2D metallTex("Textures/grass_1.png");
+	floor.material->SetTexture(&metallTex, "texture_diffuse");
+
+	GameObject box(Primitive::Cube(), &model);
+	box.transform->_position.y += 4;
+
+	GameObject *light = new GameObject();
+	DirectionalLight *dL = light->AddComponentR<DirectionalLight>();
+	dL->direction = vec3(0, -1, 0);
+	dL->strengh = 1.f;
+	dL->color = vec3(0.85, 0.65, 0.39);
+	floor.material->params.stretch = vec2(30, 30);
+
+
+	mat4 projLight = Matrix::GenOrtho(50, 50, 50, 50, 0, 200);
+	mat4 viewLight = lookAt(dL->transform->_position, dL->direction, Transform::up);
+	mat4 projL = projLight * viewLight;
+	RenderTexture texLight(1024, 1024, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RGB);
+	Material* depth = new Material("Default/Depth");
+	
+
+
+	glUniformLights();
+
 	while (!glfwWindowShouldClose(window))
 	{
-		if (Input::GetKey(GLFW_KEY_ESCAPE))
+		if (Input::GetKeyDown(GLFW_KEY_ESCAPE))
 		{
 			goto exit;
-		}		
+		}
+
 		Time::currenttime = glfwGetTime();
 		Time::CalculateDelta();
+		ActiveLights();
 
 
 //-------------------------------------------------------------------------------------//
-
 		glfwPollEvents();
-		if (Input::GetKey(GLFW_KEY_UP))
-			dLight->strengh += Time::deltaTime;
-		if (Input::GetKey(GLFW_KEY_DOWN))
-			dLight->strengh -= Time::deltaTime;
+		glClearColor(0.1, 0.02, 0.1, 1);
 		
-		depthMap.ActiveBuffer();
-		glViewport(0, 0, DPTH_W, DPTH_H);
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		depth.ActiveShader();
-		depth.SetUnifMat4("lightSpaceMatrix", lightSpaceMatrix);
-		city->Draw(&depth);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, SCR_W, SCR_H);
-		glClearColor(0.10f, 0.11f, 0.14f,1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			
-
-		model->ActiveShader();
-		model->SetUnifMat4("lightSpaceMatrix", lightSpaceMatrix);
-		model->SetUnifInt("shadowMap", 5);
-
-///test
-
-		depthMap.Active(5);
-		forScreen.ActiveShader();
-		forScreen.SetUnifInt("_main", 5);
-		screen->Draw(&forScreen);
+		texLight.ActiveBuffer();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		//city->Draw();	
+		depth->SetUnifMat4("projView", projL);
+		floor.Draw(depth);
+		box.Draw(depth);		
+		
+		texLight.DeactiveBuffer();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		model.SetUnifMat4("projViewL", projL);
 		camera->Draw();
-		LightCube->Draw();
-
+		light->Draw();
+		floor.Draw();
+		box.Draw();
+		
+		skybox->Draw();		
 //------------------------------------------------------------------------------------//
-		skybox->Draw();
-
-		glSetUnifVariable(CameraGlobalShader, 0, 16, &Camera::mainCamera->transform->_position);
-		glSetUnifVariable(MatrixGlobalShader, 0, 64, &Matrix::view);
+		glUniformDataObject(U_Global_MatProps, 16, 16, &Camera::mainCamera->transform->_position);
+		glUniformDataObject(U_Global_Matrix, 64, 0, &Matrix::view);
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);
 	}
@@ -221,17 +159,12 @@ int main()
 
 exit:
 	delete skybox;
-	delete model;
-	delete city;
-	delete LightCube;
 	delete camera;
-	Light::pointLs.clear();
-	Light::spotLs.clear();
-	Light::dirLs.clear();
-	faces.clear();
-	cubeVert.clear();
-	glDeleteBuffers(1, &MatrixGlobalShader);
-	glDeleteBuffers(1, &CameraGlobalShader);
+	delete light;
+
+	glDeleteBuffers(1, &U_Global_Matrix);
+	glDeleteBuffers(1, &U_Global_MatProps);
+	glDeleteBuffers(1, &U_Global_LightsPDS);
 
 	glfwTerminate();
 	return 0;

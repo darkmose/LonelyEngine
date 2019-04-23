@@ -9,7 +9,7 @@ public:
 	Component() {}
 	virtual void Awake() {}
 	virtual ~Component() {}
-
+	Transform * transform = NULL;
 protected:
 	GameObject * gameObject = NULL;
 };

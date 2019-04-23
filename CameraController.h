@@ -29,7 +29,12 @@ void CameraController::myFunc()
 		camera->transform->TranslatePos(camera->Right(-cameraSpeed));
 	if (Input::GetKey(GLFW_KEY_D))
 		camera->transform->TranslatePos(camera->Right(cameraSpeed));
+	if (Input::GetKeyDown(GLFW_KEY_DOWN))
+	{
+		
+	}
 
+	
 	if (Input::GetKey(340))
 		speed = 2.f;
 	else speed = 1.f;

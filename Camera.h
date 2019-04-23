@@ -9,11 +9,10 @@ private:
 public:
 	void Update();
 	static Camera* mainCamera;
-	Transform *transform;
 	void Look(GLfloat, GLfloat);
 	void View();
 	void SetMain();
-	Camera(Transform*);
+	Camera();
 	vec3 Forward(float);
 	vec3 Right(float);
 	vec3 Direction();
@@ -22,13 +21,12 @@ public:
 
 Camera* Camera::mainCamera;
 
-inline Camera::Camera(Transform* trans)
+inline Camera::Camera()
 {
 	if (mainCamera == NULL)
 	{
 		Camera::mainCamera = this;
 	}	
-	transform = trans;
 }
 
 

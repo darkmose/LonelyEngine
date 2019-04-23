@@ -29,7 +29,7 @@ Sprite::Sprite(const GLchar* path)
 	GameObject::material = new Material("Default/Sprite");
 	mesh = Primitive::Quad();
 	texture = new Texture2D(path);
-	material->SetSingleTexture(texture, "texture_diffuse");
+	material->SetTexture(texture, "texture_diffuse");
 }
 
 
@@ -75,11 +75,11 @@ inline void Sprite::DrawRender()
 inline void Sprite::SetTexture(Texture2D * tex)
 {
 	texture = tex;
-	material->SetSingleTexture(texture, "texture_diffuse");
+	material->SetTexture(texture, "texture_diffuse");
 }
 
 inline void Sprite::SetTexture(RenderTexture *rTexture)
 {
 	rTex = rTexture;
-	material->SetSingleTexture(rTex, "texture_diffuse");
+	material->SetTexture(rTex, "texture_diffuse");
 }

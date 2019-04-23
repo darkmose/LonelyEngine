@@ -25,11 +25,10 @@ public:
 	void ActiveUniforms();
 	Shader * shader;
 	void ActiveShader();
-	void ActiveLight();
 	Material(const GLchar*);
 	vector<Texture> textures;
-	void SetSingleTexture(Texture2D*, string);
-	void SetSingleTexture(RenderTexture*, string);
+	void SetTexture(Texture2D*, string);
+	void SetTexture(RenderTexture*, string);
 	void AddTexture(Texture2D*, string);
 	void SetUnifVec3(const GLchar*, vec3);
 	void SetUnifVec4(const GLchar*, vec4);
@@ -38,61 +37,8 @@ public:
 	void SetUnifFloat(const GLchar*, GLfloat);
 	void SetUnifInt(const GLchar*, GLint);
 	~Material();
-	void SetShaderUnifBlockBind(const GLchar*, GLuint);
+	void BindUniformBuffer(const GLchar*, GLuint);
 };
-
-void Material::ActiveLight() 
-{
-	for (size_t i = 0; i < Light::pointLs.size(); i++)
-	{
-		char* intValue = new char[2];
-		_itoa_s(i, intValue, 2, 10);
-		string Kc = "Point[" + string(intValue) + "].Kc";
-		string Kl = "Point[" + string(intValue) + "].Kl";
-		string Kq = "Point[" + string(intValue) + "].Kq";
-		string str = "Point[" + string(intValue) + "].strengh";
-		string col = "Point[" + string(intValue) + "].color";
-		string pos = "Point[" + string(intValue) + "].position";
-
-		SetUnifFloat(Kc.c_str(), (*Light::pointLs[i]).Kc);
-		SetUnifFloat(Kl.c_str(), (*Light::pointLs[i]).Kl);
-		SetUnifFloat(Kq.c_str(), (*Light::pointLs[i]).Kq);
-		SetUnifFloat(str.c_str(), (*Light::pointLs[i]).strengh);
-		SetUnifVec3(col.c_str(), (*Light::pointLs[i]).color);
-		SetUnifVec3(pos.c_str(), (*Light::pointLs[i]).position);
-	}
-	for (size_t i = 0; i < Light::spotLs.size(); i++)
-	{
-		char* intValue = new char[2];
-		_itoa_s(i, intValue, 2, 10);
-		string pos = "Spot[" + string(intValue) + "].position";
-		string dir = "Spot[" + string(intValue) + "].direction";
-		string Icutoff = "Spot[" + string(intValue) + "].innerCutOff";
-		string Ocutoff = "Spot[" + string(intValue) + "].outerCutOff";
-		string str = "Spot[" + string(intValue) + "].color";
-		string colr = "Spot[" + string(intValue) + "].position";
-
-		SetUnifVec3(pos.c_str(), Camera::mainCamera->transform->_position);
-		SetUnifVec3(dir.c_str(), Camera::mainCamera->Direction());
-		SetUnifFloat(Icutoff.c_str(), (*Light::spotLs[i]).innerCutOff);
-		SetUnifFloat(Ocutoff.c_str(), (*Light::spotLs[i]).outerCutOff);
-		SetUnifFloat(str.c_str(), (*Light::spotLs[i]).strengh);
-		SetUnifVec3(colr.c_str(), (*Light::spotLs[i]).color);
-	}
-	for (size_t i = 0; i < Light::dirLs.size(); i++)
-	{
-		char* intValue = new char[2];
-		_itoa_s(i, intValue, 2, 10);
-
-		string dir = "Directional[" + string(intValue) + "].direction";
-		string col = "Directional[" + string(intValue) + "].color";
-		string str = "Directional[" + string(intValue) + "].strengh";
-
-		SetUnifVec3(dir.c_str(), (*Light::dirLs[i]).direction);
-		SetUnifVec3(col.c_str(), (*Light::dirLs[i]).color);
-		SetUnifFloat(str.c_str(), (*Light::dirLs[i]).strengh);
-	}
-}
 
 void Material::ActiveUniforms()
 {
@@ -106,7 +52,7 @@ inline Material::Material(const GLchar * sh)
 	shader = new Shader(sh);
 }
 
-inline void Material::SetSingleTexture(Texture2D* tex, string textureType)
+inline void Material::SetTexture(Texture2D* tex, string textureType)
 {
 	textures.clear();
 	Texture texture;
@@ -115,7 +61,7 @@ inline void Material::SetSingleTexture(Texture2D* tex, string textureType)
 	textures.push_back(texture);
 }
 
-inline void Material::SetSingleTexture(RenderTexture* tex, string textureType)
+inline void Material::SetTexture(RenderTexture* tex, string textureType)
 {
 	textures.clear();
 	Texture texture;
@@ -167,7 +113,7 @@ Material::~Material()
 	textures.clear();
 }
 
-inline void Material::SetShaderUnifBlockBind(const GLchar * unifName, GLuint idBlock)
+inline void Material::BindUniformBuffer(const GLchar * unifName, GLuint idBlock)
 {
 	GLuint idUnifBlock = glGetUniformBlockIndex(shader->Sprogram(), unifName);
 	glUniformBlockBinding(shader->Sprogram(), idUnifBlock, idBlock);

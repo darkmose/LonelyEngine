@@ -3,19 +3,34 @@
 class Shader
 {
 private:
-	const GLchar* VertexShader;
-	const GLchar* FragmentShader;
-	const GLchar* GeometryShader;
+
+	enum class Type
+	{
+		nullShader = -1,
+		Vertex = 0,
+		Geometry = 1,
+		Fragment = 2
+	} type;
+
+	struct ShaderSources
+	{
+		string Vertex;
+		string Geometry;
+		string Fragment;
+
+	} shaderSources;
+
+	stringstream ss[3];
+
 	bool isGeometry = false;
 
 	GLuint shaderProgram;
-	GLuint vertexShader;
-	GLuint fragmentShader;
-	GLuint geometryShader;
-	void InitShaders();
+
 	void InitProgram();
 	void LoadShaders(std::string& path);
-	
+	GLuint CompileShader(GLuint type, string& source);
+
+
 public:
 	Shader(const GLchar* name);
 	void Active();
@@ -24,177 +39,114 @@ public:
 };
 
 
-//test_progr(const GLchar*name) 
-//{
-//	string path = "Shaders/" + (string)name;
-//	
-//	resf = path + "F.lshader";
-//	{		
-//		ifstream str(resf, ios::in | ios::binary | ios::ate);
-//
-//		while (!str.eof())
-//		{
-//			char temp[100];
-//			istream s = str.get(temp, 100);
-//			if ()
-//			{
-//				cout << str;
-//			}
-//		}
-//		ifstream::pos_type size = str.tellg();
-//		GLint fSize = (GLint)str.tellg();
-//		GLchar* memblock;
-//		memblock = new char[1 + fSize];
-//		str.seekg(0, ios::beg);
-//		str.read(memblock, size);
-//		str.close();
-//		memblock[size] = '\0';
-//
-//		VertexShader = memblock;
-//		str.close();
-//	}
-//}
-
-
 inline Shader::Shader(const GLchar * name)
 {
 	std::string path = "Shaders/" + (std::string)name;
 	LoadShaders(path);	
 }
 
-void Shader::InitShaders()
-{
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &VertexShader, nullptr);
-	glCompileShader(vertexShader);
 
+inline GLuint Shader::CompileShader(GLuint type, string & source)
+{
+	GLuint id = glCreateShader(type);
+	const char* src = source.c_str();
+	glShaderSource(id, 1, &src, nullptr);
+	glCompileShader(id);
 	GLint status;
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+	glGetShaderiv(id, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE)
 	{
 		char info[512];
-		glGetShaderInfoLog(vertexShader, 512, NULL, info);
-		std::cout << info;
+		glGetShaderInfoLog(id, 512, NULL, info);
+		std::cout << "Shader Error\n" << info;
 		glfwTerminate();
 	}
-
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &FragmentShader, nullptr);
-	glCompileShader(fragmentShader);
-
-	GLint status2;
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status2);
-	if (status2 == GL_FALSE)
-	{
-		char info[512];
-		glGetShaderInfoLog(fragmentShader, 512, NULL, info);
-		std::cout << info;
-		glfwTerminate();
-	}
-	if (isGeometry)
-	{
-		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-		glShaderSource(geometryShader, 1, &GeometryShader, NULL);
-		glCompileShader(geometryShader);
-
-		GLint status3;
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status3);
-		if (status3 == GL_FALSE)
-		{
-			char info[512];
-			glGetShaderInfoLog(fragmentShader, 512, NULL, info);
-			std::cout << info;
-			glfwTerminate();
-		}
-	}
+	return id;
 }
 
 void Shader::InitProgram()
 {
+	GLuint vs, gs, fs;
+
+	vs = CompileShader(GL_VERTEX_SHADER, shaderSources.Vertex);
+	if(isGeometry) gs = CompileShader(GL_GEOMETRY_SHADER, shaderSources.Geometry);
+	fs = CompileShader(GL_FRAGMENT_SHADER, shaderSources.Fragment);
+
 	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	if (isGeometry)	
-		glAttachShader(shaderProgram, geometryShader);
+	glAttachShader(shaderProgram, vs);
+	glAttachShader(shaderProgram, fs);
+	if (isGeometry)
+	{
+		glAttachShader(shaderProgram, gs);
+	}
 	glLinkProgram(shaderProgram);
 
-	GLint status4;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status4);
-	if (status4 == GL_FALSE)
+	GLint status;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
+	if (status == GL_FALSE)
 	{
 		char log[512];
 		glGetProgramInfoLog(shaderProgram, 512, NULL, log);
-		std::cout << log;
+		std::cout<<"Shader Program Error!!\n"<< log;
 		glfwTerminate();
 	}
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	if(isGeometry)
-		glDeleteShader(geometryShader);
-	delete[] VertexShader;
-	delete[] FragmentShader;
-	delete[] GeometryShader;
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+	if (isGeometry)
+	{
+		glDeleteShader(gs);
+	}
+	for (size_t i = 0; i < 3; i++)
+	{
+		ss[i].clear();
+	}
+	
 }
 
-inline void Shader::LoadShaders(std::string & path)
+void Shader::LoadShaders(std::string & path)
 {
-	std::string resv, resf, resg;
-	resv = path + "V.lshader";
-	resf = path + "F.lshader";
-	resg = path + "G.lshader";
-	{
-		ifstream str(resv, ios::in|ios::binary|ios::ate);
-		ifstream::pos_type size = str.tellg();
-		GLint fSize = (GLint)str.tellg();
-		GLchar* memblock;
-		memblock = new char[1 + fSize];
-		str.seekg(0, ios::beg);
-		str.read(memblock, size);
-		str.close();
-		memblock[size] = '\0';		
+	string sPath = path + ".shader";
+	type = Type::nullShader;
+	ifstream stream(sPath.c_str());
 
-		VertexShader = memblock;
-		str.close();		
-	}	
+	string line;
+	while (getline(stream,line)) 
 	{
-		ifstream str(resf, ios::in | ios::binary | ios::ate);
-		ifstream::pos_type size = str.tellg();
-		GLint fSize = (GLint)str.tellg();
-		GLchar* memblock;
-		memblock = new char[1 + fSize];
-		str.seekg(0, ios::beg);
-		str.read(memblock, size);
-		str.close();
-		memblock[size] = '\0';
+		if (line.find("#shader") != string::npos)
+		{
+			if (line.find("vertex") != string::npos)
+			{
+				type = Type::Vertex;
+				continue;
+			}
+			if (line.find("geometry") != string::npos)
+			{
+				type = Type::Geometry;
+				isGeometry = true;
+				continue;
+			}
+			if (line.find("fragment") != string::npos)
+			{
+				type = Type::Fragment;
+				continue;
+			}
+		}
+		if (type != Type::nullShader)
+		{
+			ss[(int)type] << line <<endl;
+		}
+	}
+	stream.close();
 
-		FragmentShader = memblock;
-		str.close();	
-	}		
-	{
-		ifstream str(resg, ios::in | ios::binary | ios::ate);
-		ifstream::pos_type size = str.tellg();
-		GLint fSize = (GLint)str.tellg();
-		if (fSize == -1)
-		{
-			isGeometry = false;
-			str.close();
-		}
-		else
-		{
-			GLchar* memblock;
-			memblock = new char[1 + fSize];
-			str.seekg(0, ios::beg);
-			str.read(memblock, size);
-			str.close();
-			memblock[size] = '\0';
-			isGeometry = true;
-			GeometryShader = memblock;
-			str.close();
-		}
-		
-	}	
-	InitShaders();
+
+
+	shaderSources = {
+		ss[(int)Type::Vertex].str(), 
+		ss[(int)Type::Geometry].str(), 
+		ss[(int)Type::Fragment].str()};
+	
+	cout<<shaderSources.Fragment.size()<<endl;
 	InitProgram();
 }
 
