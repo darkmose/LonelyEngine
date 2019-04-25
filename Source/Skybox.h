@@ -88,8 +88,8 @@ inline Skybox::Skybox(string path, string format)
 	paths.push_back(path + "_lf." + format);
 	paths.push_back(path + "_up." + format);
 	paths.push_back(path + "_dn." + format);
-	paths.push_back(path + "_ft." + format);
 	paths.push_back(path + "_bk." + format);
+	paths.push_back(path + "_ft." + format);
 
 	sky = Texture2D::TextureCube(paths);
 	shader = new Shader("Default/Skybox");

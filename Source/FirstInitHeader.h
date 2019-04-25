@@ -70,7 +70,8 @@ namespace userGl
 #include "Input.h"
 #include "RenderTexture.h"
 #include "Sprite.h"
-
+#include "CameraController.h"
+#include "Skybox.h"
 
 namespace userGl {
 	GLuint U_Global_LightsPDS;

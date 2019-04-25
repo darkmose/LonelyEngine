@@ -1,9 +1,8 @@
 #include "FirstInitHeader.h"
-#include "CameraController.h"
-#include "Skybox.h"
+
 
 int SCR_W, SCR_H;
-GLbyte _MSAA = 1;
+GLbyte _MSAA = 8;
 
 
 GLFWwindow* window;
@@ -77,8 +76,8 @@ int main()
 	userGl::glUniformData(U_Global_MatProps, 4, 12, 32.f);
 	userGl::glUniformDataObject(U_Global_Matrix, 64, 64, &Matrix::projection);
 
-	Material model("Default/Standart");
-	Skybox *skybox = new Skybox("Data/Textures/SkyboxN/purplenebula","tga");
+	Material model("Default/Model");
+	Skybox *skybox = new Skybox("Data/Textures/SkyboxN/oasisnight","tga");
 	
 
 	///------------------------------------------------------------------------------------------------------------
@@ -95,10 +94,9 @@ int main()
 	GLuint grassTex = Texture2D::Texture2D("Data/Textures/grass_1.png");
 	floor.material->SetTexture(grassTex, "texture_diffuse");
 
-	
-
 	GameObject box(Primitive::Cube(), &model);
 	box.transform->_position.y += 4;
+	box.transform->_position.x += 8;
 
 	GameObject *light = new GameObject();
 	DirectionalLight *dL = light->AddComponentR<DirectionalLight>();
@@ -107,14 +105,6 @@ int main()
 	dL->strengh = 1.f;
 	dL->color = vec3(0.85, 0.65, 0.39);
 	floor.material->params.stretch = vec2(50, 50);
-
-
-	mat4 projLight = Matrix::GenOrtho(50, 50, 50, 50, 0, 100);
-	mat4 viewLight = lookAt(dL->transform->_position, dL->direction, Transform::up);
-	mat4 projL = projLight * viewLight;
-	RenderTexture texLight(1024, 1024, GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RGB);
-	Material depth("Default/Depth");
-
 
 	userGl::glUniformLights();
 
@@ -129,32 +119,10 @@ int main()
 		Time::CalculateDelta();
 		userGl::ActiveLights();
 
-
 //-------------------------------------------------------------------------------------//
 		glfwPollEvents();
 		glClearColor(0.1f, 0.02f, 0.1f,0.1f);
-		
-
-
-		texLight.ActiveBuffer();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		depth.ActiveShader();
-		depth.SetUnifMat4("LightModel", projL);
-		floor.material = &depth;
-		box.material = &depth;	
-
-		floor.Draw();
-		box.Draw();		
-		
-		texLight.DeactiveBuffer();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		floor.material = &model;
-		box.material = &model;
-
-		model.ActiveShader();
-		model.SetUnifMat4("projViewL", projL);
-		
 		camera->Draw();
 		light->Draw();
 		floor.Draw();
