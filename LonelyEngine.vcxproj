@@ -106,6 +106,7 @@
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CameraController.h" />
     <ClInclude Include="Source\Component.h" />
+    <ClInclude Include="Source\delegate.h" />
     <ClInclude Include="Source\FirstInitHeader.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\Input.h" />

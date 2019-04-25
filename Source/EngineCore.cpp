@@ -1,11 +1,12 @@
 #include "FirstInitHeader.h"
-
+#include "delegate.h"
 
 int SCR_W, SCR_H;
 GLbyte _MSAA = 8;
 
 
 GLFWwindow* window;
+
 
 
 int WindowInit() 
@@ -51,17 +52,30 @@ int WindowInit()
 	return 1;
 }
 
+
+void func(int a,int b)
+{
+	cout << a*b << endl;
+}
+
+void sqrfunc(int a,int v)
+{
+	cout << a*a << endl;
+}
+
+
 int main()
-{	
+{
+	
 	if (WindowInit() == -1)
 	{
 		cout << "OpenGL Init error!";
 		return -1;
 	}
-	
+
 	Matrix::projection = Matrix::GenPerspective(SCR_W, SCR_H, 0.1f, 400.f);
 	Callbacks::initCallbacks(window);
-
+	   
 	GameObject *camera = new GameObject();
 	camera->AddComponentR<Camera>();
 	camera->AddComponent<CameraController>();
