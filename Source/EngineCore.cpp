@@ -2,7 +2,7 @@
 #include "delegate.h"
 
 int SCR_W, SCR_H;
-GLbyte _MSAA = 8;
+GLbyte _MSAA = 1;
 
 
 GLFWwindow* window;
@@ -53,20 +53,17 @@ int WindowInit()
 }
 
 
-void func(int a,int b)
-{
-	cout << a*b << endl;
-}
 
-void sqrfunc(int a,int v)
+void func(int x,int y)
 {
-	cout << a*a << endl;
+	cout <<"X: "<<x << "\tY: " << y<<endl;
 }
 
 
 int main()
 {
-	
+	Callbacks::mouse_click_event.Add(func);
+
 	if (WindowInit() == -1)
 	{
 		cout << "OpenGL Init error!";
@@ -111,6 +108,7 @@ int main()
 	GameObject box(Primitive::Cube(), &model);
 	box.transform->_position.y += 4;
 	box.transform->_position.x += 8;
+
 
 	GameObject *light = new GameObject();
 	DirectionalLight *dL = light->AddComponentR<DirectionalLight>();

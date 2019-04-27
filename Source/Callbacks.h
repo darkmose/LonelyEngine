@@ -1,4 +1,5 @@
 #pragma once
+#include "delegate.h"
 
 static class Callbacks 
 {	
@@ -20,6 +21,8 @@ public:
 	static unsigned char getState(int nKey);
 	static void setState(int nKey, unsigned char state);
 	static void initCallbacks(GLFWwindow*);
+	static delegate<int, int> mouse_click_event;
+	static vec2 mousePos;
 };
 
 GLFWwindow* Callbacks::_window;
@@ -29,6 +32,10 @@ vec2 Callbacks::deltaMouse;
 bool Callbacks::keys[400];
 bool Callbacks::mods[10];
 unsigned char Callbacks::state[400];
+delegate<int, int> Callbacks::mouse_click_event;
+vec2 Callbacks::mousePos;
+
+
 
 
 void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -47,24 +54,17 @@ void Callbacks::key_callback(GLFWwindow* window, int key, int scancode, int acti
 
 void Callbacks::cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
 {		
-	deltaMouse = vec2((xpos - lastX), (lastY - ypos));
-	Camera::mainCamera->Look(deltaMouse.y, deltaMouse.x);
-	lastX = xpos;
-	lastY = ypos;
+	mousePos = vec2(xpos, ypos);
 }
 
 void Callbacks::mouseB_callback(GLFWwindow* window, int b, int action, int mods)
 {
-	if (b == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-	{
-		
-	}
+	mouse_click_event(lastX,lastY);
 }
 
 void Callbacks::resize_callback(GLFWwindow* window, int w, int h) 
 {
-	glfwSetWindowSize(window, w, w);
-	glViewport(0, 0, w, w);
+
 }
 
 void Callbacks::scroll_callback(GLFWwindow* window, double x, double y) 

@@ -97,7 +97,6 @@ namespace Primitive {
 			pos = vec3(_Quad[k], _Quad[k+1], 0.0f);
 			texCoor = vec2(_Quad[k+2], _Quad[k+3]);
 			k += 4;
-			normal = vec3();
 			Vertex vertex;
 			vertex.Normal = normal;
 			vertex.Position = pos;

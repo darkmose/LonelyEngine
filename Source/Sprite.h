@@ -19,19 +19,22 @@ public:
 Sprite::Sprite()
 {
 	material = new Material("Default/Sprite");
+	material->BindUniformBuffer("Matrices", 1);
 	mesh = Primitive::Quad();
 }
 
 inline Sprite::Sprite(GLuint id)
 {
 	material = new Material("Default/Sprite");
+	material->BindUniformBuffer("Matrices", 1);
 	mesh = Primitive::Quad();
 	material->SetTexture(id, "texture_diffuse");
 }
 
 Sprite::Sprite(const GLchar* path)
 {
-	GameObject::material = new Material("Default/Sprite");
+	material = new Material("Default/Sprite");
+	material->BindUniformBuffer("Matrices", 1);
 	mesh = Primitive::Quad();
 	texture = Texture2D::Texture2D(path);
 	material->SetTexture(texture, "texture_diffuse");
@@ -53,9 +56,7 @@ inline void Sprite::Draw()
 	material->ActiveShader();
 	material->SetUnifFloat("transparent", transparent);
 	transform->MoveGlobalMatrix();
-	material->SetUnifMat4("Matrix.model", Matrix::model);
-	material->SetUnifMat4("Matrix.view", Matrix::view);
-	material->SetUnifMat4("Matrix.projection", Matrix::projection);
+	material->SetUnifMat4("model", Matrix::model);
 	material->SetUnifVec3("col", color);
 
 	mesh->Draw(material);

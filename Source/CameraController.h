@@ -7,11 +7,13 @@ private:
 	GLfloat speed = 1.f;
 	Camera* camera;
 	void myFunc();
-	void Awake()
-	{
-		camera = gameObject->GetComponent<Camera>();
-	}
+	vec2 deltaMouse;
+	double lastX, lastY;
 public:
+	void Awake() 
+	{
+		camera = Camera::mainCamera;
+	}
 	void Update();
 };
 
@@ -19,6 +21,12 @@ public:
 
 void CameraController::myFunc()
 {
+	vec2 mousePos = Input::mousePos();
+	deltaMouse = vec2((mousePos.x - lastX), (lastY - mousePos.y));
+	Camera::mainCamera->Look(deltaMouse.y, deltaMouse.x);
+	lastX = mousePos.x;
+	lastY = mousePos.y;
+
 	cameraSpeed = Time::deltaTime * 5 * speed;
 
 	if (Input::GetKey(GLFW_KEY_W))
